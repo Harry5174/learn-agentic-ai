@@ -6,13 +6,13 @@ readme = "README.md"
 authors = [
     { name = "Harry5174", email = "harisjaved010@gmail.com" }
 ]
-requires-python = ">=3.13"
+requires-python = ">=3.11"
 dependencies = [
     "pydantic>=2.13.4",
 ]
 
-[project.scripts]
-app = "app:main"
+# [project.scripts]
+# app = "app:main"
 
 [build-system]
 requires = ["hatchling"]
