@@ -6,16 +6,23 @@ from app.policy.schemas import PolicyDecisionType
 from app.state.schemas import TaskStatus
 
 
+def _config(task_id: str) -> dict:
+    """Build a LangGraph config with a unique thread_id."""
+    return {"configurable": {"thread_id": task_id}}
+
+
 def test_viewer_draft_task_is_denied() -> None:
     graph = build_harness_graph()
+    task_id = "task-denied-1"
 
     result = graph.invoke(
         {
-            "task_id": "task-denied-1",
+            "task_id": task_id,
             "user_query": "draft issue comment",
             "identity": resolve_identity_from_api_key(VIEWER_API_KEY),
             "audit_trail": [],
-        }
+        },
+        config=_config(task_id),
     )
 
     assert result["selected_tool_name"] == "draft_issue_comment"
@@ -27,14 +34,16 @@ def test_viewer_draft_task_is_denied() -> None:
 
 def test_viewer_draft_task_audit_excludes_tool_executed() -> None:
     graph = build_harness_graph()
+    task_id = "task-denied-2"
 
     result = graph.invoke(
         {
-            "task_id": "task-denied-2",
+            "task_id": task_id,
             "user_query": "draft issue comment",
             "identity": resolve_identity_from_api_key(VIEWER_API_KEY),
             "audit_trail": [],
-        }
+        },
+        config=_config(task_id),
     )
 
     event_types = [event.event_type for event in result["audit_trail"]]
@@ -48,14 +57,16 @@ def test_viewer_draft_task_audit_excludes_tool_executed() -> None:
 
 def test_unknown_query_fails_without_tool_execution() -> None:
     graph = build_harness_graph()
+    task_id = "task-unknown-1"
 
     result = graph.invoke(
         {
-            "task_id": "task-unknown-1",
+            "task_id": task_id,
             "user_query": "do something random",
             "identity": resolve_identity_from_api_key(VIEWER_API_KEY),
             "audit_trail": [],
-        }
+        },
+        config=_config(task_id),
     )
 
     assert result["status"] == TaskStatus.FAILED
@@ -67,14 +78,16 @@ def test_unknown_query_fails_without_tool_execution() -> None:
 
 def test_unknown_query_audit_does_not_include_tool_or_permission_events() -> None:
     graph = build_harness_graph()
+    task_id = "task-unknown-2"
 
     result = graph.invoke(
         {
-            "task_id": "task-unknown-2",
+            "task_id": task_id,
             "user_query": "do something random",
             "identity": resolve_identity_from_api_key(VIEWER_API_KEY),
             "audit_trail": [],
-        }
+        },
+        config=_config(task_id),
     )
 
     event_types = [event.event_type for event in result["audit_trail"]]

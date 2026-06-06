@@ -1,8 +1,12 @@
 from typing import Any
 
-from app.approval.schemas import ApprovalRequest
+from langgraph.types import interrupt
+
+from app.approval.schemas import ApprovalDecision, ApprovalRequest, ApprovalStatus
 from app.audit.logger import (
     append_audit_event,
+    create_approval_granted_event,
+    create_approval_rejected_event,
     create_approval_requested_event,
     create_audit_event,
     create_permission_checked_event,
@@ -12,6 +16,7 @@ from app.audit.logger import (
 )
 from app.audit.schemas import AuditEvent, AuditEventType
 from app.graph.state import HarnessGraphState
+from app.identity.schemas import IdentityContext
 from app.policy.guard import evaluate_tool_permission
 from app.policy.schemas import PolicyDecisionType
 from app.state.schemas import TaskStatus
@@ -55,6 +60,37 @@ def _select_tool_from_query(user_query: str) -> tuple[str | None, dict[str, Any]
         )
 
     return None, {}, None
+
+
+def _has_scope(identity: IdentityContext, scope: str) -> bool:
+    """Return whether an identity has a required scope."""
+
+    return scope in identity.scopes
+
+
+def _coerce_approval_decision(value: Any) -> ApprovalDecision | None:
+    """Convert interrupt resume value into an ApprovalDecision if possible."""
+
+    if isinstance(value, ApprovalDecision):
+        return value
+
+    if isinstance(value, dict):
+        return ApprovalDecision.model_validate(value.get("approval_decision", value))
+
+    return None
+
+
+def _coerce_approval_actor(value: Any) -> IdentityContext | None:
+    """Convert interrupt resume value into an IdentityContext if possible."""
+
+    if isinstance(value, dict):
+        actor_value = value.get("approval_actor")
+        if isinstance(actor_value, IdentityContext):
+            return actor_value
+        if isinstance(actor_value, dict):
+            return IdentityContext.model_validate(actor_value)
+
+    return None
 
 
 def interpret_task(state: HarnessGraphState) -> HarnessGraphState:
@@ -192,6 +228,101 @@ def pause_for_approval(state: HarnessGraphState) -> HarnessGraphState:
     }
 
 
+def handle_approval_decision(state: HarnessGraphState) -> HarnessGraphState:
+    """Interrupt graph execution and handle an external approval decision."""
+
+    task_id = state["task_id"]
+    selected_tool_name = state["selected_tool_name"]
+    approval_request = state.get("approval_request")
+
+    if approval_request is None:
+        return {
+            **state,
+            "status": TaskStatus.FAILED,
+            "resume_error": "Cannot resume approval flow without an approval request.",
+            "error_message": "Cannot resume approval flow without an approval request.",
+        }
+
+    resume_value = interrupt(
+        {
+            "kind": "approval_required",
+            "task_id": task_id,
+            "tool_name": selected_tool_name,
+            "approval_request": approval_request.model_dump(mode="json"),
+            "message": "Approval decision required before high-risk execution.",
+        }
+    )
+
+    approval_decision = _coerce_approval_decision(resume_value)
+    approval_actor = _coerce_approval_actor(resume_value)
+
+    if approval_decision is None:
+        return {
+            **state,
+            "status": TaskStatus.FAILED,
+            "resume_error": "Missing or invalid approval decision.",
+            "error_message": "Missing or invalid approval decision.",
+        }
+
+    if approval_actor is None:
+        return {
+            **state,
+            "status": TaskStatus.FAILED,
+            "approval_decision": approval_decision,
+            "resume_error": "Missing or invalid approval actor.",
+            "error_message": "Missing or invalid approval actor.",
+        }
+
+    if approval_decision.status == ApprovalStatus.APPROVED:
+        required_scope = "approval:approve"
+        event_factory = create_approval_granted_event
+        next_status = TaskStatus.RUNNING
+    elif approval_decision.status == ApprovalStatus.REJECTED:
+        required_scope = "approval:reject"
+        event_factory = create_approval_rejected_event
+        next_status = TaskStatus.REJECTED
+    else:
+        return {
+            **state,
+            "status": TaskStatus.FAILED,
+            "approval_decision": approval_decision,
+            "approval_actor": approval_actor,
+            "resume_error": f"Unsupported approval decision: {approval_decision.status.value}",
+            "error_message": f"Unsupported approval decision: {approval_decision.status.value}",
+        }
+
+    if not _has_scope(approval_actor, required_scope):
+        return {
+            **state,
+            "status": TaskStatus.FAILED,
+            "approval_decision": approval_decision,
+            "approval_actor": approval_actor,
+            "resume_error": f"Approval actor lacks required scope: {required_scope}",
+            "error_message": f"Approval actor lacks required scope: {required_scope}",
+            "tool_result": None,
+        }
+
+    audit_trail = append_audit_event(
+        _audit_trail(state),
+        event_factory(
+            task_id=task_id,
+            actor_id=approval_actor.user_id,
+            tool_name=selected_tool_name,
+            reason=approval_decision.reason,
+        ),
+    )
+
+    return {
+        **state,
+        "status": next_status,
+        "approval_decision": approval_decision,
+        "approval_actor": approval_actor,
+        "resume_error": None,
+        "error_message": None,
+        "audit_trail": audit_trail,
+    }
+
+
 def execute_tool(state: HarnessGraphState) -> HarnessGraphState:
     """Execute an allowed dry-run tool through the controlled registry."""
 
@@ -231,6 +362,20 @@ def finalize_denial(state: HarnessGraphState) -> HarnessGraphState:
         "status": TaskStatus.DENIED,
         "tool_result": None,
         "final_report": f"Task denied: {decision.reason}",
+    }
+
+
+def finalize_rejection(state: HarnessGraphState) -> HarnessGraphState:
+    """Finalize a rejected approval flow without executing a tool."""
+
+    approval_decision = state.get("approval_decision")
+    reason = approval_decision.reason if approval_decision else "Approval was rejected."
+
+    return {
+        **state,
+        "status": TaskStatus.REJECTED,
+        "tool_result": None,
+        "final_report": f"Task rejected: {reason}",
     }
 
 

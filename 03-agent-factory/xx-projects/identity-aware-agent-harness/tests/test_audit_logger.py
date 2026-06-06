@@ -8,6 +8,9 @@ from app.audit.logger import (
     create_task_created_event,
     create_tool_executed_event,
     create_tool_selected_event,
+    create_approval_granted_event,
+    create_approval_rejected_event,
+    create_task_completed_event,
 )
 from app.audit.schemas import AuditEvent, AuditEventType
 from pathlib import Path
@@ -231,3 +234,41 @@ def test_audit_logger_does_not_persist_to_database() -> None:
     ]
 
     assert not any(term in source for term in forbidden_terms)
+
+def test_create_approval_granted_event() -> None:
+    event = create_approval_granted_event(
+        task_id="task-123",
+        actor_id="admin-123",
+        tool_name="trigger_workflow_dry_run",
+        reason="Approved by admin.",
+    )
+
+    assert event.event_type == AuditEventType.APPROVAL_GRANTED
+    assert event.actor_id == "admin-123"
+    assert event.tool_name == "trigger_workflow_dry_run"
+    assert event.metadata["reason"] == "Approved by admin."
+
+
+def test_create_approval_rejected_event() -> None:
+    event = create_approval_rejected_event(
+        task_id="task-123",
+        actor_id="admin-123",
+        tool_name="trigger_workflow_dry_run",
+        reason="Rejected by admin.",
+    )
+
+    assert event.event_type == AuditEventType.APPROVAL_REJECTED
+    assert event.actor_id == "admin-123"
+    assert event.tool_name == "trigger_workflow_dry_run"
+    assert event.metadata["reason"] == "Rejected by admin."
+
+
+def test_create_task_completed_event() -> None:
+    event = create_task_completed_event(
+        task_id="task-123",
+        actor_id="system",
+    )
+
+    assert event.event_type == AuditEventType.TASK_COMPLETED
+    assert event.actor_id == "system"
+    assert event.message == "Task was completed."

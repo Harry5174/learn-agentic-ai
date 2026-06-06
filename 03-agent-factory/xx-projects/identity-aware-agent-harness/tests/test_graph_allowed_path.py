@@ -6,16 +6,23 @@ from app.policy.schemas import PolicyDecisionType
 from app.state.schemas import TaskStatus
 
 
+def _config(task_id: str) -> dict:
+    """Build a LangGraph config with a unique thread_id."""
+    return {"configurable": {"thread_id": task_id}}
+
+
 def test_viewer_inspect_task_completes_allowed_path() -> None:
     graph = build_harness_graph()
+    task_id = "task-allowed-1"
 
     result = graph.invoke(
         {
-            "task_id": "task-allowed-1",
+            "task_id": task_id,
             "user_query": "inspect sandbox issues",
             "identity": resolve_identity_from_api_key(VIEWER_API_KEY),
             "audit_trail": [],
-        }
+        },
+        config=_config(task_id),
     )
 
     assert result["selected_tool_name"] == "inspect_sandbox_issues"
@@ -29,14 +36,16 @@ def test_viewer_inspect_task_completes_allowed_path() -> None:
 
 def test_viewer_inspect_task_audit_contains_expected_events() -> None:
     graph = build_harness_graph()
+    task_id = "task-allowed-2"
 
     result = graph.invoke(
         {
-            "task_id": "task-allowed-2",
+            "task_id": task_id,
             "user_query": "inspect sandbox issues",
             "identity": resolve_identity_from_api_key(VIEWER_API_KEY),
             "audit_trail": [],
-        }
+        },
+        config=_config(task_id),
     )
 
     event_types = [event.event_type for event in result["audit_trail"]]
@@ -50,14 +59,16 @@ def test_viewer_inspect_task_audit_contains_expected_events() -> None:
 
 def test_viewer_inspect_task_executes_only_after_allow_decision() -> None:
     graph = build_harness_graph()
+    task_id = "task-allowed-3"
 
     result = graph.invoke(
         {
-            "task_id": "task-allowed-3",
+            "task_id": task_id,
             "user_query": "inspect sandbox issues",
             "identity": resolve_identity_from_api_key(VIEWER_API_KEY),
             "audit_trail": [],
-        }
+        },
+        config=_config(task_id),
     )
 
     assert result["policy_decision"].decision == PolicyDecisionType.ALLOW

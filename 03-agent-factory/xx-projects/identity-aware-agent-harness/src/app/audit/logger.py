@@ -142,3 +142,50 @@ def create_tool_executed_event(
             "success": success,
         },
     )
+
+
+def create_approval_granted_event(
+    task_id: str,
+    actor_id: str,
+    tool_name: str,
+    reason: str,
+) -> AuditEvent:
+    """Create an approval-granted audit event."""
+    return create_audit_event(
+        task_id=task_id,
+        event_type=AuditEventType.APPROVAL_GRANTED,
+        actor_id=actor_id,
+        message="Approval was granted.",
+        tool_name=tool_name,
+        metadata={"reason": reason},
+    )
+
+
+def create_approval_rejected_event(
+    task_id: str,
+    actor_id: str,
+    tool_name: str,
+    reason: str,
+) -> AuditEvent:
+    """Create an approval-rejected audit event."""
+    return create_audit_event(
+        task_id=task_id,
+        event_type=AuditEventType.APPROVAL_REJECTED,
+        actor_id=actor_id,
+        message="Approval was rejected.",
+        tool_name=tool_name,
+        metadata={"reason": reason},
+    )
+
+
+def create_task_completed_event(
+    task_id: str,
+    actor_id: str,
+) -> AuditEvent:
+    """Create a task-completed audit event."""
+    return create_audit_event(
+        task_id=task_id,
+        event_type=AuditEventType.TASK_COMPLETED,
+        actor_id=actor_id,
+        message="Task was completed.",
+    )

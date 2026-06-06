@@ -1,14 +1,21 @@
+from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import END, START, StateGraph
 
 from app.graph.nodes import (
     execute_tool,
     finalize_denial,
+    finalize_rejection,
     generate_report,
+    handle_approval_decision,
     interpret_task,
     pause_for_approval,
     policy_guard,
 )
-from app.graph.routing import route_after_interpret_task, route_after_policy_guard
+from app.graph.routing import (
+    route_after_approval_decision,
+    route_after_interpret_task,
+    route_after_policy_guard,
+)
 from app.graph.state import HarnessGraphState
 
 
@@ -30,6 +37,8 @@ def build_harness_graph():
     builder.add_node("finalize_denial", finalize_denial)
     builder.add_node("pause_for_approval", pause_for_approval)
     builder.add_node("generate_report", generate_report)
+    builder.add_node("handle_approval_decision", handle_approval_decision)
+    builder.add_node("finalize_rejection", finalize_rejection)
 
     builder.add_edge(START, "interpret_task")
 
@@ -52,10 +61,21 @@ def build_harness_graph():
             "generate_report": "generate_report",
         },
     )
+    builder.add_conditional_edges(
+        "handle_approval_decision",
+        route_after_approval_decision,
+        {
+            "execute_tool": "execute_tool",
+            "finalize_rejection": "finalize_rejection",
+            "generate_report": "generate_report",
+        },
+    )
 
     builder.add_edge("execute_tool", "generate_report")
     builder.add_edge("finalize_denial", END)
-    builder.add_edge("pause_for_approval", END)
+    builder.add_edge("pause_for_approval", "handle_approval_decision")
+    builder.add_edge("finalize_rejection", END)
     builder.add_edge("generate_report", END)
 
-    return builder.compile()
+    checkpointer = InMemorySaver()
+    return builder.compile(checkpointer=checkpointer)

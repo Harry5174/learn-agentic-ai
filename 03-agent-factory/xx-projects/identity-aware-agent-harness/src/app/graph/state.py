@@ -2,7 +2,7 @@ from typing import Any
 
 from typing_extensions import TypedDict
 
-from app.approval.schemas import ApprovalRequest
+from app.approval.schemas import ApprovalDecision, ApprovalRequest
 from app.audit.schemas import AuditEvent
 from app.identity.schemas import IdentityContext
 from app.policy.schemas import PolicyDecision
@@ -25,8 +25,11 @@ class HarnessGraphState(TypedDict, total=False):
     tool_arguments: dict[str, Any]
     policy_decision: PolicyDecision | None
     approval_request: ApprovalRequest | None
+    approval_decision: ApprovalDecision | None
+    approval_actor: IdentityContext | None
 
     tool_result: ToolExecutionResult | None
     audit_trail: list[AuditEvent]
     final_report: str | None
     error_message: str | None
+    resume_error: str | None

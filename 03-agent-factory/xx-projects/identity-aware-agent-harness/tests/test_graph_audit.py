@@ -6,16 +6,23 @@ from app.identity.config import OPERATOR_API_KEY, VIEWER_API_KEY
 from app.identity.resolver import resolve_identity_from_api_key
 
 
+def _config(task_id: str) -> dict:
+    """Build a LangGraph config with a unique thread_id."""
+    return {"configurable": {"thread_id": task_id}}
+
+
 def test_allowed_graph_path_audit_event_order() -> None:
     graph = build_harness_graph()
+    task_id = "task-audit-allowed-1"
 
     result = graph.invoke(
         {
-            "task_id": "task-audit-allowed-1",
+            "task_id": task_id,
             "user_query": "inspect sandbox issues",
             "identity": resolve_identity_from_api_key(VIEWER_API_KEY),
             "audit_trail": [],
-        }
+        },
+        config=_config(task_id),
     )
 
     event_types = [event.event_type for event in result["audit_trail"]]
@@ -31,14 +38,16 @@ def test_allowed_graph_path_audit_event_order() -> None:
 
 def test_denied_graph_path_audit_event_order() -> None:
     graph = build_harness_graph()
+    task_id = "task-audit-denied-1"
 
     result = graph.invoke(
         {
-            "task_id": "task-audit-denied-1",
+            "task_id": task_id,
             "user_query": "draft issue comment",
             "identity": resolve_identity_from_api_key(VIEWER_API_KEY),
             "audit_trail": [],
-        }
+        },
+        config=_config(task_id),
     )
 
     event_types = [event.event_type for event in result["audit_trail"]]
@@ -52,15 +61,21 @@ def test_denied_graph_path_audit_event_order() -> None:
 
 def test_approval_pause_graph_path_audit_event_order() -> None:
     graph = build_harness_graph()
+    task_id = "task-audit-approval-1"
+    config = _config(task_id)
 
-    result = graph.invoke(
+    graph.invoke(
         {
-            "task_id": "task-audit-approval-1",
+            "task_id": task_id,
             "user_query": "trigger workflow",
             "identity": resolve_identity_from_api_key(OPERATOR_API_KEY),
             "audit_trail": [],
-        }
+        },
+        config=config,
     )
+
+    snapshot = graph.get_state(config)
+    result = snapshot.values
 
     event_types = [event.event_type for event in result["audit_trail"]]
 
@@ -74,14 +89,16 @@ def test_approval_pause_graph_path_audit_event_order() -> None:
 
 def test_permission_checked_audit_contains_policy_metadata() -> None:
     graph = build_harness_graph()
+    task_id = "task-audit-policy-1"
 
     result = graph.invoke(
         {
-            "task_id": "task-audit-policy-1",
+            "task_id": task_id,
             "user_query": "draft issue comment",
             "identity": resolve_identity_from_api_key(VIEWER_API_KEY),
             "audit_trail": [],
-        }
+        },
+        config=_config(task_id),
     )
 
     permission_events = [
