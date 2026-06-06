@@ -25,3 +25,12 @@ class ToolSpec(BaseModel):
     description: str
     required_scopes: list[str] = Field(default_factory=list)
     risk_level: RiskLevel
+
+class ToolExecutionResult(BaseModel):
+    """Result returned by a dry-run tool execution."""
+
+    tool_name: str
+    success: bool
+    result: dict[str, Any] = Field(default_factory=dict)
+    dry_run: bool = True
+    message: str | None = None
