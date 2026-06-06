@@ -8,7 +8,7 @@ Identity is server-derived, policy is deterministic, and high-risk execution can
 
 ## High-Level Layers
 1. FastAPI API Layer (not implemented yet)
-2. Identity Layer (not implemented yet)
+2. Identity Layer (Sprint 1 pure resolver implemented; FastAPI dependency not implemented yet)
 3. Rate Limit Layer (not implemented yet)
 4. LangGraph Orchestration Layer (not implemented yet)
 5. Policy Guard Layer (not implemented yet)

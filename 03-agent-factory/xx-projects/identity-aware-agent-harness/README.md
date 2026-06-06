@@ -24,7 +24,9 @@ This is a controlled LangGraph-based agent execution harness where an LLM may pr
 - schema tests
 
 ## Current Status
-Sprint 0 setup in progress
+- Sprint 0 complete: skeleton, domain contracts, schema tests.
+- Sprint 1 implemented: pure API-key identity resolver.
+- FastAPI and LangGraph are intentionally not added yet.
 
 ## Tech Stack
 - Python 3.11+

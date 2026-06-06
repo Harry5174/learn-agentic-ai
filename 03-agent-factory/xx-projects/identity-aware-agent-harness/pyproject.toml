@@ -1,7 +1,7 @@
 [project]
 name = "app"
 version = "0.1.0"
-description = "Add your description here"
+description = "Identity-aware stateful agent execution harness"
 readme = "README.md"
 authors = [
     { name = "Harry5174", email = "harisjaved010@gmail.com" }
