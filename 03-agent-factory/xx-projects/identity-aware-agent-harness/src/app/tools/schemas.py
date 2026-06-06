@@ -3,7 +3,6 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-
 class RiskLevel(StrEnum):
     """Risk level for a tool call."""
 
@@ -18,7 +17,6 @@ class ToolCallRequest(BaseModel):
     tool_name: str
     arguments: dict[str, Any] = Field(default_factory=dict)
     risk_level: RiskLevel | None = None
-
 
 class ToolSpec(BaseModel):
     """Static specification for a registered tool."""
