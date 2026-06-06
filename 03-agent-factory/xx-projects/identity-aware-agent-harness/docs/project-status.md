@@ -5,26 +5,17 @@
 **Principle:** The LLM proposes. The harness decides.
 **Safety Invariant:** Identity is server-derived, policy is deterministic, and high-risk execution cannot happen before approval.
 
-## State
-- Sprint 0 approved.
-- Sprint 1 implemented and awaiting/ready for architecture review.
-
-## Implemented So Far
-**Sprint 0**
-- project skeleton
-- Pydantic domain schemas
-- import smoke tests
-- schema validation tests
-
-**Sprint 1**
-- identity error type
-- demo identity config
-- pure API-key identity resolver
-- identity resolver tests
+## Current Approved/Implemented Sprints
+- Sprint 0 approved
+- Sprint 1 approved
+- Sprint 2 approved
+- Sprint 3 implemented
+- Sprint 4 implemented
+- Sprint 5 implemented and ready for architecture review
 
 ## Current Test Status
 `uv run pytest`
-34 passed
+99 passed
 
 `uv run ruff check .`
 All checks passed
@@ -32,22 +23,24 @@ All checks passed
 ## Explicitly Not Implemented Yet
 - FastAPI routes
 - FastAPI dependencies
-- LangGraph graph
-- GraphState
-- checkpointing
-- policy guard logic
-- tool registry
-- dry-run tool execution
-- approval service
-- audit persistence
-- database
-- rate limiting
+- Checkpointing
+- Approval resume semantics
+- Database persistence
+- Rate limiting
 - LLM calls
 - OAuth/OIDC
 - JWT validation
-- frontend
+- Frontend
 
 ## Next Recommended Sprint
-Sprint 2 / Module 3: Tool Registry and Dry-Run Tool Contracts/Implementation
+Sprint 6: Checkpointing and Approval Resume Semantics
 
-> **Note:** Do not begin Sprint 2 until Sprint 1 architecture review is approved.
+> **Note:** Do not begin Sprint 6 until Sprint 5 architecture review is approved.
+
+## Sprint 6 Focus
+- true checkpointing
+- explicit interrupt/resume semantics
+- ApprovalDecision injection
+- approved execution path
+- rejected execution path
+- PAUSED_FOR_APPROVAL is suspended, not completed

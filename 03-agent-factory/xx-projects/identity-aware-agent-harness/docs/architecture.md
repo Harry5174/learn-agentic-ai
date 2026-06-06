@@ -8,14 +8,16 @@ Identity is server-derived, policy is deterministic, and high-risk execution can
 
 ## High-Level Layers
 1. FastAPI API Layer (not implemented yet)
-2. Identity Layer (Sprint 1 pure resolver implemented; FastAPI dependency not implemented yet)
-3. Rate Limit Layer (not implemented yet)
-4. LangGraph Orchestration Layer (not implemented yet)
-5. Policy Guard Layer (not implemented yet)
-6. Tool Registry Layer (not implemented yet)
-7. Dry-Run Tool Layer (not implemented yet)
-8. Audit Layer (not implemented yet)
-9. Persistence Layer (not implemented yet)
+2. Identity Layer: pure resolver implemented
+3. Rate Limit Layer: not implemented
+4. Local LangGraph Orchestration Layer: implemented locally
+5. Policy Guard Layer: implemented
+6. Tool Registry Layer: implemented
+7. Dry-Run Tool Layer: implemented
+8. Audit Layer: implemented
+9. Persistence/checkpointing: not implemented
+
+> **Warning:** PAUSED_FOR_APPROVAL is currently represented locally, but full checkpointed interrupt/resume is Sprint 6.
 
 ## Intended Graph Flow
 *(Architecture only, not implemented yet)*

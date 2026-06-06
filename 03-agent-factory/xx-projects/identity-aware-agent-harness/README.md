@@ -25,8 +25,14 @@ This is a controlled LangGraph-based agent execution harness where an LLM may pr
 
 ## Current Status
 - Sprint 0 complete: skeleton, domain contracts, schema tests.
-- Sprint 1 implemented: pure API-key identity resolver.
-- FastAPI and LangGraph are intentionally not added yet.
+- Sprint 1 complete: server-derived API-key identity resolver.
+- Sprint 2 complete: controlled dry-run tool registry.
+- Sprint 3 complete: deterministic policy guard.
+- Sprint 4 complete: in-memory audit logger.
+- Sprint 5 implemented: local LangGraph harness with allowed, denied, and approval-pause paths.
+- Sprint 6 next: checkpointing and approval resume semantics.
+
+FastAPI, persistence, OAuth/JWT, and LLM planning are intentionally not added yet.
 
 ## Tech Stack
 - Python 3.11+
