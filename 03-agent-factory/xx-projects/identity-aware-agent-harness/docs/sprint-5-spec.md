@@ -63,3 +63,6 @@ START
 ## Important Deferral
 Sprint 5 proves `PAUSED_FOR_APPROVAL` state and non-execution of high-risk tools, but does not yet implement full checkpointed LangGraph interrupt/resume semantics.
 That belongs to Sprint 6.
+
+## Current Follow-Up Status
+Sprint 6 has since implemented checkpointed interrupt/resume semantics. This Sprint 5 spec remains the record for the first local graph harness slice and its original limitation.

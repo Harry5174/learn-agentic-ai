@@ -61,3 +61,7 @@ Implement a controlled tool registry and deterministic dry-run tools so future a
 ## Important Boundary
 The registry does not perform authorization.
 Policy belongs to Sprint 3.
+
+The registry also does not know identity, roles, scopes, approval status, or request context. It exposes a controlled set of tool specs and dry-run callables only.
+
+All three V1 tools are deterministic dry-run tools. They make no real external calls, do not call GitHub, do not post issue comments, and do not trigger workflows.

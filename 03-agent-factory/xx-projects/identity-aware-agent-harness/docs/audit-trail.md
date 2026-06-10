@@ -24,3 +24,6 @@ append_audit_event(audit_trail, event)
 - Audit does not perform authorization.
 - Audit does not execute tools.
 - Audit does not persist to database yet.
+- Audit does not approve or reject high-risk actions.
+
+Current audit events are in-memory only. They are carried in task state/checkpoints while the process is alive.

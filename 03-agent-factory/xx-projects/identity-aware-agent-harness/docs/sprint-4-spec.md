@@ -33,3 +33,8 @@ Implement deterministic in-memory audit helpers for future graph nodes.
 - safe metadata defaults implemented
 - defensive metadata copy implemented
 - immutable-style append implemented
+
+## Boundary
+Audit records events but does not control execution, authorize tools, approve requests, or persist to a database.
+
+The current audit trail is in-memory state attached to graph task state.

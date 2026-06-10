@@ -33,12 +33,10 @@ It does not accept:
 ## Mutation Safety
 The resolver returns a copied IdentityContext so mutation of returned scopes does not affect future resolver calls.
 
-## Future FastAPI Integration
-FastAPI is not implemented yet.
+## FastAPI Integration
 
-Later, a FastAPI dependency can read the X-API-Key header and call this pure resolver.
+Sprint 7 adds a FastAPI dependency that reads the `X-API-Key` header and calls this pure resolver.
 
-Example future flow only, not implemented:
 ```text
 X-API-Key header
 → FastAPI dependency
@@ -48,6 +46,6 @@ X-API-Key header
 
 ## Safety Invariant Status
 - Identity is server-derived.
-- Policy is not implemented yet.
-- Tool execution is not implemented yet.
-- High-risk execution cannot happen.
+- Policy is deterministic.
+- Tool execution is controlled through the registry and graph.
+- High-risk execution cannot happen before approval.

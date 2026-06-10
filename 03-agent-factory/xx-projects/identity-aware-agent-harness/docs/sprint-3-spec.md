@@ -45,3 +45,15 @@ They return REQUIRE_APPROVAL when eligible or DENY when not eligible.
 
 ## Admin Rule
 Admin does not bypass approval.
+
+## LLM Boundary
+No LLM authorization is involved. The policy guard uses only the server-derived `IdentityContext` and the controlled `ToolSpec`.
+
+## Output Contract
+The policy guard returns one of:
+
+- `ALLOW`
+- `DENY`
+- `REQUIRE_APPROVAL`
+
+High-risk tools never return direct `ALLOW`. They require approval when the identity is eligible, or return `DENY` when it is not.

@@ -1,49 +1,106 @@
 # Identity-Aware Stateful Agent Harness
 
-This is a controlled LangGraph-based agent execution harness where an LLM may propose actions, but identity, authorization, approval, execution, and audit are controlled by deterministic application logic.
+Identity-Aware Stateful Agent Harness is a local/demo execution harness for controlled agent actions. It is built to show how an LLM-facing system can keep identity, policy, approval, execution, and audit decisions inside deterministic application code.
 
-**Project Principle:** "The LLM proposes. The harness decides."
+**Project Principle:** The LLM proposes. The harness decides.
 
-## What this is not
-- not a chatbot
-- not a generic RAG wrapper
-- not an OAuth project
-- not a multi-agent demo
-
-## V1 Scope Summary
-- API-key-derived identity later
-- deterministic policy guard later
-- dry-run tool registry later
-- human approval gates later
-- checkpointed graph state later
-- audit trail later
-
-## Sprint 0 Scope
-- project skeleton
-- domain contracts
-- schema tests
+**Core Safety Invariant:** Identity is server-derived, policy is deterministic, and high-risk execution cannot happen before approval.
 
 ## Current Status
-- Sprint 0 complete: skeleton, domain contracts, schema tests.
+
+This repository is a portfolio MVP, not a production-ready service.
+
+- Sprint 0 complete: domain contracts and schema tests.
 - Sprint 1 complete: server-derived API-key identity resolver.
 - Sprint 2 complete: controlled dry-run tool registry.
 - Sprint 3 complete: deterministic policy guard.
 - Sprint 4 complete: in-memory audit logger.
-- Sprint 5 implemented: local LangGraph harness with allowed, denied, and approval-pause paths.
-- Sprint 6 next: checkpointing and approval resume semantics.
+- Sprint 5 complete: local LangGraph harness with allowed, denied, failed, and approval-pause paths.
+- Sprint 6 complete: checkpointed approval resume flow using LangGraph `InMemorySaver`.
+- Sprint 7 complete: FastAPI demo API with tools, identity, task creation, task retrieval, approval, rejection, and audit endpoints.
+- Sprint 8 next: Rate Limiting and Public Safety.
 
-FastAPI, persistence, OAuth/JWT, and LLM planning are intentionally not added yet.
+Current checks:
 
-## Tech Stack
-- Python 3.11+
-- uv
-- Pydantic v2
-- Pytest
-- Ruff
-- LangGraph later, not yet added
-- FastAPI later, not yet added
+```bash
+uv run pytest
+# 143 passed
 
-## Basic Commands
-- `uv sync`
-- `uv run pytest`
-- `uv run ruff check .`
+uv run ruff check .
+# All checks passed!
+```
+
+## Current API
+
+Implemented Sprint 7 endpoints:
+
+- `GET /tools`: returns public metadata for the controlled dry-run tools.
+- `GET /identity/me`: resolves identity from the `X-API-Key` header.
+- `POST /tasks`: starts a graph task through `HarnessGraphService`.
+- `GET /tasks/{task_id}`: returns the current public task summary.
+- `POST /tasks/{task_id}/approve`: resumes a paused task with an approval decision through `HarnessGraphService`.
+- `POST /tasks/{task_id}/reject`: resumes a paused task with a rejection decision through `HarnessGraphService`.
+- `GET /tasks/{task_id}/audit`: returns the task's structured audit trail.
+
+This is a local/demo API. It uses a module-level, in-memory `HarnessGraphService` and LangGraph `InMemorySaver`. Task state and checkpoints are process-local, do not survive process restart, and are not backed by durable persistence.
+
+## Architecture Summary
+
+The current flow is:
+
+```text
+FastAPI route
+→ X-API-Key identity dependency
+→ HarnessGraphService
+→ local LangGraph harness
+→ deterministic policy guard
+→ controlled dry-run tool registry
+→ public response schema
+```
+
+Important boundaries:
+
+- Identity is resolved server-side from `X-API-Key`.
+- API routes do not inspect role/scopes manually.
+- API routes do not evaluate policy directly.
+- API routes do not execute tools directly.
+- Approval and rejection routes delegate to `HarnessGraphService`.
+- The tool registry does not authorize.
+- The policy guard does not execute tools.
+- Audit records decisions and actions but does not control routing.
+- High-risk execution pauses before tool execution and requires an approval resume path.
+
+## Quickstart
+
+```bash
+uv sync
+uv run pytest
+uv run ruff check .
+uv run uvicorn app.api.main:app --reload
+```
+
+Demo API keys are defined in `src/app/identity/config.py`.
+
+## Non-Goals
+
+V1 intentionally does not include:
+
+- production durability
+- database persistence
+- OAuth/OIDC
+- JWT validation
+- rate limiting
+- real GitHub writes
+- real workflow triggers
+- LLM calls
+- frontend dashboard
+- production deployment hardening
+- multi-agent behavior
+
+## What This Is Not
+
+- not a chatbot
+- not a generic RAG wrapper
+- not an OAuth project
+- not a production authorization platform
+- not a multi-agent demo

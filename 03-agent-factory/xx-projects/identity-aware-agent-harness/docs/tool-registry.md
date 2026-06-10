@@ -14,8 +14,14 @@ build_default_tool_registry()
 
 ## Registered Tools
 - `inspect_sandbox_issues`
+  - risk: `low`
+  - required scope: `tools:inspect`
 - `draft_issue_comment`
+  - risk: `medium`
+  - required scope: `tools:draft`
 - `trigger_workflow_dry_run`
+  - risk: `high`
+  - required scope: `tools:trigger_workflow`
 
 ## Dry-Run Guarantee
 - no external calls
@@ -28,3 +34,5 @@ build_default_tool_registry()
 - Registry does not know identity.
 - Registry does not perform policy checks.
 - Registry does not approve actions.
+- Registry does not decide whether high-risk execution may proceed.
+- Registry does not call external APIs.

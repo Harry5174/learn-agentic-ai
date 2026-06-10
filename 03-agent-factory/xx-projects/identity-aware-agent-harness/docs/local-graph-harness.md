@@ -34,12 +34,14 @@ Current simple mapping:
 - `TOOL_EXECUTED` audit is absent
 
 ## Boundary
-- No FastAPI.
-- No persistence.
+- FastAPI exists in Sprint 7, but graph logic remains outside route handlers.
+- Checkpointing exists through `InMemorySaver`, but durable persistence does not.
 - No OAuth/JWT.
 - No LLM calls.
 - No external HTTP calls.
 - No real GitHub/workflow execution.
 
-## Sprint 6 Carry-Forward
-Sprint 6 should focus on checkpointing and true interrupt/resume semantics.
+## Sprint 5 Limitation
+Sprint 5 paused locally for approval but did not yet provide full checkpointed interrupt/resume semantics.
+
+Sprint 6 later added `InMemorySaver`, `interrupt(...)`, and `Command(resume=...)` handling.

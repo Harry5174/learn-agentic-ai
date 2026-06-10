@@ -25,3 +25,19 @@ evaluate_tool_permission(identity, tool)
 - Policy guard does not create approval workflow.
 - Policy guard does not call LLM.
 - Policy guard does not import FastAPI or LangGraph.
+- Policy guard does not inspect request bodies.
+- Policy guard does not trust client-supplied identity.
+
+## Contract
+Input:
+
+- server-derived `IdentityContext`
+- controlled `ToolSpec`
+
+Output:
+
+- `ALLOW`
+- `DENY`
+- `REQUIRE_APPROVAL`
+
+High-risk tools never return direct `ALLOW`; eligible identities receive `REQUIRE_APPROVAL`.
