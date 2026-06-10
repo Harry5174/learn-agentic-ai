@@ -2,9 +2,11 @@
 
 ## Status
 
-The API is a local/demo FastAPI surface for the current portfolio MVP. Sprint 7 is complete.
+The API is a local/demo FastAPI surface for the current portfolio MVP. Sprint 8 is complete.
 
 API task state is backed by a module-level, in-memory `HarnessGraphService` and LangGraph `InMemorySaver`. Task state and checkpoints are process-local, do not survive process restart, and are not backed by durable persistence.
+
+Public-demo abuse protection is provided by a simple in-memory fixed-window rate limiter. Rate limit state is process-local and resets on process restart.
 
 ## Authentication
 
@@ -13,6 +15,22 @@ Endpoints that require identity use the `X-API-Key` header.
 Identity is resolved server-side by `get_current_identity`, which calls the pure API-key resolver. Clients cannot set role, scopes, or user ID through request bodies.
 
 Missing or invalid API keys return `401`.
+
+## Rate Limiting
+
+Rate limiting happens after identity resolution and uses server-derived `api_key_id` values. Clients cannot influence rate limit keys through request bodies.
+
+Protected route groups:
+
+- task creation: `POST /tasks`, 5 requests per 60 seconds per API key
+- approval actions: `POST /tasks/{task_id}/approve` and `POST /tasks/{task_id}/reject`, 10 requests per 60 seconds per API key
+
+When a protected endpoint exceeds its limit, the API returns:
+
+- status: `429`
+- detail: `Rate limit exceeded.`
+
+Invalid or missing API keys still return `401` before rate limiting.
 
 ## Response Summary: Task State
 
@@ -115,6 +133,7 @@ Important error cases:
 
 - missing key: `401`, `Missing X-API-Key header.`
 - invalid key: `401`, `Invalid API key.`
+- over task creation rate limit: `429`, `Rate limit exceeded.`
 
 The body includes only `user_query`. Role, scopes, and user ID are ignored if provided as extra client data.
 
@@ -173,6 +192,7 @@ Important error cases:
 
 - missing key: `401`, `Missing X-API-Key header.`
 - invalid key: `401`, `Invalid API key.`
+- over approval action rate limit: `429`, `Rate limit exceeded.`
 - missing task: `404`, `Task not found.`
 - non-paused task: `409`, `Task is not paused for approval.`
 
@@ -210,6 +230,7 @@ Important error cases:
 
 - missing key: `401`, `Missing X-API-Key header.`
 - invalid key: `401`, `Invalid API key.`
+- over approval action rate limit: `429`, `Rate limit exceeded.`
 - missing task: `404`, `Task not found.`
 - non-paused task: `409`, `Task is not paused for approval.`
 
@@ -268,7 +289,7 @@ Current limitations:
 - paused tasks can be resumed only while the process is alive
 - durable persistence is not implemented
 - SQLite checkpointing is not implemented
-- rate limiting is not implemented
+- rate limiting is in-memory only and not distributed
 - OAuth/OIDC and JWT validation are not implemented
 - LLM/OpenAI behavior is not implemented
 - frontend and deployment changes are not implemented

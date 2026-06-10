@@ -18,13 +18,13 @@ This repository is a portfolio MVP, not a production-ready service.
 - Sprint 5 complete: local LangGraph harness with allowed, denied, failed, and approval-pause paths.
 - Sprint 6 complete: checkpointed approval resume flow using LangGraph `InMemorySaver`.
 - Sprint 7 complete: FastAPI demo API with tools, identity, task creation, task retrieval, approval, rejection, and audit endpoints.
-- Sprint 8 next: Rate Limiting and Public Safety.
+- Sprint 8 complete: in-memory API rate limiting and public safety documentation.
 
 Current checks:
 
 ```bash
 uv run pytest
-# 143 passed
+# 155 passed
 
 uv run ruff check .
 # All checks passed!
@@ -32,7 +32,7 @@ uv run ruff check .
 
 ## Current API
 
-Implemented Sprint 7 endpoints:
+Implemented API endpoints:
 
 - `GET /tools`: returns public metadata for the controlled dry-run tools.
 - `GET /identity/me`: resolves identity from the `X-API-Key` header.
@@ -41,6 +41,8 @@ Implemented Sprint 7 endpoints:
 - `POST /tasks/{task_id}/approve`: resumes a paused task with an approval decision through `HarnessGraphService`.
 - `POST /tasks/{task_id}/reject`: resumes a paused task with a rejection decision through `HarnessGraphService`.
 - `GET /tasks/{task_id}/audit`: returns the task's structured audit trail.
+
+`POST /tasks`, `POST /tasks/{task_id}/approve`, and `POST /tasks/{task_id}/reject` are protected by simple in-memory fixed-window rate limits keyed from the server-derived API-key identity.
 
 This is a local/demo API. It uses a module-level, in-memory `HarnessGraphService` and LangGraph `InMemorySaver`. Task state and checkpoints are process-local, do not survive process restart, and are not backed by durable persistence.
 
@@ -61,6 +63,7 @@ FastAPI route
 Important boundaries:
 
 - Identity is resolved server-side from `X-API-Key`.
+- Rate limiting is keyed from the resolved API-key identity, not request body claims.
 - API routes do not inspect role/scopes manually.
 - API routes do not evaluate policy directly.
 - API routes do not execute tools directly.
@@ -89,7 +92,7 @@ V1 intentionally does not include:
 - database persistence
 - OAuth/OIDC
 - JWT validation
-- rate limiting
+- Redis or distributed rate limiting
 - real GitHub writes
 - real workflow triggers
 - LLM calls

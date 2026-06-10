@@ -10,15 +10,16 @@ Identity is server-derived, policy is deterministic, and high-risk execution can
 
 ## Current Layers
 
-1. FastAPI API Layer: implemented for Sprint 7 as a local/demo API.
-2. Identity Layer: API-key resolver and FastAPI dependency implemented.
-3. Harness Service Layer: `HarnessGraphService` wraps the local checkpointed graph.
-4. Local LangGraph Orchestration Layer: implemented with `InMemorySaver`.
-5. Policy Guard Layer: implemented as pure deterministic authorization logic.
-6. Tool Registry Layer: implemented as a controlled registry of three dry-run tools.
-7. Dry-Run Tool Layer: implemented with no external side effects.
-8. Audit Layer: implemented as structured in-memory audit event helpers.
-9. Durable Persistence Layer: not implemented.
+1. FastAPI API Layer: implemented as a local/demo API.
+2. API Safety Layer: in-memory rate limiting for task creation and approval actions.
+3. Identity Layer: API-key resolver and FastAPI dependency implemented.
+4. Harness Service Layer: `HarnessGraphService` wraps the local checkpointed graph.
+5. Local LangGraph Orchestration Layer: implemented with `InMemorySaver`.
+6. Policy Guard Layer: implemented as pure deterministic authorization logic.
+7. Tool Registry Layer: implemented as a controlled registry of three dry-run tools.
+8. Dry-Run Tool Layer: implemented with no external side effects.
+9. Audit Layer: implemented as structured in-memory audit event helpers.
+10. Durable Persistence Layer: not implemented.
 
 ## API Boundary
 
@@ -40,6 +41,8 @@ API routes must not:
 - create approval decisions outside the service/graph boundary
 
 Approval and rejection routes resolve identity with `get_current_identity` and then delegate to `HarnessGraphService`. The audit route reads structured audit events through the same service boundary.
+
+Rate limiting is applied after identity resolution and is keyed from server-derived `api_key_id` plus route group. It does not alter graph policy, approval, or execution semantics.
 
 ## Current Graph Flow
 
@@ -95,11 +98,12 @@ Current checkpointing is in-memory and process-local through LangGraph `InMemory
 
 State does not survive process restart. This project does not yet include durable persistence, SQLite checkpointing, or database-backed task storage.
 
-The API should be treated as local/demo infrastructure only. It does not include rate limiting, OAuth/OIDC, JWT validation, database persistence, LLM calls, frontend functionality, or deployment hardening.
+The API should be treated as local/demo infrastructure only. It does not include OAuth/OIDC, JWT validation, database persistence, LLM calls, frontend functionality, or deployment hardening.
+The in-memory rate limiter is local/demo protection only. It is not Redis-backed, distributed, or suitable as production traffic control.
 
 ## V1 Non-Goals
 
-- rate limiting
+- Redis or distributed rate limiting
 - OAuth/OIDC
 - JWT validation
 - database persistence

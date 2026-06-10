@@ -18,8 +18,8 @@
 - Sprint 5 complete: local LangGraph harness.
 - Sprint 6 complete: checkpointed approval resume flow.
 - Sprint 7 complete: FastAPI task API.
-- Sprint 8 next: Rate Limiting and Public Safety.
-- Sprint 9 planned: Documentation and Portfolio Polish.
+- Sprint 8 complete: Rate Limiting and Public Safety.
+- Sprint 9 next: Documentation and Portfolio Polish.
 
 ## Completed Sprint 7 Implementation
 
@@ -38,11 +38,23 @@ Implemented:
 - Thin FastAPI routes that delegate task behavior to graph/service layers.
 - Structured audit trail responses for task history.
 
+## Completed Sprint 8 Implementation
+
+Implemented:
+
+- In-memory fixed-window rate limiter.
+- Task creation rate limit for `POST /tasks`.
+- Approval action rate limit for `POST /tasks/{task_id}/approve`.
+- Rejection action rate limit for `POST /tasks/{task_id}/reject`.
+- HTTP `429` response when a protected endpoint exceeds its limit.
+- Rate limit keys derived from server-resolved API-key identity.
+- Public safety documentation for local/demo limitations.
+
 ## Current Test Status
 
 ```bash
 uv run pytest
-# 143 passed
+# 155 passed
 
 uv run ruff check .
 # All checks passed!
@@ -64,7 +76,7 @@ This means:
 - database persistence
 - durable checkpoint storage
 - SQLite checkpointing
-- rate limiting
+- Redis or distributed rate limiting
 - LLM calls
 - real GitHub writes
 - real workflow triggers
@@ -75,8 +87,8 @@ This means:
 
 ## Next Implementation Slice
 
-Sprint 8 focuses on rate limiting and public safety:
+Sprint 9 focuses on documentation and portfolio polish:
 
 ```text
-Rate limiting and public safety controls
+Documentation and Portfolio Polish
 ```

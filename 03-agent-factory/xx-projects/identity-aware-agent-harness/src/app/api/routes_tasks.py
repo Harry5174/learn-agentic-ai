@@ -2,7 +2,10 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.api.dependencies import get_current_identity
+from app.api.dependencies import (
+    enforce_approval_action_rate_limit,
+    enforce_task_create_rate_limit,
+)
 from app.api.schemas import (
     ApprovalActionRequest,
     TaskAuditResponse,
@@ -19,7 +22,7 @@ from app.identity.schemas import IdentityContext
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
-# In-memory/local service state for the Sprint 7 demo API.
+# In-memory/local service state for the demo API.
 # State does not survive process restart.
 _task_service = HarnessGraphService()
 
@@ -31,7 +34,7 @@ _task_service = HarnessGraphService()
 )
 def create_task(
     request: TaskCreateRequest,
-    identity: Annotated[IdentityContext, Depends(get_current_identity)],
+    identity: Annotated[IdentityContext, Depends(enforce_task_create_rate_limit)],
 ) -> TaskSummaryResponse:
     """Start a new task for the current server-derived identity."""
 
@@ -60,7 +63,7 @@ def get_task(task_id: str) -> TaskSummaryResponse:
 @router.post("/{task_id}/approve", response_model=TaskSummaryResponse)
 def approve_task(
     task_id: str,
-    identity: Annotated[IdentityContext, Depends(get_current_identity)],
+    identity: Annotated[IdentityContext, Depends(enforce_approval_action_rate_limit)],
     request: ApprovalActionRequest | None = None,
 ) -> TaskSummaryResponse:
     """Approve and resume a paused task for the current identity."""
@@ -94,7 +97,7 @@ def approve_task(
 @router.post("/{task_id}/reject", response_model=TaskSummaryResponse)
 def reject_task(
     task_id: str,
-    identity: Annotated[IdentityContext, Depends(get_current_identity)],
+    identity: Annotated[IdentityContext, Depends(enforce_approval_action_rate_limit)],
     request: ApprovalActionRequest | None = None,
 ) -> TaskSummaryResponse:
     """Reject and resume a paused task for the current identity."""
