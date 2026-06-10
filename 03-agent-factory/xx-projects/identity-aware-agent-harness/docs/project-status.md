@@ -19,7 +19,7 @@
 - Sprint 6 complete: checkpointed approval resume flow.
 - Sprint 7 complete: FastAPI task API.
 - Sprint 8 complete: Rate Limiting and Public Safety.
-- Sprint 9 next: Documentation and Portfolio Polish.
+- Sprint 9 complete: Documentation and Portfolio Polish.
 
 ## Completed Sprint 7 Implementation
 
@@ -49,6 +49,19 @@ Implemented:
 - HTTP `429` response when a protected endpoint exceeds its limit.
 - Rate limit keys derived from server-resolved API-key identity.
 - Public safety documentation for local/demo limitations.
+
+## Completed Sprint 9 Implementation
+
+Implemented:
+
+- Portfolio-ready README.
+- Final architecture documentation.
+- Final API reference.
+- Demo flow documentation with curl examples.
+- V1 safety model documentation.
+- V1/V1.1/V2/V3 roadmap.
+- Interview notes for explaining design decisions.
+- Honest limitations and non-goals across docs.
 
 ## Current Test Status
 
@@ -85,10 +98,8 @@ This means:
 - frontend
 - production deployment hardening
 
-## Next Implementation Slice
+## V1 Status
 
-Sprint 9 focuses on documentation and portfolio polish:
+V1 is ready for final architecture review as a portfolio MVP.
 
-```text
-Documentation and Portfolio Polish
-```
+Future work should follow the roadmap in `docs/roadmap.md`.

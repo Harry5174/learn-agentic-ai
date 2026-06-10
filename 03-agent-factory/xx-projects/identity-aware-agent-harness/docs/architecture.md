@@ -8,54 +8,76 @@ The LLM proposes. The harness decides.
 
 Identity is server-derived, policy is deterministic, and high-risk execution cannot happen before approval.
 
-## Current Layers
+## V1 Framing
 
-1. FastAPI API Layer: implemented as a local/demo API.
-2. API Safety Layer: in-memory rate limiting for task creation and approval actions.
-3. Identity Layer: API-key resolver and FastAPI dependency implemented.
-4. Harness Service Layer: `HarnessGraphService` wraps the local checkpointed graph.
-5. Local LangGraph Orchestration Layer: implemented with `InMemorySaver`.
-6. Policy Guard Layer: implemented as pure deterministic authorization logic.
-7. Tool Registry Layer: implemented as a controlled registry of three dry-run tools.
-8. Dry-Run Tool Layer: implemented with no external side effects.
-9. Audit Layer: implemented as structured in-memory audit event helpers.
-10. Durable Persistence Layer: not implemented.
+V1 uses deterministic task interpretation to prove the harness. An LLM can later replace the proposer without changing the identity, policy, approval, execution, or audit layers.
 
-## API Boundary
+This means the architecture is centered on execution control, not conversation.
 
-The API layer stays thin:
+## Layered Architecture
 
-```text
-route
-→ get_current_identity dependency
-→ HarnessGraphService
-→ response schema
+```mermaid
+flowchart TD
+    Client["Client / Demo curl"]
+    API["FastAPI API Layer"]
+    Identity["Identity Layer<br/>X-API-Key -> IdentityContext"]
+    RateLimit["API Safety Layer<br/>in-memory rate limits"]
+    Service["HarnessGraphService"]
+    Graph["LangGraph Harness<br/>checkpointed state"]
+    Policy["Deterministic Policy Guard"]
+    Approval["Approval Gate<br/>interrupt / resume"]
+    Tools["Controlled Dry-Run Tools"]
+    Audit["Structured Audit Trail"]
+
+    Client --> API
+    API --> Identity
+    Identity --> RateLimit
+    RateLimit --> Service
+    Service --> Graph
+    Graph --> Policy
+    Policy --> Approval
+    Policy --> Tools
+    Approval --> Tools
+    Graph --> Audit
 ```
 
-API routes must not:
+## Module Map
 
-- trust role/scopes/user_id from request bodies
-- evaluate policy manually
-- execute tools manually
-- inspect role/scopes manually
-- create approval decisions outside the service/graph boundary
+- `src/app/identity/`: demo API-key identity resolver and identity schemas.
+- `src/app/tools/`: dry-run tool registry and controlled tool functions.
+- `src/app/policy/`: deterministic policy guard.
+- `src/app/approval/`: approval request and decision schemas.
+- `src/app/audit/`: structured audit event schemas and helpers.
+- `src/app/state/`: task lifecycle status schemas.
+- `src/app/graph/`: LangGraph nodes, routing, builder, state, and service wrapper.
+- `src/app/api/`: FastAPI routes, public response schemas, dependencies, and in-memory rate limiter.
+- `tests/`: focused tests for each layer and cross-layer API behavior.
 
-Approval and rejection routes resolve identity with `get_current_identity` and then delegate to `HarnessGraphService`. The audit route reads structured audit events through the same service boundary.
+## Graph Flow
 
-Rate limiting is applied after identity resolution and is keyed from server-derived `api_key_id` plus route group. It does not alter graph policy, approval, or execution semantics.
+```mermaid
+flowchart LR
+    Start([START])
+    Interpret["interpret_task"]
+    Policy["policy_guard"]
+    Execute["execute_tool"]
+    Deny["finalize_denial"]
+    Pause["pause_for_approval"]
+    Decision["handle_approval_decision"]
+    Reject["finalize_rejection"]
+    Report["generate_report"]
+    End([END])
 
-## Current Graph Flow
-
-```text
-START
-→ interpret_task
-→ policy_guard
-    ├── ALLOW → execute_tool → generate_report → END
-    ├── DENY → finalize_denial → END
-    └── REQUIRE_APPROVAL → pause_for_approval → handle_approval_decision
+    Start --> Interpret --> Policy
+    Policy -->|ALLOW| Execute --> Report --> End
+    Policy -->|DENY| Deny --> End
+    Policy -->|REQUIRE_APPROVAL| Pause --> Decision
+    Decision -->|approved| Execute
+    Decision -->|rejected| Reject --> End
+    Decision -->|invalid actor or decision| Report
 ```
 
-Unknown tasks are marked `FAILED` and routed to report generation without tool execution.
+Unknown tasks are marked `failed` and routed to report generation without tool execution.
 
 ## Approval Resume Flow
 
@@ -63,59 +85,119 @@ When policy requires approval:
 
 ```text
 pause_for_approval
-→ create ApprovalRequest
-→ checkpoint state
-→ interrupt before high-risk execution
+-> create ApprovalRequest
+-> checkpoint state
+-> interrupt before high-risk execution
 ```
 
 On resume:
 
 ```text
 Command(resume={ approval_decision, approval_actor })
-→ validate approval decision and actor
-→ approved: execute dry-run tool
-→ rejected: finalize rejection
-→ invalid actor/decision: fail safely
+-> validate approval decision and actor
+-> approved: execute dry-run tool
+-> rejected: finalize rejection
+-> invalid actor/decision: fail safely
 ```
 
 Admin does not bypass approval. High-risk tools never return direct allow from policy.
 
-## Current API Endpoints
+## Identity Boundary
 
-Implemented:
+Identity is server-derived from `X-API-Key`.
 
-- `GET /tools`
-- `GET /identity/me`
-- `POST /tasks`
-- `GET /tasks/{task_id}`
-- `POST /tasks/{task_id}/approve`
-- `POST /tasks/{task_id}/reject`
-- `GET /tasks/{task_id}/audit`
+Clients cannot set or override:
+
+- user ID
+- role
+- scopes
+- API key ID
+
+Request body fields that look like identity claims do not affect execution identity.
+
+## Policy Boundary
+
+Policy is deterministic and lives outside the API routes.
+
+The policy guard decides:
+
+- allow
+- deny
+- require approval
+
+The policy layer does not execute tools. The tool layer does not authorize.
+
+## API Boundary
+
+The API layer stays thin:
+
+```text
+route
+-> get_current_identity dependency where identity is required
+-> rate-limit dependency for protected write routes
+-> HarnessGraphService
+-> response schema
+```
+
+API routes must not:
+
+- trust role/scopes/user_id from request bodies
+- inspect role/scopes manually
+- evaluate policy manually
+- execute tools manually
+- create approval decisions outside the service/graph boundary
+
+Approval and rejection routes delegate to `HarnessGraphService`. The audit route reads structured audit events through the same service boundary.
+
+## Rate Limiting Boundary
+
+Sprint 8 added local/demo rate limiting for public safety.
+
+Rate limiting:
+
+- runs after identity resolution
+- is keyed from server-derived `api_key_id` plus route group
+- protects task creation and approval/rejection actions
+- returns `429` when a protected route exceeds its limit
+- is in-memory and process-local
+- resets on process restart
+
+It does not alter graph policy, approval, or execution semantics.
 
 ## State and Persistence
 
-Current checkpointing is in-memory and process-local through LangGraph `InMemorySaver`.
+Current checkpointing uses LangGraph `InMemorySaver`.
 
-State does not survive process restart. This project does not yet include durable persistence, SQLite checkpointing, or database-backed task storage.
+This means:
 
-The API should be treated as local/demo infrastructure only. It does not include OAuth/OIDC, JWT validation, database persistence, LLM calls, frontend functionality, or deployment hardening.
-The in-memory rate limiter is local/demo protection only. It is not Redis-backed, distributed, or suitable as production traffic control.
+- task state is process-local
+- checkpoints do not survive process restart
+- paused tasks can be resumed only while the process is alive
+- audit events are not durably stored
+- database-backed task storage is not implemented
+
+## V2 Extension Points
+
+Future versions can replace or extend layers without changing the core invariant:
+
+- proposer: deterministic interpreter -> LLM planner
+- identity: demo API key -> OAuth/OIDC and JWT validation
+- checkpointing: `InMemorySaver` -> SQLite/Postgres checkpointing
+- task store: process memory -> durable task database
+- rate limiting: in-memory fixed window -> Redis/API gateway/platform limits
+- tools: dry-run adapters -> real external tool adapters behind stronger controls
+- observability: local tests/docs -> tracing and production telemetry
 
 ## V1 Non-Goals
 
-- Redis or distributed rate limiting
 - OAuth/OIDC
 - JWT validation
+- Redis or distributed rate limiting
 - database persistence
 - SQLite checkpointing
-- LLM calls
-- real identity provider
-- frontend dashboard
-- complex RAG
-- fine-tuning
+- LLM/OpenAI calls
 - real GitHub writes
 - real workflow triggers
-- multi-agent system
-- OPA/Casbin
-- Kubernetes
+- frontend dashboard
+- multi-agent behavior
 - production deployment hardening

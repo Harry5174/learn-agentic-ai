@@ -4,6 +4,8 @@
 
 Sprint 8 adds basic public-demo safety for the FastAPI API through in-memory rate limiting.
 
+For the broader V1 safety model, see `docs/security-model-v1.md`.
+
 ## Identity Boundary
 
 V1 uses API-key identity resolved by the server from `X-API-Key`.
@@ -65,3 +67,5 @@ Sprint 8 does not add:
 - LLM/OpenAI calls
 - frontend behavior
 - deployment hardening
+
+Production-oriented upgrades are listed in `docs/roadmap.md`.

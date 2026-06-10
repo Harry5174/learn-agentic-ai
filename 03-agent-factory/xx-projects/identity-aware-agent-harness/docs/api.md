@@ -2,19 +2,34 @@
 
 ## Status
 
-The API is a local/demo FastAPI surface for the current portfolio MVP. Sprint 8 is complete.
+The API is a local/demo FastAPI surface for the V1 portfolio MVP.
 
-API task state is backed by a module-level, in-memory `HarnessGraphService` and LangGraph `InMemorySaver`. Task state and checkpoints are process-local, do not survive process restart, and are not backed by durable persistence.
+Base URL for local development:
 
-Public-demo abuse protection is provided by a simple in-memory fixed-window rate limiter. Rate limit state is process-local and resets on process restart.
+```text
+http://127.0.0.1:8000
+```
+
+V1 uses deterministic task interpretation to prove the harness. It does not call an LLM.
 
 ## Authentication
 
 Endpoints that require identity use the `X-API-Key` header.
 
-Identity is resolved server-side by `get_current_identity`, which calls the pure API-key resolver. Clients cannot set role, scopes, or user ID through request bodies.
+Demo keys:
 
-Missing or invalid API keys return `401`.
+| Key | User | Role | Notes |
+| --- | --- | --- | --- |
+| `viewer-dev-key` | `demo_viewer` | `viewer` | can inspect low-risk issues |
+| `operator-dev-key` | `demo_operator` | `operator` | can request high-risk workflow approval |
+| `admin-dev-key` | `demo_admin` | `admin` | can approve or reject paused high-risk tasks |
+
+Identity is resolved server-side by `get_current_identity`. Clients cannot set role, scopes, user ID, or API key ID through request bodies.
+
+Authentication errors:
+
+- missing key: `401`, `Missing X-API-Key header.`
+- invalid key: `401`, `Invalid API key.`
 
 ## Rate Limiting
 
@@ -25,51 +40,47 @@ Protected route groups:
 - task creation: `POST /tasks`, 5 requests per 60 seconds per API key
 - approval actions: `POST /tasks/{task_id}/approve` and `POST /tasks/{task_id}/reject`, 10 requests per 60 seconds per API key
 
-When a protected endpoint exceeds its limit, the API returns:
+Rate limit response:
 
-- status: `429`
-- detail: `Rate limit exceeded.`
+```json
+{
+  "detail": "Rate limit exceeded."
+}
+```
+
+Status:
+
+- `429 Too Many Requests`
 
 Invalid or missing API keys still return `401` before rate limiting.
 
-## Response Summary: Task State
+## Endpoint List
 
-Task endpoints return a public task summary with these fields:
+- `GET /identity/me`
+- `GET /tools`
+- `POST /tasks`
+- `GET /tasks/{task_id}`
+- `POST /tasks/{task_id}/approve`
+- `POST /tasks/{task_id}/reject`
+- `GET /tasks/{task_id}/audit`
 
-- `task_id`
-- `status`
-- `selected_tool_name`
-- `requires_approval`
-- `final_report`
-- `error_message`
-- `approval_request`
+## Task Summary Response
+
+Task endpoints return a public task summary:
+
+```json
+{
+  "task_id": "task-id",
+  "status": "completed",
+  "selected_tool_name": "inspect_sandbox_issues",
+  "requires_approval": false,
+  "final_report": "Task completed successfully using dry-run execution.",
+  "error_message": null,
+  "approval_request": null
+}
+```
 
 `approval_request` is present only while the task is paused for approval.
-
-## `GET /tools`
-
-Purpose:
-
-Returns public metadata for the controlled dry-run tools.
-
-Auth:
-
-- none
-
-Request body:
-
-- none
-
-Response summary:
-
-- `tools`
-- each tool includes name, description, risk level, and required scopes
-
-Important error cases:
-
-- no endpoint-specific error cases
-
-The endpoint does not expose callables, handlers, internal graph objects, or execution functions.
 
 ## `GET /identity/me`
 
@@ -81,11 +92,14 @@ Auth:
 
 - requires `X-API-Key`
 
-Request body:
+Example:
 
-- none
+```bash
+curl -s http://127.0.0.1:8000/identity/me \
+  -H "X-API-Key: viewer-dev-key"
+```
 
-Response summary:
+Response:
 
 ```json
 {
@@ -95,12 +109,37 @@ Response summary:
 }
 ```
 
-Important error cases:
+Status codes:
 
-- missing key: `401`, `Missing X-API-Key header.`
-- invalid key: `401`, `Invalid API key.`
+- `200 OK`
+- `401 Unauthorized`
 
-Request bodies cannot override the resolved identity.
+## `GET /tools`
+
+Purpose:
+
+Returns public metadata for the controlled dry-run tools.
+
+Auth:
+
+- none
+
+Example:
+
+```bash
+curl -s http://127.0.0.1:8000/tools
+```
+
+Response summary:
+
+- `tools`
+- each tool includes name, description, risk level, and required scopes
+
+The endpoint does not expose callables, handlers, internal graph objects, or execution functions.
+
+Status codes:
+
+- `200 OK`
 
 ## `POST /tasks`
 
@@ -112,6 +151,15 @@ Auth:
 
 - requires `X-API-Key`
 
+Example:
+
+```bash
+curl -s -X POST http://127.0.0.1:8000/tasks \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: viewer-dev-key" \
+  -d '{"user_query": "inspect sandbox issues"}'
+```
+
 Request body:
 
 ```json
@@ -120,45 +168,47 @@ Request body:
 }
 ```
 
-Response summary:
+Response behavior:
 
-- success status: `202 Accepted`
-- returns the public task summary
-- allowed low-risk tasks can complete immediately
-- denied tasks return a denied task summary
-- unsupported tasks fail safely
-- high-risk trigger workflow tasks pause for approval
+- low-risk allowed task -> `completed`
+- policy-denied task -> `denied`
+- unsupported task -> `failed`
+- high-risk task -> `paused_for_approval`
 
-Important error cases:
+Status codes:
 
-- missing key: `401`, `Missing X-API-Key header.`
-- invalid key: `401`, `Invalid API key.`
-- over task creation rate limit: `429`, `Rate limit exceeded.`
-
-The body includes only `user_query`. Role, scopes, and user ID are ignored if provided as extra client data.
+- `202 Accepted`
+- `401 Unauthorized`
+- `429 Too Many Requests`
 
 ## `GET /tasks/{task_id}`
 
 Purpose:
 
-Returns the current public task state summary through `HarnessGraphService.get_task`.
+Returns the current public task summary through `HarnessGraphService.get_task`.
 
 Auth:
 
 - none
 
-Request body:
+Example:
 
-- none
+```bash
+curl -s http://127.0.0.1:8000/tasks/TASK_ID
+```
 
-Response summary:
+Status codes:
 
-- success status: `200 OK`
-- returns the public task summary
+- `200 OK`
+- `404 Not Found`
 
-Important error cases:
+Missing task response:
 
-- missing task: `404`, `Task not found.`
+```json
+{
+  "detail": "Task not found."
+}
+```
 
 ## `POST /tasks/{task_id}/approve`
 
@@ -170,9 +220,16 @@ Auth:
 
 - requires `X-API-Key`
 
-Request body:
+Example:
 
-Optional:
+```bash
+curl -s -X POST http://127.0.0.1:8000/tasks/TASK_ID/approve \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: admin-dev-key" \
+  -d '{"reason": "Approved for dry-run execution."}'
+```
+
+Optional request body:
 
 ```json
 {
@@ -180,23 +237,23 @@ Optional:
 }
 ```
 
-Response summary:
+Response behavior:
 
-- success status: `200 OK`
-- returns the public task summary
-- valid admin approval completes the task
-- `requires_approval` becomes `false`
-- `final_report` is present after completion
+- valid admin approval -> `completed`
+- invalid approver -> failed task summary without tool execution
+- missing task -> `404`
+- non-paused task -> `409`
+- over approval rate limit -> `429`
 
-Important error cases:
+Approval policy is not duplicated in the route.
 
-- missing key: `401`, `Missing X-API-Key header.`
-- invalid key: `401`, `Invalid API key.`
-- over approval action rate limit: `429`, `Rate limit exceeded.`
-- missing task: `404`, `Task not found.`
-- non-paused task: `409`, `Task is not paused for approval.`
+Status codes:
 
-Approval policy is not duplicated in the route. If the approver lacks `approval:approve`, the graph/service layer fails safely and the route returns the resulting failed task summary without tool execution.
+- `200 OK`
+- `401 Unauthorized`
+- `404 Not Found`
+- `409 Conflict`
+- `429 Too Many Requests`
 
 ## `POST /tasks/{task_id}/reject`
 
@@ -208,9 +265,16 @@ Auth:
 
 - requires `X-API-Key`
 
-Request body:
+Example:
 
-Optional:
+```bash
+curl -s -X POST http://127.0.0.1:8000/tasks/TASK_ID/reject \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: admin-dev-key" \
+  -d '{"reason": "Rejected during review."}'
+```
+
+Optional request body:
 
 ```json
 {
@@ -218,23 +282,24 @@ Optional:
 }
 ```
 
-Response summary:
+Response behavior:
 
-- success status: `200 OK`
-- returns the public task summary
-- valid admin rejection marks the task `rejected`
-- `requires_approval` becomes `false`
-- `final_report` explains the rejection
+- valid admin rejection -> `rejected`
+- rejected tasks do not execute the high-risk tool
+- invalid rejector -> failed task summary without tool execution
+- missing task -> `404`
+- non-paused task -> `409`
+- over approval action rate limit -> `429`
 
-Important error cases:
+Rejection policy is not duplicated in the route.
 
-- missing key: `401`, `Missing X-API-Key header.`
-- invalid key: `401`, `Invalid API key.`
-- over approval action rate limit: `429`, `Rate limit exceeded.`
-- missing task: `404`, `Task not found.`
-- non-paused task: `409`, `Task is not paused for approval.`
+Status codes:
 
-Rejection policy is not duplicated in the route. If the rejector lacks `approval:reject`, the graph/service layer fails safely and the route returns the resulting failed task summary without tool execution.
+- `200 OK`
+- `401 Unauthorized`
+- `404 Not Found`
+- `409 Conflict`
+- `429 Too Many Requests`
 
 ## `GET /tasks/{task_id}/audit`
 
@@ -246,16 +311,29 @@ Auth:
 
 - none
 
-Request body:
+Example:
 
-- none
+```bash
+curl -s http://127.0.0.1:8000/tasks/TASK_ID/audit
+```
 
-Response summary:
+Response shape:
 
 ```json
 {
   "task_id": "task-id",
-  "audit_trail": []
+  "audit_trail": [
+    {
+      "event_id": "event-id",
+      "task_id": "task-id",
+      "event_type": "task_created",
+      "actor_id": "demo_viewer",
+      "message": "Task was created.",
+      "timestamp": "2026-01-01T00:00:00Z",
+      "tool_name": null,
+      "metadata": {}
+    }
+  ]
 }
 ```
 
@@ -275,21 +353,28 @@ Rejected high-risk paths exclude:
 
 - `tool_executed`
 
-Important error cases:
+Status codes:
 
-- missing task: `404`, `Task not found.`
+- `200 OK`
+- `404 Not Found`
 
-## Current Limitations
+## Approval and Rejection Flow
 
-This API should be treated as a local/demo API, not production infrastructure.
+1. `operator-dev-key` creates a high-risk trigger workflow task.
+2. The graph returns `paused_for_approval` and an `approval_request`.
+3. `admin-dev-key` approves or rejects the task.
+4. Approval resumes and executes the dry-run tool.
+5. Rejection resumes and finalizes without tool execution.
+6. Invalid approvers fail safely without tool execution.
 
-Current limitations:
+## Known Demo Limitations
 
-- task state does not survive process restart
-- paused tasks can be resumed only while the process is alive
-- durable persistence is not implemented
-- SQLite checkpointing is not implemented
-- rate limiting is in-memory only and not distributed
-- OAuth/OIDC and JWT validation are not implemented
-- LLM/OpenAI behavior is not implemented
-- frontend and deployment changes are not implemented
+- API-key identity is static demo identity, not OAuth/OIDC.
+- Task state and checkpoints are in-memory and process-local.
+- Audit events are not persisted to a database.
+- Rate limiting is in-memory and not distributed.
+- Rate limits reset on process restart.
+- Tools are dry-run only.
+- No real GitHub writes happen.
+- No real workflow triggers happen.
+- No LLM/OpenAI call happens in V1.
