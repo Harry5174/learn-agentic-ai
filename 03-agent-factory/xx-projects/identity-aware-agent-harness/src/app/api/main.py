@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+import uvicorn
 
 from app.api.rate_limiter import InMemoryRateLimiter
 from app.api.routes_identity import router as identity_router
@@ -23,3 +24,14 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
+
+def main() -> None:
+    uvicorn.run(
+        app="app.api.main:app",
+        reload=True,
+        host="0.0.0.0",
+        port=8000,
+    )
+    
+if __name__=="__main__":
+    main()
