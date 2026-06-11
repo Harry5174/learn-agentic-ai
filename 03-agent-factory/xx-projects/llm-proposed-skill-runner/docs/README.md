@@ -62,6 +62,12 @@ Artifact 2.2.
 - [Sprint 5 spec](specs/sprint-5-spec.md)
 - [Archived Artifact 1 sprint specs](specs/archive/artifact-1-sprint-specs/)
 
+## Constitution
+
+- [Mission](specs/constitution/mission.md)
+- [Tech Stack](specs/constitution/tech-stack.md)
+- [Roadmap](specs/constitution/roadmap.md)
+
 ## Current Boundaries
 
 - The default HTTP skill-runner API uses fake proposer mode.

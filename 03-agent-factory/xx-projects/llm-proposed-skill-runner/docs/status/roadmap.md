@@ -3,6 +3,9 @@
 This roadmap is intentionally narrow. Artifact 2 is a local/demo skill-runner
 harness, not a production platform plan.
 
+For the project-level sequencing rules, see
+[../specs/constitution/roadmap.md](../specs/constitution/roadmap.md).
+
 ## Completed Artifact 2 Foundation
 
 Completed work includes:

@@ -99,6 +99,7 @@ Use [docs/README.md](docs/README.md) as the documentation index.
 
 High-value entry points:
 
+- [Project constitution](docs/specs/constitution/mission.md)
 - [Skill-runner API contract](docs/api/skill-runner-api.md)
 - [Inherited task API reference](docs/api/task-api.md)
 - [Architecture](docs/architecture/architecture.md)

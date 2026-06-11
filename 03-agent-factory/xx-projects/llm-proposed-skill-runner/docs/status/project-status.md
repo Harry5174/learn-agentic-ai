@@ -10,6 +10,9 @@ approval-gates, executes, and audits.
 **Safety Invariant:** Identity is server-derived, policy is deterministic, and
 high-risk execution cannot happen before approval.
 
+For the current project constitution, see
+[../specs/constitution/mission.md](../specs/constitution/mission.md).
+
 ## Current Artifact Status
 
 Artifact 2 has completed the proposal-validation, skill-execution, and
