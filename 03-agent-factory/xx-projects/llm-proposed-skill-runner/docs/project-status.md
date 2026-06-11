@@ -62,20 +62,21 @@ move security-relevant decisions into the model.
 
 ## Current API Status
 
-The FastAPI surface remains the inherited local/demo task API:
+The FastAPI surface includes the inherited local/demo task API and the first
+Artifact 2.1 skill-runner routes:
 
 - `GET /tools`
 - `GET /identity/me`
+- `GET /skills`
 - `POST /tasks`
 - `GET /tasks/{task_id}`
 - `POST /tasks/{task_id}/approve`
 - `POST /tasks/{task_id}/reject`
 - `GET /tasks/{task_id}/audit`
+- `POST /skill-runs`
 
-No public skill-runner API endpoints have been added.
-
-The Artifact 2 skill runner is currently exercised through `SkillGraphService`
-and focused tests.
+Skill-run creation is exposed through `SkillGraphService`. Skill-run fetch,
+approval, rejection, and audit routes are not implemented yet.
 
 ## Current Persistence Status
 

@@ -2,10 +2,13 @@
 
 ## Status
 
-Sprint E1.0 defines the planned public API contract for Artifact 2.1 only.
+Sprint E1.1 implements the first public FastAPI surface for Artifact 2.1:
 
-These routes are not implemented yet. Route implementation is planned for later
-Artifact 2.1 sprints.
+- `GET /skills`
+- `POST /skill-runs`
+
+Sprint E1.2 is planned to add skill-run fetch, approval, rejection, and audit
+routes. Those E1.2 routes are documented below as planned contracts only.
 
 The future skill-runner API must preserve the Artifact 2 invariant:
 
@@ -18,25 +21,30 @@ Clients may submit task text and optional proposer preferences, but identity,
 policy, approval authority, tool trust, and execution remain server-side harness
 concerns.
 
-## Planned Endpoints
+## Implemented In E1.1
 
 ```text
 GET  /skills
 POST /skill-runs
+```
+
+## Planned For E1.2
+
+```text
 GET  /skill-runs/{run_id}
 POST /skill-runs/{run_id}/approve
 POST /skill-runs/{run_id}/reject
 GET  /skill-runs/{run_id}/audit
 ```
 
-All endpoint descriptions below are planned contracts, not implemented routes.
+Only `GET /skills` and `POST /skill-runs` are implemented in E1.1.
 
 ## Authentication And Identity
 
-Future endpoints that create, approve, reject, or inspect protected skill-run
-state should use the existing server-derived identity boundary. Clients must
-send identity through the configured authentication mechanism, not through JSON
-request bodies.
+Skill-run creation uses the existing server-derived identity boundary. Future
+endpoints that approve, reject, or inspect protected skill-run state should use
+the same boundary. Clients must send identity through the configured
+authentication mechanism, not through JSON request bodies.
 
 Request bodies must not accept:
 
@@ -101,8 +109,10 @@ Allowed `proposer_mode` values:
 - `fake`
 - `llm`
 
-`proposer_mode` is a future routing preference only. Sprint E1.0 does not wire
-or change proposer behavior.
+In E1.1, omitted `proposer_mode` defaults to `fake`. `proposer_mode: "fake"`
+uses the existing deterministic fake proposer through `SkillGraphService`.
+`proposer_mode: "llm"` is disabled at the HTTP layer and returns a safe `400`
+response without calling a live model provider.
 
 ### SkillRunSummaryResponse
 
@@ -185,6 +195,8 @@ graph state.
 
 ## GET /skills
 
+Status: implemented in E1.1.
+
 Purpose: list public metadata for registered skills.
 
 Request body: none.
@@ -192,35 +204,33 @@ Request body: none.
 Response shape:
 
 ```json
-{
-  "skills": [
-    {
-      "skill_id": "inspect_sandbox_health",
-      "version": "1.0",
-      "name": "Inspect sandbox health",
-      "description": "Inspect predictable sandbox issue status data.",
-      "required_scopes": ["tools:inspect"],
-      "risk_level": "low",
-      "steps": []
-    }
-  ]
-}
+[
+  {
+    "skill_id": "inspect_sandbox_health",
+    "version": "1.0",
+    "name": "Inspect sandbox health",
+    "description": "Inspect predictable sandbox issue status data.",
+    "required_scopes": ["tools:inspect"],
+    "risk_level": "low",
+    "steps": []
+  }
+]
 ```
 
-Identity handling: future implementation may use server-derived identity if the
-catalog becomes identity-filtered. The response must not trust request body
-identity because this endpoint has no request body.
+Identity handling: this E1.1 endpoint is public like `GET /tools`. The response
+does not trust request body identity because this endpoint has no request body.
 
 Approval handling: none. Listing skills does not approve, reject, or execute
 anything.
 
 Errors:
 
-- `401 Unauthorized` if a later sprint makes the skill catalog protected
 - `500 Internal Server Error` with `SkillRunErrorResponse` shape for unexpected
   server failures
 
 ## POST /skill-runs
+
+Status: implemented in E1.1.
 
 Purpose: create a new skill run from user task text.
 
@@ -240,21 +250,32 @@ Identity handling: identity is resolved server-side. The request body cannot
 claim user ID, role, scopes, API key, API key ID, policy decision, approval
 decision, approval authority, risk override, or trusted tool names.
 
+Proposer handling: omitted `proposer_mode` defaults to `fake`. `fake` delegates
+to the existing `SkillGraphService` default proposer. `llm` returns `400`
+without invoking a provider or service run.
+
+Validation and execution handling: the route delegates to
+`SkillGraphService.start_run`. Proposal validation, policy checks, approval
+gating, dry-run execution, and audit behavior remain in the existing service and
+graph layers.
+
 Approval handling: if the validated proposal requires high-risk approval, the
-future route should return a paused summary with `approval_required: true` and
-`approval_status: "pending"`. It must not execute high-risk tools before
+route returns a paused summary with `approval_required: true` and
+`approval_status: "pending"`. It does not execute high-risk tools before
 approval.
 
 Errors:
 
-- `400 Bad Request` for invalid request shape
+- `400 Bad Request` when `proposer_mode: "llm"` is requested but not enabled
+- `422 Unprocessable Entity` for invalid request shape or forbidden body fields
 - `401 Unauthorized` for missing or invalid identity
-- `404 Not Found` if `requested_skill_id` is unsupported by the future route
 - `429 Too Many Requests` for server-derived rate-limit overflow
 - `500 Internal Server Error` with `SkillRunErrorResponse` shape for unexpected
   server failures
 
 ## GET /skill-runs/{run_id}
+
+Status: planned for E1.2; not implemented in E1.1.
 
 Purpose: fetch the current public summary for one skill run.
 
@@ -276,6 +297,8 @@ Errors:
 - `404 Not Found` if the run ID is unknown
 
 ## POST /skill-runs/{run_id}/approve
+
+Status: planned for E1.2; not implemented in E1.1.
 
 Purpose: approve and resume a paused high-risk skill run.
 
@@ -309,6 +332,8 @@ Errors:
 
 ## POST /skill-runs/{run_id}/reject
 
+Status: planned for E1.2; not implemented in E1.1.
+
 Purpose: reject and finalize a paused high-risk skill run without executing the
 pending high-risk tool action.
 
@@ -340,6 +365,8 @@ Errors:
 - `429 Too Many Requests` for server-derived rate-limit overflow
 
 ## GET /skill-runs/{run_id}/audit
+
+Status: planned for E1.2; not implemented in E1.1.
 
 Purpose: return a safe public audit trail for one skill run.
 

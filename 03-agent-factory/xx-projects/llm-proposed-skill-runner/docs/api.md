@@ -2,11 +2,8 @@
 
 ## Status
 
-The FastAPI surface is a local/demo API inherited from Artifact 1. It exposes
-the deterministic task harness, not new Artifact 2 skill-runner endpoints.
-
-Artifact 2 skill-runner behavior is currently exercised through
-`SkillGraphService` and focused tests.
+The FastAPI surface is a local/demo API. It exposes the inherited deterministic
+task harness and the first Artifact 2.1 skill-runner routes.
 
 Base URL for local development:
 
@@ -43,6 +40,7 @@ bodies.
 Protected route groups:
 
 - task creation: `POST /tasks`, 5 requests per 60 seconds per API key
+- skill-run creation: `POST /skill-runs`, 5 requests per 60 seconds per API key
 - approval actions: `POST /tasks/{task_id}/approve` and `POST /tasks/{task_id}/reject`, 10 requests per 60 seconds per API key
 
 Rate limit response:
@@ -59,13 +57,16 @@ Invalid or missing API keys return `401` before rate limiting.
 
 - `GET /identity/me`
 - `GET /tools`
+- `GET /skills`
 - `POST /tasks`
 - `GET /tasks/{task_id}`
 - `POST /tasks/{task_id}/approve`
 - `POST /tasks/{task_id}/reject`
 - `GET /tasks/{task_id}/audit`
+- `POST /skill-runs`
 
-No public `/skills` or `/skill-runs` endpoints are implemented.
+Skill-run fetch, approval, rejection, and audit routes are planned for E1.2 and
+are not implemented yet.
 
 ## `GET /identity/me`
 
@@ -105,6 +106,24 @@ curl -s http://127.0.0.1:8000/tools
 
 The endpoint returns tool names, descriptions, risk levels, and required scopes.
 It does not expose callables, handlers, graph objects, or execution functions.
+
+Status codes:
+
+- `200 OK`
+
+## `GET /skills`
+
+Returns public metadata for registered skills.
+
+Example:
+
+```bash
+curl -s http://127.0.0.1:8000/skills
+```
+
+The endpoint returns skill IDs, versions, names, descriptions, risk levels,
+required scopes, and safe step metadata. It does not expose callables, registry
+internals, graph objects, checkpointer state, or tool implementation objects.
 
 Status codes:
 
@@ -232,6 +251,46 @@ Status codes:
 - `200 OK`
 - `404 Not Found`
 
+## `POST /skill-runs`
+
+Starts a skill run through the Artifact 2 skill graph.
+
+Example:
+
+```bash
+curl -s -X POST http://127.0.0.1:8000/skill-runs \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: viewer-dev-key" \
+  -d '{"task": "Inspect sandbox health.", "proposer_mode": "fake"}'
+```
+
+Request body:
+
+```json
+{
+  "task": "Inspect sandbox health.",
+  "proposer_mode": "fake",
+  "requested_skill_id": "inspect_sandbox_health"
+}
+```
+
+Response behavior:
+
+- omitted `proposer_mode` defaults to `fake`
+- `fake` uses the existing deterministic proposer through `SkillGraphService`
+- `llm` returns a safe `400` response without calling a live model provider
+- invalid proposals are rejected before policy evaluation or tool execution
+- low-risk accepted proposals execute dry-run tools
+- high-risk accepted proposals pause for approval instead of executing
+
+Status codes:
+
+- `202 Accepted`
+- `400 Bad Request`
+- `401 Unauthorized`
+- `422 Unprocessable Entity`
+- `429 Too Many Requests`
+
 ## Public Task Summary Shape
 
 Task endpoints return:
@@ -258,14 +317,15 @@ Artifact 2 skill-runner behavior lives in:
 - `src/app/proposer/`
 - `src/app/skill_graph/`
 
-It is verified by tests such as:
+It is exposed through `GET /skills` and `POST /skill-runs`, and is verified by
+tests such as:
 
 - `tests/test_proposal_validator.py`
 - `tests/test_fake_proposer.py`
 - `tests/test_llm_proposer.py`
 - `tests/test_skill_execution_graph.py`
 
-Sprint 5 does not add API endpoints for those services.
+Skill-run fetch, approval, rejection, and audit routes remain planned for E1.2.
 
 ## Known API Limitations
 
@@ -277,6 +337,6 @@ Sprint 5 does not add API endpoints for those services.
 - no OAuth/OIDC
 - no JWT validation
 - no database persistence
-- no public skill-runner endpoints
+- no skill-run fetch, approval, rejection, or audit endpoints yet
 - no real GitHub writes
 - no real workflow triggers

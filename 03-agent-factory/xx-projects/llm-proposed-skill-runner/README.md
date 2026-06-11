@@ -106,20 +106,22 @@ The required Sprint 5 scenarios are documented in
 
 ## Current API Boundary
 
-The FastAPI routes currently expose the inherited local/demo task API from
-Artifact 1:
+The FastAPI routes expose the inherited local/demo task API from Artifact 1 and
+the first Artifact 2.1 skill-runner API routes:
 
 - `GET /tools`
 - `GET /identity/me`
+- `GET /skills`
 - `POST /tasks`
 - `GET /tasks/{task_id}`
 - `POST /tasks/{task_id}/approve`
 - `POST /tasks/{task_id}/reject`
 - `GET /tasks/{task_id}/audit`
+- `POST /skill-runs`
 
-Those routes still wrap the deterministic task harness in `src/app/graph/`.
-Sprint 5 does not add public skill-runner API endpoints. The Artifact 2 skill
-runner is currently exercised through `SkillGraphService` and focused tests.
+Task routes still wrap the deterministic task harness in `src/app/graph/`.
+Skill-run creation wraps the Artifact 2 `SkillGraphService`. Skill-run fetch,
+approval, rejection, and audit routes are not implemented yet.
 
 See [docs/api.md](docs/api.md).
 

@@ -182,13 +182,13 @@ Audit state is in memory and process-local.
 
 ## API Boundary
 
-The current FastAPI routes expose the inherited deterministic task API from
-Artifact 1. They wrap `HarnessGraphService` from `src/app/graph/`.
+The FastAPI routes expose the inherited deterministic task API from Artifact 1
+and the first Artifact 2.1 skill-runner API surface.
 
-Sprint 5 does not add public skill-runner endpoints.
-
-The Artifact 2 skill runner is currently demonstrated through
-`SkillGraphService` and tests.
+Task routes wrap `HarnessGraphService` from `src/app/graph/`. Skill-run
+creation wraps `SkillGraphService` from `src/app/skill_graph/`. Skill-run fetch,
+approval, rejection, and audit routes are planned for E1.2 and are not
+implemented yet.
 
 FastAPI routes must not:
 

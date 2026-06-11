@@ -9,8 +9,10 @@ from app.identity.schemas import IdentityContext
 
 DEFAULT_RATE_LIMIT_WINDOW_SECONDS = 60
 TASK_CREATE_RATE_LIMIT = 5
+SKILL_RUN_CREATE_RATE_LIMIT = 5
 APPROVAL_ACTION_RATE_LIMIT = 10
 TASK_CREATE_ROUTE_GROUP = "task_create"
+SKILL_RUN_CREATE_ROUTE_GROUP = "skill_run_create"
 APPROVAL_ACTION_ROUTE_GROUP = "approval_action"
 RATE_LIMIT_EXCEEDED_DETAIL = "Rate limit exceeded."
 
@@ -83,6 +85,21 @@ def enforce_task_create_rate_limit(
         limiter=limiter,
         route_group=TASK_CREATE_ROUTE_GROUP,
         limit=TASK_CREATE_RATE_LIMIT,
+    )
+    return identity
+
+
+def enforce_skill_run_create_rate_limit(
+    identity: Annotated[IdentityContext, Depends(get_current_identity)],
+    limiter: Annotated[InMemoryRateLimiter, Depends(get_rate_limiter)],
+) -> IdentityContext:
+    """Resolve identity and enforce skill-run creation rate limits."""
+
+    enforce_rate_limit(
+        identity=identity,
+        limiter=limiter,
+        route_group=SKILL_RUN_CREATE_ROUTE_GROUP,
+        limit=SKILL_RUN_CREATE_RATE_LIMIT,
     )
     return identity
 

@@ -40,17 +40,15 @@ Current limits:
 
 ## API Surface
 
-The current FastAPI routes expose the inherited task API.
+The current FastAPI routes expose the inherited task API plus `GET /skills` and
+`POST /skill-runs`.
 
 Not implemented:
 
-- public skill-runner API endpoints
-- skill listing API
-- skill-run creation API
+- skill-run fetch API
+- skill-run approval API
+- skill-run rejection API
 - skill-run audit API
-
-Artifact 2 skill-runner behavior is currently verified through services and
-tests.
 
 ## Tool Execution
 
