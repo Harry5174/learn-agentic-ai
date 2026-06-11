@@ -1,40 +1,60 @@
-# Sprint 4: Audit Trail Logger
+# Sprint 4: Real LLM Proposer
 
 ## Objective
-Implement deterministic in-memory audit helpers for future graph nodes.
+Add an optional real LLM proposer behind the existing proposer abstraction.
+
+The LLM proposes a structured `SkillProposal`. The harness remains responsible
+for validation, policy checks, approval gating, execution, and audit records.
 
 ## Scope
-- create_audit_event
-- append_audit_event
-- selected convenience helpers
-- audit logger tests
+- Provider-neutral prompt/context helpers.
+- Injectable `LLMProposer` client boundary.
+- Safe parsing of mocked LLM output into `SkillProposal`.
+- Malformed-output fallback that preserves evidence of the parse/schema failure.
+- Focused proposer tests using mocked clients only.
 
 ## Non-Goals
+- MCP
+- OAuth/OIDC
+- JWT validation
+- multi-agent behavior
+- real GitHub writes
+- real workflow triggers
+- frontend
 - database persistence
-- external logging service
-- LangGraph
-- FastAPI
-- approval service
-- checkpointing
-- LLM calls
+- production deployment
+- autonomous planning loops
+- recursive planning
+- skill marketplace
+- YAML/JSON skill loading
+- public API expansion
 
-## Implemented Helpers
-- `create_audit_event`
-- `append_audit_event`
-- `create_task_created_event`
-- `create_tool_selected_event`
-- `create_permission_checked_event`
-- `create_approval_requested_event`
-- `create_tool_executed_event`
+## Harness Authority Boundary
+The LLM proposer may return only a proposed skill plan.
 
-## Acceptance Criteria Status
-- fresh UUID event IDs implemented
-- timezone-aware timestamps implemented
-- safe metadata defaults implemented
-- defensive metadata copy implemented
-- immutable-style append implemented
+It must not:
+- authorize
+- approve
+- execute tools
+- bypass `ProposalValidator`
+- bypass policy
+- bypass approval
+- invent trusted tools
+- decide final risk
 
-## Boundary
-Audit records events but does not control execution, authorize tools, approve requests, or persist to a database.
+The invariant is:
 
-The current audit trail is in-memory state attached to graph task state.
+```text
+LLM output -> SkillProposal parsing -> ProposalValidator -> policy/approval/execution
+```
+
+## Test Boundary
+Tests use mocked client output only.
+
+No test requires:
+- real model calls
+- network access
+- API credentials
+- provider SDKs
+
+`FakeProposer` remains available and remains the default graph proposer.
