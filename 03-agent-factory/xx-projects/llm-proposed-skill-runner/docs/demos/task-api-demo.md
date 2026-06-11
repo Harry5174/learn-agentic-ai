@@ -1,4 +1,10 @@
-# Demo Flow
+# Task API Demo Flow
+
+This guide demonstrates the inherited Artifact 1-style `/tasks` API that remains
+available in Artifact 2.
+
+The primary Artifact 2.1 demo is the skill-runner API guide:
+[skill-runner-api-demo.md](skill-runner-api-demo.md).
 
 This guide assumes the local API is running:
 

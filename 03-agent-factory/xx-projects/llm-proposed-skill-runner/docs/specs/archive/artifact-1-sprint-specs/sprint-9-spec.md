@@ -27,18 +27,18 @@ Sprint 9 finalized:
 
 Created:
 
-- `docs/demo-flow.md`
-- `docs/security-model-v1.md`
-- `docs/roadmap.md`
-- `docs/interview-notes.md`
+- `docs/demos/task-api-demo.md`
+- `docs/architecture/security-model.md`
+- `docs/status/roadmap.md`
+- `docs/status/interview-notes.md`
 
 Updated:
 
 - `README.md`
-- `docs/architecture.md`
-- `docs/api.md`
-- `docs/project-status.md`
-- `docs/public-safety.md`
+- `docs/architecture/architecture.md`
+- `docs/api/task-api.md`
+- `docs/status/project-status.md`
+- `docs/architecture/public-safety.md`
 
 ## README Finalization
 
@@ -60,7 +60,7 @@ The README states that V1 uses deterministic task interpretation to prove the ha
 
 ## Architecture Documentation
 
-`docs/architecture.md` now documents:
+`docs/architecture/architecture.md` now documents:
 
 - layered architecture
 - module responsibilities
@@ -75,7 +75,7 @@ The README states that V1 uses deterministic task interpretation to prove the ha
 
 ## API Documentation
 
-`docs/api.md` now documents:
+`docs/api/task-api.md` now documents:
 
 - base URL
 - required `X-API-Key`
@@ -90,7 +90,7 @@ The README states that V1 uses deterministic task interpretation to prove the ha
 
 ## Demo Flow Documentation
 
-`docs/demo-flow.md` provides curl examples for:
+`docs/demos/task-api-demo.md` provides curl examples for:
 
 - viewer inspects sandbox issues -> `completed`
 - viewer drafts issue comment -> `denied`
@@ -101,7 +101,7 @@ The README states that V1 uses deterministic task interpretation to prove the ha
 
 ## V1 Safety Model
 
-`docs/security-model-v1.md` explains:
+`docs/architecture/security-model.md` explains:
 
 - V1 demonstrates safety-oriented harness design
 - identity is server-derived from API key
@@ -121,7 +121,7 @@ The safety model avoids production security claims.
 
 ## Roadmap
 
-`docs/roadmap.md` describes:
+`docs/status/roadmap.md` describes:
 
 - V1: Portfolio MVP
 - V1.1: durability upgrade
@@ -130,7 +130,7 @@ The safety model avoids production security claims.
 
 ## Interview Notes
 
-`docs/interview-notes.md` provides concise talking points for:
+`docs/status/interview-notes.md` provides concise talking points for:
 
 - the problem solved
 - why this is not a chatbot/RAG app

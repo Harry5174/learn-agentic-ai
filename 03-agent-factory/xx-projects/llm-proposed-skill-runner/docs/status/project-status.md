@@ -36,10 +36,10 @@ only. It does not change runtime behavior.
 
 The active Artifact 2 foundation sprint specs are:
 
-- `docs/sprint-2-spec.md`
-- `docs/sprint-3-spec.md`
-- `docs/sprint-4-spec.md`
-- `docs/sprint-5-spec.md`
+- `../specs/sprint-2-spec.md`
+- `../specs/sprint-3-spec.md`
+- `../specs/sprint-4-spec.md`
+- `../specs/sprint-5-spec.md`
 
 Artifact 2.1 extends that foundation with the skill-runner API lifecycle.
 
@@ -47,7 +47,7 @@ Copied Artifact 1 sprint specs that could mislead future IDE agents are archived
 under:
 
 ```text
-docs/archive/artifact-1-sprint-specs/
+../specs/archive/artifact-1-sprint-specs/
 ```
 
 ## Inherited Foundation From Artifact 1

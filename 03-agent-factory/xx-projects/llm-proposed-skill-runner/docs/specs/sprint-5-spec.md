@@ -147,16 +147,16 @@ Sprint 5 must keep the following limits explicit:
 
 The active Artifact 2 sprint specs are:
 
-- `docs/sprint-2-spec.md`
-- `docs/sprint-3-spec.md`
-- `docs/sprint-4-spec.md`
-- `docs/sprint-5-spec.md`
+- `docs/specs/sprint-2-spec.md`
+- `docs/specs/sprint-3-spec.md`
+- `docs/specs/sprint-4-spec.md`
+- `docs/specs/sprint-5-spec.md`
 
 Copied Artifact 1 sprint specs that could mislead future IDE agents should live
 under:
 
 ```text
-docs/archive/artifact-1-sprint-specs/
+docs/specs/archive/artifact-1-sprint-specs/
 ```
 
 ## Acceptance Criteria

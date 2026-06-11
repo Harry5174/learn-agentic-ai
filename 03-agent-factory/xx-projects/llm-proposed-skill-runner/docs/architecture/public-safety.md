@@ -5,8 +5,8 @@
 This project is a local/demo artifact. Public safety controls are intentionally
 small and in-memory.
 
-For the broader safety model, see `docs/security-model-v1.md` and
-`docs/threat-model.md`.
+For the broader safety model, see [security-model.md](security-model.md) and
+[threat-model.md](threat-model.md).
 
 ## Identity Boundary
 
@@ -84,4 +84,5 @@ This project does not add:
 - real GitHub writes
 - real workflow triggers
 
-Production-oriented upgrades are listed in `docs/roadmap.md`.
+Production-oriented upgrades are listed in
+[../status/roadmap.md](../status/roadmap.md).

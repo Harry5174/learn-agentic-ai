@@ -59,7 +59,8 @@ high-risk audit behavior are covered by API tests using scenario-configured fake
 proposer injection. The default running HTTP API does not currently expose a
 public request field for selecting those fake proposer scenarios.
 
-See [skill-runner-demo.md](skill-runner-demo.md) for curl-oriented walkthroughs.
+See [../demos/skill-runner-api-demo.md](../demos/skill-runner-api-demo.md) for
+curl-oriented walkthroughs.
 
 ## Authentication And Identity
 

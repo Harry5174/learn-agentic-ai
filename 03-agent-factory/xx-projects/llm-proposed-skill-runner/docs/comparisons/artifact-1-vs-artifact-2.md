@@ -93,7 +93,16 @@ Both artifacts use dry-run tools only.
 
 ## Current Integration Boundary
 
-The current public FastAPI API remains the inherited Artifact 1 task API.
+The public FastAPI API includes the inherited Artifact 1 task API and the
+Artifact 2.1 skill-runner lifecycle API.
 
-The Artifact 2 skill runner is implemented in service/graph modules and verified
-by tests. Public skill-runner API endpoints are future work, not Sprint 5 work.
+The inherited task API remains useful for demonstrating the original execution
+harness. The Artifact 2.1 skill-runner API is the primary demo surface for
+model-shaped skill proposals.
+
+See:
+
+- [../api/task-api.md](../api/task-api.md)
+- [../api/skill-runner-api.md](../api/skill-runner-api.md)
+- [../demos/task-api-demo.md](../demos/task-api-demo.md)
+- [../demos/skill-runner-api-demo.md](../demos/skill-runner-api-demo.md)

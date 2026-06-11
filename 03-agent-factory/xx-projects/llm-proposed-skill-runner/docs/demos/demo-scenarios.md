@@ -11,7 +11,7 @@ proposer -> SkillProposal -> ProposalValidator -> policy -> approval -> dry-run 
 ```
 
 For Artifact 2.1 HTTP walkthroughs, see
-[skill-runner-demo.md](skill-runner-demo.md).
+[skill-runner-api-demo.md](skill-runner-api-demo.md).
 
 The default running HTTP API uses fake proposer mode and can demonstrate
 `GET /skills`, low-risk `POST /skill-runs`, `GET /skill-runs/{run_id}`,

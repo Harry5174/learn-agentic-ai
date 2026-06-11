@@ -1,4 +1,4 @@
-# Skill Runner Demo Walkthrough
+# Skill Runner API Demo Walkthrough
 
 This walkthrough is for Artifact 2.1, the local/demo skill-runner API surface.
 
