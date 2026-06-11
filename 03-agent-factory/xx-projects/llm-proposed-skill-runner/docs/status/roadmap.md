@@ -36,15 +36,25 @@ surface:
 Sprint E1.3 is documentation and demo-surface tightening only. No runtime
 behavior is added.
 
-## Next Step: Artifact 2.2
+## Active Step: Artifact 2.2
 
-The next useful implementation step is validated proposed tool arguments:
+Artifact 2.2 has started with Sprint E2.0 argument contract design.
+
+Artifact 2.2 targets:
 
 - validated proposed tool arguments
-- execution using validated model-proposed runtime tool arguments
+- a raw proposed argument non-execution rule
+- scalar-only V1 argument schema stubs
+- central forbidden argument names
+- redaction policy documentation
 - focused adversarial tests for argument-level failures
 
-Artifact 2.2 should preserve the existing safety boundary: model output remains
+Sprint E2.0 covers the contract design and schema stubs only.
+
+Raw proposed arguments still do not execute. Validator and execution wiring are
+planned for later sprints.
+
+Artifact 2.2 must preserve the existing safety boundary: model output remains
 untrusted, and the harness validates before policy, approval, or execution.
 
 ## Near-Term Follow-Ups

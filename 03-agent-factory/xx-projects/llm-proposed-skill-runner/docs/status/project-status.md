@@ -18,6 +18,10 @@ For the current project constitution, see
 Artifact 2 has completed the proposal-validation, skill-execution, and
 Artifact 2.1 HTTP lifecycle foundation for a local/demo skill runner.
 
+Artifact 2.2 has started with Sprint E2.0 argument contract design. Raw
+proposed arguments still do not execute. Validator and execution wiring are
+planned for later sprints.
+
 Implemented:
 
 - `SkillSpec`, `SkillStep`, and `SkillProposal` contracts
@@ -131,7 +135,8 @@ No test depends on:
 - multi-agent behavior
 - real GitHub writes
 - real workflow triggers
-- full proposed tool-argument validation framework
+- proposed tool-argument validator behavior
+- execution wiring for model-proposed runtime tool arguments
 - provider SDK integration
 - live LLM mode through HTTP
 
@@ -139,4 +144,6 @@ No test depends on:
 
 Skill specs contain argument-schema metadata, but the skill execution graph uses
 harness-owned default arguments for the dry-run tools. Validating and executing
-model-proposed runtime arguments is planned as future Artifact 2.2 work.
+model-proposed runtime arguments is planned as later Artifact 2.2 work.
+
+Sprint E2.0 defines argument contract schemas and documentation only.
