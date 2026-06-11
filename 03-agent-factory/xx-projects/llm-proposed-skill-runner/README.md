@@ -31,6 +31,8 @@ Implemented capabilities include:
   and structured audit evidence
 - Artifact 2.1 skill-runner HTTP routes for listing skills, creating runs,
   reading runs, approving/rejecting paused runs, and retrieving audit events
+- Artifact 2.2 validation for model-proposed scalar tool arguments before
+  dry-run execution
 
 ## What This Is Not
 
@@ -105,6 +107,7 @@ High-value entry points:
 - [Architecture](docs/architecture/architecture.md)
 - [Security model](docs/architecture/security-model.md)
 - [Threat model](docs/architecture/threat-model.md)
+- [Adversarial argument validation](docs/adversarial-argument-validation.md)
 - [Known limitations](docs/status/known-limitations.md)
 - [Roadmap](docs/status/roadmap.md)
 - [Interview notes](docs/status/interview-notes.md)
@@ -118,10 +121,16 @@ provider. Invalid-proposal and high-risk skill-run scenarios are covered by API
 tests using scenario-configured fake proposer injection when default curl cannot
 select those scenarios.
 
-Skill specs include argument-schema metadata, but current skill execution uses
-harness-owned default arguments for registered dry-run tools. Validating and
-executing model-proposed runtime tool arguments is future Artifact 2.2 work.
+Skill specs include trusted argument metadata. A model-shaped proposal can
+include runtime tool arguments, but only registry-declared scalar
+string/integer/boolean values accepted by `ProposalValidator` can reach dry-run
+tool execution. Unknown, missing, wrong-type, forbidden control-plane, object,
+and list arguments are rejected. Public API and audit summaries expose safe
+argument-validation status, argument names, redaction names, and issue codes
+without echoing rejected raw values.
 
 This remains a local/demo artifact with process-local state, in-memory
 checkpointing, in-memory audit/rate limits, dry-run tools only, and no durable
-persistence.
+persistence. Artifact 2.2 does not add object/list/nested argument support,
+partial acceptance, live HTTP LLM mode, MCP, OAuth/OIDC, database persistence,
+or real GitHub writes.

@@ -44,6 +44,7 @@ Artifact 2 adds:
 - fake proposer scenarios
 - optional mocked LLM proposer boundary
 - skill execution graph
+- validated model-proposed scalar tool arguments
 
 The important design move is that adding a proposer does not give the model
 authority.
@@ -76,9 +77,24 @@ It validates:
 - allowed tool names
 - required scopes
 - risk consistency
+- registry-declared scalar runtime arguments
+- forbidden identity, policy, approval, risk, tool, and skill argument names
 
 It derives final risk and approval requirement from registry metadata, not from
 the model.
+
+## What Artifact 2.2 Adds
+
+Artifact 2.2 lets a model-shaped proposal include runtime tool arguments while
+keeping execution authority in the harness.
+
+The validator accepts only registry-declared scalar arguments. Unknown,
+missing, wrong-type, overlong, forbidden control-plane, object, and list
+arguments are rejected. Accepted arguments are placed into `ValidatedSkillPlan`,
+and the graph reads that plan for policy context, approval request arguments,
+and dry-run execution.
+
+Raw proposed arguments do not flow directly into `ToolRegistry.execute()`.
 
 ## Why Policy Is Still Needed
 
@@ -147,7 +163,9 @@ public request field for selecting those fake proposer scenarios.
 - no real GitHub writes
 - no real workflow triggers
 - tools are dry-run only
-- proposed runtime tool arguments are not fully validated or executed yet
+- Artifact 2.2 V1 supports only scalar string/integer/boolean arguments
+- no object/list/nested argument validation
+- no partial acceptance of mixed valid and invalid argument plans
 - HTTP `llm` proposer mode is disabled and rejected
 
 ## Strong Interview Framing

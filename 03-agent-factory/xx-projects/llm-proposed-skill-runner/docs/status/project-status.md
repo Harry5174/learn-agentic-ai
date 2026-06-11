@@ -18,11 +18,12 @@ For the current project constitution, see
 Artifact 2 has completed the proposal-validation, skill-execution, and
 Artifact 2.1 HTTP lifecycle foundation for a local/demo skill runner.
 
-Artifact 2.2 has completed Sprint E2.0 argument contract design, Sprint E2.1
-validator argument checks, and Sprint E2.2 validated-argument execution wiring.
-Raw proposed arguments still do not execute directly. E2.3 adversarial suite
-and documentation follow-up remain before Artifact 2.2 should be marked
-complete.
+Artifact 2.2 is complete as a local/demo safety artifact. Sprint E2.0 added the
+argument contract design, Sprint E2.1 added validator argument checks, Sprint
+E2.2 wired validated arguments into execution, and Sprint E2.3 added
+adversarial boundary tests plus final documentation packaging.
+
+Raw proposed arguments still do not execute directly.
 
 Implemented:
 
@@ -41,6 +42,8 @@ Implemented:
   trusted `ValidatedSkillPlan`
 - Artifact 2.2 E2.2 graph wiring so dry-run tools receive accepted validated
   step arguments only
+- Artifact 2.2 E2.3 adversarial tests for argument attacks, raw non-execution,
+  safe audit/API evidence, and approval preservation
 
 Sprint E1.3 is documentation, demo walkthrough, and portfolio packaging work
 only. It does not change runtime behavior.
@@ -141,7 +144,6 @@ No test depends on:
 - multi-agent behavior
 - GitHub write operations
 - real workflow triggers
-- Artifact 2.2 E2.3 adversarial argument suite and completion packaging
 - provider SDK integration
 - live LLM mode through HTTP
 
@@ -155,3 +157,6 @@ validation, policy checks, and any required approval gate.
 Raw proposed arguments do not flow directly to `ToolRegistry.execute()`. Public
 API and audit summaries expose safe argument-validation status, argument names,
 redaction names, and issue codes without raw rejected values.
+
+Artifact 2.2 V1 remains intentionally narrow: no object/list/nested argument
+support, no arbitrary JSON payload validation, and no partial acceptance.

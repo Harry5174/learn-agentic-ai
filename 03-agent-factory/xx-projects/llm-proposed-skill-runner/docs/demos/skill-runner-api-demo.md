@@ -82,6 +82,17 @@ Representative response fields:
   "approval_required": false,
   "approval_status": "not_required",
   "risk_level": "low",
+  "validation": {
+    "status": "accepted",
+    "argument_validation_status": "accepted",
+    "validated_argument_names": {
+      "inspect_issues": ["repository"]
+    },
+    "redacted_argument_names": {
+      "inspect_issues": []
+    },
+    "argument_validation_issue_codes": []
+  },
   "execution": {
     "attempted_step_count": 1,
     "completed_step_count": 1,
@@ -101,6 +112,8 @@ curl -s http://127.0.0.1:8000/skill-runs/RUN_ID
 
 The summary is safe for clients. It does not expose identity objects, approval
 actor objects, checkpointer internals, graph objects, or step argument stores.
+It exposes argument-validation status, argument names, redaction names, and
+issue codes rather than raw rejected argument values.
 
 ## Get Skill Run Audit
 
@@ -145,6 +158,7 @@ Test-backed behavior:
 - an invalid proposal is rejected by `ProposalValidator`
 - rejection happens before policy evaluation or tool execution
 - the run summary reports `validation_status: "rejected"`
+- argument-validation failures report safe issue codes
 - execution reports zero attempted and zero completed steps
 
 Representative response fields:
@@ -169,6 +183,7 @@ Representative response fields:
 Evidence:
 
 - `tests/test_api_skill_runs.py::test_invalid_proposal_is_rejected_before_execution_through_http`
+- `tests/test_adversarial_argument_validation.py::test_raw_rejected_values_are_absent_from_api_response_and_audit`
 
 ## High-Risk Approval Example
 
@@ -301,7 +316,9 @@ Evidence:
 - dry-run tools only
 - default HTTP API uses fake proposer mode
 - HTTP `llm` mode is disabled and rejected
-- model-proposed runtime tool arguments are not yet validated or executed
+- model-proposed runtime tool arguments are scalar-only in Artifact 2.2 V1
+- object/list/nested arguments are unsupported
+- partial acceptance is unsupported
 - no MCP
 - no OAuth/OIDC
 - no database persistence

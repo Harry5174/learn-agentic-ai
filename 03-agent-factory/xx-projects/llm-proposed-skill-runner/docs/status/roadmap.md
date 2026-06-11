@@ -36,10 +36,11 @@ surface:
 Sprint E1.3 is documentation and demo-surface tightening only. No runtime
 behavior is added.
 
-## Active Step: Artifact 2.2
+## Completed Artifact 2.2 Argument Boundary
 
-Artifact 2.2 has completed Sprint E2.0 argument contract design, Sprint E2.1
-validator argument checks, and Sprint E2.2 execution wiring.
+Artifact 2.2 is complete as a local/demo safety artifact. It includes Sprint
+E2.0 argument contract design, Sprint E2.1 validator argument checks, Sprint
+E2.2 execution wiring, and Sprint E2.3 adversarial boundary evidence.
 
 Artifact 2.2 targets:
 
@@ -54,10 +55,10 @@ Artifact 2.2 targets:
 
 Sprint E2.0 covers the contract design and schema stubs. Sprint E2.1 validates
 proposed arguments into `ValidatedSkillPlan`. Sprint E2.2 wires accepted
-validated arguments into graph/tool execution.
+validated arguments into graph/tool execution. Sprint E2.3 proves adversarial
+argument-boundary behavior and updates the documentation surface.
 
-Raw proposed arguments still do not execute directly. E2.3 adversarial suite and
-documentation follow-up remain before Artifact 2.2 should be marked complete.
+Raw proposed arguments still do not execute directly.
 
 Artifact 2.2 must preserve the existing safety boundary: model output remains
 untrusted, and the harness validates before policy, approval, or execution.
@@ -66,8 +67,8 @@ untrusted, and the harness validates before policy, approval, or execution.
 
 Useful next steps after Artifact 2.2:
 
-- Sprint E2.3 adversarial proposal test suite and completion docs
 - optional demo-only script if documentation and API tests stop being enough
+- richer argument schema support only after an explicit future design pass
 
 ## Future Integration Paths
 
@@ -78,6 +79,7 @@ Possible future work:
 - durable task/run persistence
 - durable audit storage
 - GitHub write tools behind approval gates
+- object/list/nested argument support if it is threat-modeled separately
 - portfolio deployment demo
 
 ## Still Out Of Scope

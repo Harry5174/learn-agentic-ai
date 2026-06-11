@@ -70,13 +70,17 @@ Not implemented:
 
 ## Tool Arguments
 
-Skill specs include argument-schema metadata, but current skill execution uses
-harness-owned default arguments for registered dry-run tools.
+Skill specs include trusted argument-schema metadata. The proposal validator
+accepts only registry-declared scalar string/integer/boolean arguments and the
+skill graph passes accepted `ValidatedSkillPlan` arguments to dry-run tools.
 
 Not implemented yet:
 
-- validation of model-proposed runtime tool arguments
-- execution using model-proposed runtime tool arguments
+- object argument support
+- list argument support
+- nested object validation
+- arbitrary JSON payload validation
+- partial acceptance of mixed valid and invalid argument plans
 - a general argument schema framework
 
 ## LLM Provider Boundary
@@ -107,4 +111,4 @@ Not implemented:
 ## Security Claim
 
 This project demonstrates a safer harness shape for model-proposed execution.
-It should not be described as production-ready security infrastructure.
+It should not be described as production security infrastructure.
