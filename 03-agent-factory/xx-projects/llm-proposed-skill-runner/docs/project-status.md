@@ -4,44 +4,66 @@
 
 **Title:** LLM-Proposed, Harness-Controlled Skill Runner
 
-**Principle:** The LLM proposes. The harness decides.
+**Principle:** The LLM proposes. The harness validates, authorizes,
+approval-gates, executes, and audits.
 
-**Safety Invariant:** Identity is server-derived, policy is deterministic, and high-risk execution cannot happen before approval.
+**Safety Invariant:** Identity is server-derived, policy is deterministic, and
+high-risk execution cannot happen before approval.
 
-**Current Artifact Status:** Artifact 2 baseline copied from the completed
-Artifact 1 harness, `Identity-Aware Stateful Agent Harness`.
+## Current Artifact Status
 
-Artifact 2 skill-runner implementation has not started yet. `SkillSpec`,
-`SkillProposal`, proposal validation, fake proposer, real LLM proposer, skill
-registry changes, and skill execution graph changes are planned for later
-sprints.
-
-## Sprint Status
-
-- Artifact 2 Sprint 0 in progress: baseline copy, metadata rename, and
-  documentation clarification.
-- Artifact 2 Sprint 1 has not started.
-
-## Inherited Baseline From Artifact 1
-
-The copied codebase currently contains the completed Artifact 1 implementation:
-
-- domain contracts
-- server-derived identity resolver
-- controlled dry-run tool registry
-- deterministic policy guard
-- structured in-memory audit helpers
-- local LangGraph harness
-- checkpointed approval resume flow
-- FastAPI task API
-- rate limiting and public safety docs
-- portfolio documentation
-
-## Inherited API Implementation
+Artifact 2 has completed the proposal-validation and skill-execution foundation
+for a local/demo skill runner.
 
 Implemented:
 
-- FastAPI application skeleton.
+- `SkillSpec`, `SkillStep`, and `SkillProposal` contracts
+- `SkillRegistry` with default registered skills
+- `ProposalValidator` for deterministic validation of untrusted proposals
+- `FakeProposer` for deterministic local/test scenarios
+- optional `LLMProposer` boundary using injected mocked clients in tests
+- checkpointed skill execution graph in `src/app/skill_graph/`
+- policy and approval integration for validated skill proposals
+- dry-run tool execution through the existing `ToolRegistry`
+- audit events for proposal, validation, policy, approval, and execution
+
+Sprint 5 is documentation, demo scenario, and portfolio packaging work only.
+
+## Active Artifact 2 Sprint Specs
+
+The active Artifact 2 sprint specs are:
+
+- `docs/sprint-2-spec.md`
+- `docs/sprint-3-spec.md`
+- `docs/sprint-4-spec.md`
+- `docs/sprint-5-spec.md`
+
+Copied Artifact 1 sprint specs that could mislead future IDE agents are archived
+under:
+
+```text
+docs/archive/artifact-1-sprint-specs/
+```
+
+## Inherited Foundation From Artifact 1
+
+Artifact 2 keeps the completed Artifact 1 harness foundation:
+
+- server-derived demo API-key identity resolver
+- deterministic policy guard
+- controlled dry-run tool registry
+- structured in-memory audit helpers
+- checkpointed approval resume behavior
+- FastAPI task API
+- in-memory public-demo rate limiting
+
+Artifact 2 adds the skill proposal layer on top of that foundation. It does not
+move security-relevant decisions into the model.
+
+## Current API Status
+
+The FastAPI surface remains the inherited local/demo task API:
+
 - `GET /tools`
 - `GET /identity/me`
 - `POST /tasks`
@@ -49,45 +71,11 @@ Implemented:
 - `POST /tasks/{task_id}/approve`
 - `POST /tasks/{task_id}/reject`
 - `GET /tasks/{task_id}/audit`
-- `X-API-Key` identity dependency.
-- `HarnessGraphService` wrapper over the checkpointed local graph.
-- Thin FastAPI routes that delegate task behavior to graph/service layers.
-- Structured audit trail responses for task history.
 
-## Inherited Rate Limiting Implementation
+No public skill-runner API endpoints have been added.
 
-Implemented:
-
-- In-memory fixed-window rate limiter.
-- Task creation rate limit for `POST /tasks`.
-- Approval action rate limit for `POST /tasks/{task_id}/approve`.
-- Rejection action rate limit for `POST /tasks/{task_id}/reject`.
-- HTTP `429` response when a protected endpoint exceeds its limit.
-- Rate limit keys derived from server-resolved API-key identity.
-- Public safety documentation for local/demo limitations.
-
-## Inherited Documentation
-
-Implemented:
-
-- Portfolio-ready README.
-- Final architecture documentation.
-- Final API reference.
-- Demo flow documentation with curl examples.
-- V1 safety model documentation.
-- V1/V1.1/V2/V3 roadmap.
-- Interview notes for explaining design decisions.
-- Honest limitations and non-goals across docs.
-
-## Current Test Status
-
-```bash
-uv run pytest
-# 155 passed
-
-uv run ruff check .
-# All checks passed!
-```
+The Artifact 2 skill runner is currently exercised through `SkillGraphService`
+and focused tests.
 
 ## Current Persistence Status
 
@@ -95,35 +83,41 @@ The graph uses LangGraph `InMemorySaver`.
 
 This means:
 
-- task state is process-local
+- task/run state is process-local
 - checkpoints do not survive process restart
-- paused tasks can be resumed only while the process is alive
-- no database persistence exists yet
+- paused tasks or skill runs can resume only while the process is alive
+- audit events are not persisted to a database
+
+## Current Test Boundary
+
+Tests use deterministic fake outputs or mocked LLM-client outputs.
+
+No test depends on:
+
+- real model calls
+- network access
+- API keys or credentials
+- real GitHub writes
+- real workflow triggers
 
 ## Explicitly Not Implemented
 
-- Artifact 2 `SkillSpec`
-- Artifact 2 `SkillStep`
-- Artifact 2 `SkillProposal`
-- proposal validation
-- fake proposer
-- real LLM proposer
-- skill registry changes
-- skill execution graph changes
-- database persistence
-- durable checkpoint storage
-- SQLite checkpointing
-- Redis or distributed rate limiting
-- LLM calls
-- real GitHub writes
-- real workflow triggers
+- public skill-runner API endpoints
 - OAuth/OIDC
 - JWT validation
+- MCP
+- database persistence
+- durable audit storage
 - frontend
-- production deployment hardening
+- production deployment
+- multi-agent behavior
+- real GitHub writes
+- real workflow triggers
+- full proposed tool-argument validation framework
+- provider SDK integration
 
-## Artifact 2 Status
+## Current Limitation To Keep Visible
 
-Artifact 2 is at Sprint 0 baseline status only.
-
-Future work should follow the roadmap in `docs/roadmap.md`.
+Skill specs contain argument-schema metadata, but the skill execution graph uses
+harness-owned default arguments for the dry-run tools. Validating and executing
+model-proposed runtime arguments is future work.

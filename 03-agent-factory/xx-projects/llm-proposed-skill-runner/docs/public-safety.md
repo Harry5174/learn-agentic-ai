@@ -1,14 +1,16 @@
 # Public Safety
 
-## Sprint 8 Status
+## Scope
 
-Sprint 8 adds basic public-demo safety for the FastAPI API through in-memory rate limiting.
+This project is a local/demo artifact. Public safety controls are intentionally
+small and in-memory.
 
-For the broader V1 safety model, see `docs/security-model-v1.md`.
+For the broader safety model, see `docs/security-model-v1.md` and
+`docs/threat-model.md`.
 
 ## Identity Boundary
 
-V1 uses API-key identity resolved by the server from `X-API-Key`.
+The demo API uses API-key identity resolved by the server from `X-API-Key`.
 
 It does not implement:
 
@@ -17,11 +19,12 @@ It does not implement:
 - external identity providers
 - user-managed accounts
 
-Clients cannot set role, scopes, user ID, or rate limit identity through request bodies.
+Clients and model outputs cannot set role, scopes, user ID, or rate-limit
+identity.
 
 ## Rate Limiting
 
-V1 uses a simple in-memory fixed-window rate limiter.
+The API uses a simple in-memory fixed-window rate limiter.
 
 Protected route groups:
 
@@ -47,25 +50,38 @@ This means:
 - limits are not shared across machines
 - the limiter is suitable for local/demo abuse reduction only
 
-Production or distributed deployments should use V2 infrastructure such as Redis, an API gateway, or platform-level traffic controls.
+Production or distributed deployments should use infrastructure such as Redis,
+an API gateway, or platform-level traffic controls.
+
+## Model Output Safety
+
+The model is not trusted to choose executable work.
+
+Artifact 2 uses deterministic validation before policy or execution. Unknown
+skills, hallucinated tools, malformed output, missing scopes, and risk
+understatement are rejected before tool execution.
 
 ## Tool Safety
 
-V1 does not perform real external GitHub writes or real workflow triggers.
+The harness does not perform real external GitHub writes or real workflow
+triggers.
 
-All tools remain controlled dry-run tools. High-risk dry-run execution still requires approval before tool execution.
+All tools remain controlled dry-run tools. High-risk dry-run execution still
+requires approval before tool execution.
 
 ## Non-Goals
 
-Sprint 8 does not add:
+This project does not add:
 
 - Redis
 - distributed rate limiting
 - OAuth/OIDC
 - JWT validation
 - database persistence
-- LLM/OpenAI calls
+- MCP
 - frontend behavior
 - deployment hardening
+- real GitHub writes
+- real workflow triggers
 
 Production-oriented upgrades are listed in `docs/roadmap.md`.

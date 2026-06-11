@@ -1,47 +1,81 @@
 # Local Graph Harness Design
 
 ## Purpose
-This is the first local stateful harness loop connecting the core components together.
 
-## Current Design
+This document distinguishes the inherited deterministic task graph from the
+Artifact 2 skill execution graph.
+
+## Inherited Task Graph
+
+The inherited task graph remains in:
+
 ```text
-Identity
-→ deterministic tool selection
-→ policy guard
-→ conditional routing
-→ audit
-→ dry-run execution or denial or approval pause
+src/app/graph/
 ```
 
-## Runtime State
-`HarnessGraphState` is a TypedDict and is separate from Pydantic domain contracts.
+It powers the current FastAPI task API.
 
-## Deterministic Interpreter
+Flow:
+
+```text
+Identity
+-> deterministic tool selection
+-> policy guard
+-> conditional routing
+-> audit
+-> dry-run execution or denial or approval pause
+```
+
 Current simple mapping:
-- `inspect`/`issue`/`issues` → `inspect_sandbox_issues`
-- `draft`/`comment` → `draft_issue_comment`
-- `trigger`/`workflow` → `trigger_workflow_dry_run`
 
-## Routing
-- `ALLOW` route executes tool
-- `DENY` route finalizes denial
-- `REQUIRE_APPROVAL` route pauses for approval
+- `inspect` / `issue` / `issues` -> `inspect_sandbox_issues`
+- `draft` / `comment` -> `draft_issue_comment`
+- `trigger` / `workflow` -> `trigger_workflow_dry_run`
+
+## Artifact 2 Skill Execution Graph
+
+The Artifact 2 skill graph lives in:
+
+```text
+src/app/skill_graph/
+```
+
+Flow:
+
+```text
+task
+-> proposer
+-> SkillProposal
+-> ProposalValidator
+-> policy guard
+-> approval gate when required
+-> dry-run tools
+-> audit
+-> SkillRunResult
+```
 
 ## Approval Pause
-- `approval_request` is created
-- status becomes `PAUSED_FOR_APPROVAL`
-- `tool_result` remains `None`
-- `TOOL_EXECUTED` audit is absent
+
+For high-risk paths:
+
+- an approval request is created
+- status becomes `paused_for_approval`
+- tool results remain empty
+- `tool_executed` audit is absent before approval
+- approval or rejection resumes checkpointed state
 
 ## Boundary
-- FastAPI exists in Sprint 7, but graph logic remains outside route handlers.
-- Checkpointing exists through `InMemorySaver`, but durable persistence does not.
+
+- FastAPI routes currently use the inherited task graph.
+- Artifact 2 skill-runner behavior is exercised through `SkillGraphService` and tests.
+- Checkpointing uses `InMemorySaver`.
+- Durable persistence is not implemented.
 - No OAuth/JWT.
-- No LLM calls.
+- No MCP.
 - No external HTTP calls.
 - No real GitHub/workflow execution.
 
-## Sprint 5 Limitation
-Sprint 5 paused locally for approval but did not yet provide full checkpointed interrupt/resume semantics.
+## Current Limitation
 
-Sprint 6 later added `InMemorySaver`, `interrupt(...)`, and `Command(resume=...)` handling.
+The skill graph validates proposed skill, step, tool, scope, and risk structure.
+It still uses harness-owned default arguments for dry-run tool execution.

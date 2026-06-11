@@ -2,15 +2,17 @@
 
 ## Status
 
-The API is a local/demo FastAPI surface for the V1 portfolio MVP.
+The FastAPI surface is a local/demo API inherited from Artifact 1. It exposes
+the deterministic task harness, not new Artifact 2 skill-runner endpoints.
+
+Artifact 2 skill-runner behavior is currently exercised through
+`SkillGraphService` and focused tests.
 
 Base URL for local development:
 
 ```text
 http://127.0.0.1:8000
 ```
-
-V1 uses deterministic task interpretation to prove the harness. It does not call an LLM.
 
 ## Authentication
 
@@ -24,7 +26,8 @@ Demo keys:
 | `operator-dev-key` | `demo_operator` | `operator` | can request high-risk workflow approval |
 | `admin-dev-key` | `demo_admin` | `admin` | can approve or reject paused high-risk tasks |
 
-Identity is resolved server-side by `get_current_identity`. Clients cannot set role, scopes, user ID, or API key ID through request bodies.
+Identity is resolved server-side by `get_current_identity`. Clients cannot set
+role, scopes, user ID, or API key ID through request bodies.
 
 Authentication errors:
 
@@ -33,7 +36,9 @@ Authentication errors:
 
 ## Rate Limiting
 
-Rate limiting happens after identity resolution and uses server-derived `api_key_id` values. Clients cannot influence rate limit keys through request bodies.
+Rate limiting happens after identity resolution and uses server-derived
+`api_key_id` values. Clients cannot influence rate limit keys through request
+bodies.
 
 Protected route groups:
 
@@ -48,11 +53,7 @@ Rate limit response:
 }
 ```
 
-Status:
-
-- `429 Too Many Requests`
-
-Invalid or missing API keys still return `401` before rate limiting.
+Invalid or missing API keys return `401` before rate limiting.
 
 ## Endpoint List
 
@@ -64,33 +65,11 @@ Invalid or missing API keys still return `401` before rate limiting.
 - `POST /tasks/{task_id}/reject`
 - `GET /tasks/{task_id}/audit`
 
-## Task Summary Response
-
-Task endpoints return a public task summary:
-
-```json
-{
-  "task_id": "task-id",
-  "status": "completed",
-  "selected_tool_name": "inspect_sandbox_issues",
-  "requires_approval": false,
-  "final_report": "Task completed successfully using dry-run execution.",
-  "error_message": null,
-  "approval_request": null
-}
-```
-
-`approval_request` is present only while the task is paused for approval.
+No public `/skills` or `/skill-runs` endpoints are implemented.
 
 ## `GET /identity/me`
 
-Purpose:
-
 Returns the server-derived identity for the provided API key.
-
-Auth:
-
-- requires `X-API-Key`
 
 Example:
 
@@ -116,13 +95,7 @@ Status codes:
 
 ## `GET /tools`
 
-Purpose:
-
-Returns public metadata for the controlled dry-run tools.
-
-Auth:
-
-- none
+Returns public metadata for controlled dry-run tools.
 
 Example:
 
@@ -130,12 +103,8 @@ Example:
 curl -s http://127.0.0.1:8000/tools
 ```
 
-Response summary:
-
-- `tools`
-- each tool includes name, description, risk level, and required scopes
-
-The endpoint does not expose callables, handlers, internal graph objects, or execution functions.
+The endpoint returns tool names, descriptions, risk levels, and required scopes.
+It does not expose callables, handlers, graph objects, or execution functions.
 
 Status codes:
 
@@ -143,13 +112,7 @@ Status codes:
 
 ## `POST /tasks`
 
-Purpose:
-
-Starts a graph task through `HarnessGraphService.start_task`.
-
-Auth:
-
-- requires `X-API-Key`
+Starts a task through the inherited deterministic task graph.
 
 Example:
 
@@ -183,13 +146,7 @@ Status codes:
 
 ## `GET /tasks/{task_id}`
 
-Purpose:
-
-Returns the current public task summary through `HarnessGraphService.get_task`.
-
-Auth:
-
-- none
+Returns the current public task summary.
 
 Example:
 
@@ -212,13 +169,7 @@ Missing task response:
 
 ## `POST /tasks/{task_id}/approve`
 
-Purpose:
-
-Approves and resumes a paused high-risk task through `HarnessGraphService.approve_task`.
-
-Auth:
-
-- requires `X-API-Key`
+Approves and resumes a paused high-risk task.
 
 Example:
 
@@ -229,14 +180,6 @@ curl -s -X POST http://127.0.0.1:8000/tasks/TASK_ID/approve \
   -d '{"reason": "Approved for dry-run execution."}'
 ```
 
-Optional request body:
-
-```json
-{
-  "reason": "Approved for dry-run execution."
-}
-```
-
 Response behavior:
 
 - valid admin approval -> `completed`
@@ -244,8 +187,6 @@ Response behavior:
 - missing task -> `404`
 - non-paused task -> `409`
 - over approval rate limit -> `429`
-
-Approval policy is not duplicated in the route.
 
 Status codes:
 
@@ -257,13 +198,7 @@ Status codes:
 
 ## `POST /tasks/{task_id}/reject`
 
-Purpose:
-
-Rejects and resumes a paused high-risk task through `HarnessGraphService.reject_task`.
-
-Auth:
-
-- requires `X-API-Key`
+Rejects and resumes a paused high-risk task without executing the tool.
 
 Example:
 
@@ -273,25 +208,6 @@ curl -s -X POST http://127.0.0.1:8000/tasks/TASK_ID/reject \
   -H "X-API-Key: admin-dev-key" \
   -d '{"reason": "Rejected during review."}'
 ```
-
-Optional request body:
-
-```json
-{
-  "reason": "Rejected during review."
-}
-```
-
-Response behavior:
-
-- valid admin rejection -> `rejected`
-- rejected tasks do not execute the high-risk tool
-- invalid rejector -> failed task summary without tool execution
-- missing task -> `404`
-- non-paused task -> `409`
-- over approval action rate limit -> `429`
-
-Rejection policy is not duplicated in the route.
 
 Status codes:
 
@@ -303,13 +219,7 @@ Status codes:
 
 ## `GET /tasks/{task_id}/audit`
 
-Purpose:
-
-Returns the structured audit trail for an existing task through `HarnessGraphService.get_audit`.
-
-Auth:
-
-- none
+Returns structured audit events for an existing task.
 
 Example:
 
@@ -317,64 +227,56 @@ Example:
 curl -s http://127.0.0.1:8000/tasks/TASK_ID/audit
 ```
 
-Response shape:
-
-```json
-{
-  "task_id": "task-id",
-  "audit_trail": [
-    {
-      "event_id": "event-id",
-      "task_id": "task-id",
-      "event_type": "task_created",
-      "actor_id": "demo_viewer",
-      "message": "Task was created.",
-      "timestamp": "2026-01-01T00:00:00Z",
-      "tool_name": null,
-      "metadata": {}
-    }
-  ]
-}
-```
-
-Approved high-risk paths include:
-
-- `approval_requested`
-- `approval_granted`
-- `tool_executed`
-- `task_completed`
-
-Rejected high-risk paths include:
-
-- `approval_requested`
-- `approval_rejected`
-
-Rejected high-risk paths exclude:
-
-- `tool_executed`
-
 Status codes:
 
 - `200 OK`
 - `404 Not Found`
 
-## Approval and Rejection Flow
+## Public Task Summary Shape
 
-1. `operator-dev-key` creates a high-risk trigger workflow task.
-2. The graph returns `paused_for_approval` and an `approval_request`.
-3. `admin-dev-key` approves or rejects the task.
-4. Approval resumes and executes the dry-run tool.
-5. Rejection resumes and finalizes without tool execution.
-6. Invalid approvers fail safely without tool execution.
+Task endpoints return:
 
-## Known Demo Limitations
+```json
+{
+  "task_id": "task-id",
+  "status": "completed",
+  "selected_tool_name": "inspect_sandbox_issues",
+  "requires_approval": false,
+  "final_report": "Task completed successfully using dry-run execution.",
+  "error_message": null,
+  "approval_request": null
+}
+```
 
-- API-key identity is static demo identity, not OAuth/OIDC.
-- Task state and checkpoints are in-memory and process-local.
-- Audit events are not persisted to a database.
-- Rate limiting is in-memory and not distributed.
-- Rate limits reset on process restart.
-- Tools are dry-run only.
-- No real GitHub writes happen.
-- No real workflow triggers happen.
-- No LLM/OpenAI call happens in V1.
+`approval_request` is present only while the task is paused for approval.
+
+## Current Skill-Runner Boundary
+
+Artifact 2 skill-runner behavior lives in:
+
+- `src/app/skills/`
+- `src/app/proposer/`
+- `src/app/skill_graph/`
+
+It is verified by tests such as:
+
+- `tests/test_proposal_validator.py`
+- `tests/test_fake_proposer.py`
+- `tests/test_llm_proposer.py`
+- `tests/test_skill_execution_graph.py`
+
+Sprint 5 does not add API endpoints for those services.
+
+## Known API Limitations
+
+- process-local task state
+- in-memory checkpoints
+- in-memory audit events
+- in-memory rate limits
+- static demo API keys
+- no OAuth/OIDC
+- no JWT validation
+- no database persistence
+- no public skill-runner endpoints
+- no real GitHub writes
+- no real workflow triggers

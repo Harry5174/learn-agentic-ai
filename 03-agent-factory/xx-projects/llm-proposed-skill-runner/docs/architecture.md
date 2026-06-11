@@ -2,44 +2,46 @@
 
 ## Project Principle
 
-The LLM proposes. The harness decides.
+```text
+The LLM proposes.
+The harness validates, authorizes, approval-gates, executes, and audits.
+```
 
 ## Core Safety Invariant
 
+```text
 Identity is server-derived, policy is deterministic, and high-risk execution cannot happen before approval.
-
-## V1 Framing
-
-V1 uses deterministic task interpretation to prove the harness. An LLM can later replace the proposer without changing the identity, policy, approval, execution, or audit layers.
-
-This means the architecture is centered on execution control, not conversation.
-
-## Layered Architecture
-
-```mermaid
-flowchart TD
-    Client["Client / Demo curl"]
-    API["FastAPI API Layer"]
-    Identity["Identity Layer<br/>X-API-Key -> IdentityContext"]
-    RateLimit["API Safety Layer<br/>in-memory rate limits"]
-    Service["HarnessGraphService"]
-    Graph["LangGraph Harness<br/>checkpointed state"]
-    Policy["Deterministic Policy Guard"]
-    Approval["Approval Gate<br/>interrupt / resume"]
-    Tools["Controlled Dry-Run Tools"]
-    Audit["Structured Audit Trail"]
-
-    Client --> API
-    API --> Identity
-    Identity --> RateLimit
-    RateLimit --> Service
-    Service --> Graph
-    Graph --> Policy
-    Policy --> Approval
-    Policy --> Tools
-    Approval --> Tools
-    Graph --> Audit
 ```
+
+Artifact 2 applies that invariant to model-shaped skill proposals.
+
+## Artifact 2 Flow
+
+```text
+Client/task
+-> proposer
+-> SkillProposal
+-> ProposalValidator
+-> SkillRegistry
+-> policy guard
+-> approval gate
+-> dry-run ToolRegistry
+-> audit
+-> SkillRunResult
+```
+
+## Layer Responsibilities
+
+- Client/task: supplies the user task text.
+- Proposer: produces an untrusted `SkillProposal`.
+- `SkillProposal`: structured proposed skill ID, version, rationale, and steps.
+- `ProposalValidator`: deterministic gate for proposal validity.
+- `SkillRegistry`: trusted registry of allowed skills, steps, tools, scopes, and risk.
+- Policy guard: deterministic authorization over server-derived identity and tool metadata.
+- Approval gate: checkpointed human decision point for high-risk execution.
+- `ToolRegistry`: controlled dry-run tool execution only.
+- Audit: structured evidence trail for important decisions and actions.
+- `SkillRunResult`: final run outcome and dry-run tool results.
 
 ## Module Map
 
@@ -48,76 +50,94 @@ flowchart TD
 - `src/app/policy/`: deterministic policy guard.
 - `src/app/approval/`: approval request and decision schemas.
 - `src/app/audit/`: structured audit event schemas and helpers.
-- `src/app/state/`: task lifecycle status schemas.
-- `src/app/graph/`: LangGraph nodes, routing, builder, state, and service wrapper.
-- `src/app/api/`: FastAPI routes, public response schemas, dependencies, and in-memory rate limiter.
-- `tests/`: focused tests for each layer and cross-layer API behavior.
+- `src/app/skills/`: skill contracts, default registry, and proposal validator.
+- `src/app/proposer/`: proposer protocol, fake proposer, and optional LLM proposer boundary.
+- `src/app/skill_graph/`: Artifact 2 skill execution graph and service.
+- `src/app/graph/`: inherited deterministic task graph still used by current FastAPI task routes.
+- `src/app/api/`: inherited local/demo FastAPI task API, dependencies, and rate limiter.
+- `tests/`: focused tests for each layer and cross-layer behavior.
 
-## Graph Flow
+## Skill Execution Graph
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start([START])
-    Interpret["interpret_task"]
-    Policy["policy_guard"]
-    Execute["execute_tool"]
-    Deny["finalize_denial"]
+    Propose["propose_skill"]
+    Validate["validate_proposal"]
+    Policy["evaluate_policy"]
+    Execute["execute_validated_steps"]
     Pause["pause_for_approval"]
     Decision["handle_approval_decision"]
+    ValidationFail["finalize_validation_failure"]
+    Deny["finalize_denial"]
     Reject["finalize_rejection"]
-    Report["generate_report"]
+    Fail["finalize_failure"]
+    Success["finalize_success"]
     End([END])
 
-    Start --> Interpret --> Policy
-    Policy -->|ALLOW| Execute --> Report --> End
-    Policy -->|DENY| Deny --> End
-    Policy -->|REQUIRE_APPROVAL| Pause --> Decision
+    Start --> Propose --> Validate
+    Validate -->|accepted| Policy
+    Validate -->|rejected| ValidationFail --> End
+    Policy -->|allow| Execute --> Success --> End
+    Policy -->|deny| Deny --> End
+    Policy -->|requires approval| Pause --> Decision
     Decision -->|approved| Execute
     Decision -->|rejected| Reject --> End
-    Decision -->|invalid actor or decision| Report
+    Decision -->|invalid| Fail --> End
 ```
 
-Unknown tasks are marked `failed` and routed to report generation without tool execution.
+## Proposal Boundary
 
-## Approval Resume Flow
+The proposer is not trusted.
 
-When policy requires approval:
+`FakeProposer` creates deterministic proposals for local tests and demos.
+`LLMProposer` can parse output from an injected client, but tests use mocked
+client output only.
 
-```text
-pause_for_approval
--> create ApprovalRequest
--> checkpoint state
--> interrupt before high-risk execution
-```
+The proposer must not:
 
-On resume:
+- authorize
+- approve
+- execute tools
+- bypass validation
+- invent trusted tools
+- decide final risk
+- decide final approval requirement
 
-```text
-Command(resume={ approval_decision, approval_actor })
--> validate approval decision and actor
--> approved: execute dry-run tool
--> rejected: finalize rejection
--> invalid actor/decision: fail safely
-```
+Malformed LLM output becomes a malformed proposal with evidence in the rationale
+and is rejected by validation.
 
-Admin does not bypass approval. High-risk tools never return direct allow from policy.
+## Validation Boundary
 
-## Identity Boundary
+`ProposalValidator` treats model output like an external API request.
 
-Identity is server-derived from `X-API-Key`.
+It checks:
 
-Clients cannot set or override:
+- skill ID is registered
+- skill version is supported
+- steps are present
+- step IDs are unique
+- proposed steps exist in the registered skill
+- proposed tool names match registered step metadata
+- identity has required scopes
+- proposed risk does not understate registry risk
 
-- user ID
-- role
-- scopes
-- API key ID
+It derives final required scopes, risk level, and approval requirement from the
+registry, not from the model.
 
-Request body fields that look like identity claims do not affect execution identity.
+## Registry Boundary
+
+`SkillRegistry` is trusted metadata.
+
+It defines which skills and steps exist, which tools each step may use, which
+scopes are required, and which risk level applies.
+
+`ToolRegistry` is the controlled execution boundary. It exposes dry-run tools
+only and does not authorize by itself.
 
 ## Policy Boundary
 
-Policy is deterministic and lives outside the API routes.
+Policy is deterministic and lives outside routes and outside the model.
 
 The policy guard decides:
 
@@ -127,77 +147,88 @@ The policy guard decides:
 
 The policy layer does not execute tools. The tool layer does not authorize.
 
-## API Boundary
+## Approval Boundary
 
-The API layer stays thin:
+High-risk validated proposals pause before execution.
+
+The graph creates an approval request, checkpoints state with `InMemorySaver`,
+and waits for a resume command.
+
+On resume:
 
 ```text
-route
--> get_current_identity dependency where identity is required
--> rate-limit dependency for protected write routes
--> HarnessGraphService
--> response schema
+approved -> execute dry-run tool
+rejected -> finalize without execution
+invalid actor/decision -> fail safely without execution
 ```
 
-API routes must not:
+Admin identity does not bypass approval.
 
-- trust role/scopes/user_id from request bodies
-- inspect role/scopes manually
+## Audit Boundary
+
+Audit events record:
+
+- task/run creation
+- skill proposal produced
+- proposal validation completed
+- permission checks
+- approval requested
+- approval granted
+- approval rejected
+- tool executed
+- task/run completed or failed
+
+Audit state is in memory and process-local.
+
+## API Boundary
+
+The current FastAPI routes expose the inherited deterministic task API from
+Artifact 1. They wrap `HarnessGraphService` from `src/app/graph/`.
+
+Sprint 5 does not add public skill-runner endpoints.
+
+The Artifact 2 skill runner is currently demonstrated through
+`SkillGraphService` and tests.
+
+FastAPI routes must not:
+
+- trust role, scopes, user ID, or API key ID from request bodies
+- inspect role/scopes manually for authorization
 - evaluate policy manually
 - execute tools manually
-- create approval decisions outside the service/graph boundary
+- create approval semantics outside service/graph boundaries
 
-Approval and rejection routes delegate to `HarnessGraphService`. The audit route reads structured audit events through the same service boundary.
-
-## Rate Limiting Boundary
-
-Sprint 8 added local/demo rate limiting for public safety.
-
-Rate limiting:
-
-- runs after identity resolution
-- is keyed from server-derived `api_key_id` plus route group
-- protects task creation and approval/rejection actions
-- returns `429` when a protected route exceeds its limit
-- is in-memory and process-local
-- resets on process restart
-
-It does not alter graph policy, approval, or execution semantics.
-
-## State and Persistence
+## State And Persistence
 
 Current checkpointing uses LangGraph `InMemorySaver`.
 
 This means:
 
-- task state is process-local
+- state is process-local
 - checkpoints do not survive process restart
-- paused tasks can be resumed only while the process is alive
+- paused work can resume only while the process is alive
 - audit events are not durably stored
-- database-backed task storage is not implemented
+- database-backed task/run storage is not implemented
 
-## V2 Extension Points
+## Tool Argument Limitation
 
-Future versions can replace or extend layers without changing the core invariant:
+Skill specs include argument-schema metadata, but the current skill execution
+graph uses harness-owned default arguments for registered dry-run tools.
 
-- proposer: deterministic interpreter -> LLM planner
-- identity: demo API key -> OAuth/OIDC and JWT validation
-- checkpointing: `InMemorySaver` -> SQLite/Postgres checkpointing
-- task store: process memory -> durable task database
-- rate limiting: in-memory fixed window -> Redis/API gateway/platform limits
-- tools: dry-run adapters -> real external tool adapters behind stronger controls
-- observability: local tests/docs -> tracing and production telemetry
+Validation currently covers the skill, version, steps, tool names, scopes, and
+risk. Full validation and execution of model-proposed runtime tool arguments is
+future work.
 
-## V1 Non-Goals
+## Non-Goals
 
+- new API endpoints
 - OAuth/OIDC
 - JWT validation
-- Redis or distributed rate limiting
+- MCP
 - database persistence
-- SQLite checkpointing
-- LLM/OpenAI calls
+- durable audit storage
 - real GitHub writes
 - real workflow triggers
-- frontend dashboard
+- frontend
+- production deployment
 - multi-agent behavior
-- production deployment hardening

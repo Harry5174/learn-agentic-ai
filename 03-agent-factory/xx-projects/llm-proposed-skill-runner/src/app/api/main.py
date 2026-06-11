@@ -8,7 +8,7 @@ from app.api.routes_tools import router as tools_router
 
 
 def create_app() -> FastAPI:
-    """Create the FastAPI application."""
+    """FastAPI application."""
 
     app = FastAPI(
         title="Identity-Aware Stateful Agent Harness",

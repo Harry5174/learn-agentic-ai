@@ -1,124 +1,113 @@
 # LLM-Proposed, Harness-Controlled Skill Runner
 
-> Status: Artifact 2 baseline.
->
-> This project was copied from the completed Artifact 1 harness:
-> `Identity-Aware Stateful Agent Harness`.
->
-> Artifact 2 skill-runner implementation has not started yet. `SkillSpec`,
-> `SkillProposal`, proposal validation, fake proposer, real LLM proposer,
-> and skill execution graph changes are planned for later sprints.
+Artifact 2 is a local/demo agent execution harness for structured skill
+proposals.
 
-Artifact 2 will become a LangGraph-based skill runner where an LLM can propose
-skills, but validation, policy, approval, execution, and audit remain controlled
-by deterministic system components.
+The project demonstrates a core agentic safety pattern:
 
-The current codebase is the inherited baseline behavior from Artifact 1:
+```text
+The LLM proposes.
+The harness validates, authorizes, approval-gates, executes, and audits.
+```
 
-> The LLM proposes. The harness decides.
-
-The copied baseline uses deterministic task interpretation to prove the harness
-shape. Artifact 2 has not yet added LLM-proposed skills.
+An LLM, fake proposer, or mocked proposer can suggest a `SkillProposal`, but the
+model is not trusted to authorize work, approve high-risk actions, choose
+unregistered tools, or execute anything directly.
 
 ## What This Is
 
-This project is the Sprint 0 baseline for Artifact 2. It currently demonstrates
-the inherited Artifact 1 harness behavior:
+This is a portfolio artifact for AI/backend interviews and agentic software
+learning. It shows how to put a controlled execution harness around model-shaped
+plans.
 
-- identity is resolved by the server from `X-API-Key`
-- policy is deterministic and scope-based
-- high-risk actions pause before execution
-- approval and rejection resume a checkpointed graph
-- tools are controlled dry-run functions
-- audit events record important decisions and actions
-- public-demo endpoints have simple in-memory rate limits
+Implemented Artifact 2 capabilities:
 
-The inherited baseline invariant is:
+- structured `SkillSpec`, `SkillStep`, and `SkillProposal` contracts
+- a trusted `SkillRegistry` containing allowed skill metadata
+- deterministic `ProposalValidator` checks before policy or execution
+- deterministic `FakeProposer` scenarios for local demos and tests
+- optional provider-neutral `LLMProposer` boundary with mocked-client tests
+- a checkpointed LangGraph skill execution graph
+- deterministic policy checks using server-derived identity and tool metadata
+- approval pause/resume for high-risk validated proposals
+- controlled dry-run tool execution through `ToolRegistry`
+- structured audit events for proposal, validation, policy, approval, and execution
 
-```text
-Identity is server-derived, policy is deterministic, and high-risk execution cannot happen before approval.
-```
-
-Future Artifact 2 sprints will add explicit skill proposal contracts and
-validation without moving security-relevant decisions into the model.
+The project was originally copied from Artifact 1,
+`Identity-Aware Stateful Agent Harness`. Artifact 2 keeps the identity, policy,
+approval, dry-run tool, and audit foundation, then adds a proposal-validation and
+skill-execution layer on top.
 
 ## What This Is Not
 
 This is not:
 
 - a chatbot
-- a generic RAG wrapper
-- an OAuth project
-- a production authorization platform
-- a production traffic-control system
-- a multi-agent demo
+- a RAG wrapper
+- an OAuth/OIDC app
+- an MCP platform
+- a production authorization system
+- a production deployment
+- a multi-agent framework
+- a real GitHub automation service
 
-The inherited baseline intentionally does not include OAuth/OIDC, JWT validation,
-Redis, database persistence, frontend UI, real GitHub writes, real workflow
-triggers, LLM/OpenAI calls, LangSmith tracing, new tools, or multi-agent
-behavior.
+The repo intentionally does not include OAuth/OIDC, JWT validation, database
+persistence, frontend UI, real GitHub writes, real workflow triggers, MCP,
+multi-agent behavior, or production deployment hardening.
 
-## Inherited Baseline Behavior From Artifact 1
+## Architecture
 
-- Domain schemas for identity, tools, policy, approval, state, and audit.
-- Server-derived demo API-key identity resolver.
-- Controlled dry-run tool registry.
-- Deterministic policy guard.
-- Structured in-memory audit events.
-- LangGraph harness with allowed, denied, failed, pause, approve, and reject paths.
-- Checkpointed approval resume flow with LangGraph `InMemorySaver`.
-- FastAPI demo API.
-- In-memory fixed-window rate limiting for task creation and approval actions.
-- Documentation for architecture, API, demo flows, V1 safety model, roadmap, and interview discussion.
-
-Last copied baseline checks:
-
-```bash
-uv run pytest
-# 155 passed
-
-uv run ruff check .
-# All checks passed!
-```
-
-## Architecture Overview
+Artifact 2's skill execution flow is:
 
 ```text
-FastAPI route
--> X-API-Key identity dependency
--> in-memory rate limit dependency for protected writes
--> HarnessGraphService
--> local LangGraph harness
--> deterministic policy guard
--> controlled dry-run tool registry
--> structured audit events
--> public response schema
+Client/task
+-> proposer
+-> SkillProposal
+-> ProposalValidator
+-> SkillRegistry
+-> policy guard
+-> approval gate
+-> dry-run ToolRegistry
+-> audit
+-> SkillRunResult
 ```
 
 Important boundaries:
 
-- API routes do not trust role, scopes, or user ID from request bodies.
-- API routes do not evaluate policy directly.
-- API routes do not execute tools directly.
-- Rate limiting is keyed from server-resolved `api_key_id`, not body claims.
-- The tool registry does not authorize.
-- The policy guard does not execute tools.
-- High-risk tool execution cannot happen before approval.
+- proposer: untrusted source of proposed skill plans
+- `SkillProposal`: structured model-shaped request
+- `ProposalValidator`: deterministic gate for schema, registry, scope, step, tool, and risk checks
+- `SkillRegistry`: trusted catalog of allowed skills and allowed tool metadata
+- policy guard: deterministic authorization over server-derived identity and registered tool metadata
+- approval gate: human decision point for high-risk execution
+- `ToolRegistry`: controlled dry-run execution primitives only
+- audit: evidence trail for proposal, validation, policy, approval, and execution events
 
-See [docs/architecture.md](docs/architecture.md) for the full architecture.
+See [docs/architecture.md](docs/architecture.md) for details.
 
-## Current API
+## Implemented Skill Scenarios
 
-The current API is inherited baseline behavior from Artifact 1. Artifact 2
-skill proposal endpoints have not been implemented yet.
+The default skill registry contains three local/demo skills:
 
-Demo API keys are defined in `src/app/identity/config.py`:
+- `inspect_sandbox_health`: low-risk inspection using `inspect_sandbox_issues`
+- `draft_sandbox_issue_comment`: medium-risk draft generation using `draft_issue_comment`
+- `simulate_sandbox_workflow`: high-risk workflow simulation using `trigger_workflow_dry_run`
 
-- `viewer-dev-key`
-- `operator-dev-key`
-- `admin-dev-key`
+The required Sprint 5 scenarios are documented in
+[docs/demo-scenarios.md](docs/demo-scenarios.md):
 
-Implemented endpoints:
+- valid low-risk proposal executes a dry-run tool
+- invalid proposal is rejected before policy or execution
+- hallucinated skill/tool is rejected
+- high-risk proposal pauses for approval
+- approved high-risk proposal resumes and executes
+- rejected high-risk proposal does not execute
+- malformed LLM output fails safely
+
+## Current API Boundary
+
+The FastAPI routes currently expose the inherited local/demo task API from
+Artifact 1:
 
 - `GET /tools`
 - `GET /identity/me`
@@ -128,13 +117,47 @@ Implemented endpoints:
 - `POST /tasks/{task_id}/reject`
 - `GET /tasks/{task_id}/audit`
 
-Protected by in-memory rate limits:
+Those routes still wrap the deterministic task harness in `src/app/graph/`.
+Sprint 5 does not add public skill-runner API endpoints. The Artifact 2 skill
+runner is currently exercised through `SkillGraphService` and focused tests.
 
-- `POST /tasks`: 5 requests per 60 seconds per API key
-- `POST /tasks/{task_id}/approve`: 10 requests per 60 seconds per API key
-- `POST /tasks/{task_id}/reject`: 10 requests per 60 seconds per API key
+See [docs/api.md](docs/api.md).
 
-See [docs/api.md](docs/api.md) for request and response examples.
+## Identity, Policy, Approval, And Audit
+
+The safety invariant is:
+
+```text
+Identity is server-derived, policy is deterministic, and high-risk execution cannot happen before approval.
+```
+
+Identity is resolved from server-known demo API keys. Request bodies and model
+outputs cannot claim user ID, role, scopes, or API key ID.
+
+Policy checks are deterministic. The policy guard does not ask the model whether
+an action is safe.
+
+High-risk tool execution pauses for approval. Rejection finalizes the run without
+tool execution.
+
+Audit events record proposal, validation, policy, approval, and execution
+evidence. Audit state is local/in-memory and not durably persisted.
+
+See:
+
+- [docs/security-model-v1.md](docs/security-model-v1.md)
+- [docs/threat-model.md](docs/threat-model.md)
+- [docs/audit-trail.md](docs/audit-trail.md)
+
+## Tool Argument Limitation
+
+Skill specs include argument-schema metadata, but current skill execution does
+not validate or execute arbitrary model-proposed runtime arguments.
+
+The graph uses harness-owned default arguments for the registered dry-run tools.
+This keeps Sprint 5 honest: Artifact 2 validates which skill, steps, tools,
+scopes, and risk levels are allowed, but a full proposed-argument validation
+framework is future work.
 
 ## Quickstart
 
@@ -163,69 +186,76 @@ The API is available at:
 http://127.0.0.1:8000
 ```
 
-## Demo
+## Demo API Keys
 
-The demo flow is inherited baseline behavior from Artifact 1.
+Demo API keys are defined in `src/app/identity/config.py`:
 
-Use the demo flow guide:
+- `viewer-dev-key`
+- `operator-dev-key`
+- `admin-dev-key`
 
-- [docs/demo-flow.md](docs/demo-flow.md)
+These are static local/demo credentials, not production identity.
 
-The guide includes curl examples for:
+## Tests
 
-- viewer inspect task -> `completed`
-- viewer draft task -> `denied`
-- operator trigger workflow -> `paused_for_approval`
-- admin approve -> `completed`
-- admin reject -> `rejected`
-- repeated task creation -> `429`
+The test suite covers:
 
-## Baseline Safety Model
+- schema contracts
+- identity resolution
+- tool registry and dry-run tools
+- policy guard behavior
+- approval schemas and checkpoint resume
+- audit helpers
+- inherited task graph/API behavior
+- skill registry
+- proposal validation
+- fake proposer scenarios
+- optional LLM proposer parsing with mocked clients
+- skill execution graph allow, reject, approval, resume, and audit paths
 
-The inherited baseline demonstrates safety-oriented harness design. It is not a
-production security system.
+No test requires real model calls, network access, credentials, real GitHub
+writes, or workflow triggers.
 
-Safety model summary:
+## Known Limitations
 
-- identity comes from server-side API-key resolution
-- request bodies cannot claim elevated role or scopes
-- policy is deterministic
-- high-risk tools require approval
-- admin does not bypass approval
-- all tools are dry-run only
-- audit events are structured
-- checkpointing is in-memory
-- rate limiting is in-memory
+This is a local/demo artifact.
 
-See [docs/security-model-v1.md](docs/security-model-v1.md) and [docs/public-safety.md](docs/public-safety.md).
+Current limits include:
 
-## Baseline Limitations
+- no production deployment
+- no OAuth/OIDC
+- no JWT validation
+- no MCP
+- no database persistence
+- no durable audit store
+- no frontend
+- no multi-agent behavior
+- no real GitHub writes
+- no real workflow triggers
+- tools remain dry-run
+- real LLM proposer is optional and tests use mocked output
+- tool arguments remain limited and harness-owned defaults are used
 
-The copied baseline is local/demo infrastructure:
-
-- task state does not survive process restart
-- checkpoints do not survive process restart
-- audit events are not persisted
-- rate limits reset on process restart
-- rate limits are not distributed
-- API keys are static demo credentials
-- tools are dry-run only
-- no real external GitHub writes occur
-- no real workflow triggers occur
-- no LLM is called in the current baseline
-- no Artifact 2 skill proposal contracts are implemented yet
+See [docs/known-limitations.md](docs/known-limitations.md).
 
 ## Roadmap
 
-- Sprint 0: Copied Artifact 1 baseline with renamed docs and metadata.
-- Later Artifact 2 sprints: `SkillSpec`, `SkillStep`, `SkillProposal`,
-  proposal validation, fake proposer, real LLM proposer, skill registry, and
-  skill execution graph changes.
-- Future hardening: durable state, persisted audit trail, production identity,
-  distributed rate limiting, observability, and deployment hardening.
+The narrow future roadmap is:
+
+- validated proposed tool arguments
+- MCP adapter after skill/tool contracts stabilize
+- OAuth/OIDC identity integration
+- durable audit/task persistence
+- real GitHub write tools behind approval gates
+- small adversarial proposal test suite
+- portfolio deployment demo
 
 See [docs/roadmap.md](docs/roadmap.md).
 
-## Interview Notes
+## Portfolio Notes
 
-For a concise explanation of the problem, design choices, and V2 extension path, see [docs/interview-notes.md](docs/interview-notes.md).
+For interview-oriented framing, see:
+
+- [docs/interview-notes.md](docs/interview-notes.md)
+- [docs/artifact-1-vs-artifact-2.md](docs/artifact-1-vs-artifact-2.md)
+- [docs/project-status.md](docs/project-status.md)

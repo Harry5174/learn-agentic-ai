@@ -1,6 +1,7 @@
-# V1 Safety Model
+# Safety Model
 
-V1 demonstrates safety-oriented harness design. It is not a production security system.
+Artifact 2 demonstrates safety-oriented harness design for model-proposed skill
+execution. It is not a production security system.
 
 The core invariant is:
 
@@ -8,18 +9,46 @@ The core invariant is:
 Identity is server-derived, policy is deterministic, and high-risk execution cannot happen before approval.
 ```
 
+## The Model Is Not Trusted
+
+The proposer may be fake, mocked, or LLM-backed. In all cases, its output is
+treated as untrusted.
+
+Prompt instructions are not security controls. The harness assumes the proposer
+can return malformed output, hallucinated skills, hallucinated tools, missing
+steps, understated risk, or unsupported versions.
+
+## Proposal Validation
+
+`ProposalValidator` treats `SkillProposal` like an external API request.
+
+It checks the proposal against trusted `SkillRegistry` metadata before policy,
+approval, or execution can happen.
+
+Validation rejects:
+
+- unknown skills
+- unsupported versions
+- empty step lists
+- duplicate step IDs
+- unknown steps
+- disallowed tool names
+- missing required scopes
+- risk understatement
+
+Validation derives final risk and approval requirement from registry metadata,
+not from model claims.
+
 ## Server-Derived Identity
 
-V1 uses demo API keys resolved by the server from `X-API-Key`.
+The harness uses demo API keys resolved by server code into `IdentityContext`.
 
-The request body cannot claim or override:
+The request body and model output cannot claim or override:
 
 - user ID
 - role
 - scopes
 - API key ID
-
-This keeps identity outside the model and outside client-controlled task payloads.
 
 ## Deterministic Policy
 
@@ -28,7 +57,7 @@ Policy is implemented as deterministic application logic.
 The policy guard evaluates:
 
 - resolved identity
-- selected tool
+- registered tool metadata
 - required scopes
 - tool risk level
 
@@ -38,13 +67,14 @@ It returns one of:
 - deny
 - require approval
 
-The LLM, or V1 deterministic proposer, does not decide authorization.
+The model does not decide authorization.
 
 ## High-Risk Approval Gate
 
 High-risk tools require approval before execution.
 
-The graph pauses and checkpoints state before high-risk execution. A later approval or rejection resumes the graph.
+The graph pauses and checkpoints state before high-risk execution. A later
+approval or rejection resumes the graph.
 
 Important behavior:
 
@@ -55,9 +85,9 @@ Important behavior:
 
 ## Dry-Run Tools
 
-All V1 tools are controlled dry-run tools.
+All tools are controlled dry-run tools.
 
-V1 does not perform:
+The harness does not perform:
 
 - real GitHub writes
 - real issue comments
@@ -66,50 +96,41 @@ V1 does not perform:
 
 ## Audit Trail
 
-The harness records structured audit events for important decisions and actions, including:
+The harness records structured audit events for important decisions and actions,
+including:
 
-- task creation
-- tool selection
+- task or run creation
+- proposal produced
+- validation completed
 - permission checks
 - approval requested
 - approval granted
 - approval rejected
 - tool executed
-- task completed
-- task failed
+- task/run completed
+- task/run failed
 
 Audit events are currently in-memory and not durably persisted.
 
 ## Checkpointing
 
-V1 uses LangGraph `InMemorySaver`.
+The graph uses LangGraph `InMemorySaver`.
 
 This enables local checkpoint/resume behavior during one process lifetime, but:
 
 - checkpoints do not survive process restart
-- paused tasks can resume only while the process remains alive
-- durable checkpointing belongs in V1.1 or V2
+- paused work can resume only while the process remains alive
+- durable checkpointing is future work
 
-## Rate Limiting
+## Tool Argument Limitation
 
-V1 includes simple in-memory fixed-window rate limiting for:
+Skill specs include argument-schema metadata. Current execution still uses
+harness-owned default arguments for registered dry-run tools.
 
-- task creation
-- approval actions
-- rejection actions
-
-Rate limiting is keyed from server-resolved API-key identity.
-
-Limitations:
-
-- limits reset on process restart
-- limits are not shared across processes
-- limits are not distributed across machines
-- Redis or gateway-based rate limiting belongs in V2 or production infrastructure
+The current harness validates proposed skill/step/tool/risk structure. It does
+not yet validate and execute arbitrary model-proposed runtime tool arguments.
 
 ## Explicit Non-Goals
-
-V1 does not implement:
 
 - OAuth/OIDC
 - JWT validation
@@ -117,17 +138,19 @@ V1 does not implement:
 - database persistence
 - durable audit storage
 - Redis or distributed rate limiting
+- MCP
 - real external tool adapters
-- LLM/OpenAI calls
 - frontend dashboard
 - production deployment hardening
+- multi-agent behavior
 
-## V1 Security Claim
+## Safety Claim
 
-V1 demonstrates a safer agent harness shape:
+Artifact 2 demonstrates a safer agent harness shape:
 
 ```text
-model/proposer suggests intent
+untrusted proposer suggests a skill plan
+validator checks it against trusted registry metadata
 server resolves identity
 deterministic policy decides
 approval gates high-risk execution

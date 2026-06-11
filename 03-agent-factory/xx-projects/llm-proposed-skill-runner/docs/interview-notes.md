@@ -2,149 +2,146 @@
 
 ## One-Minute Summary
 
-LLM-Proposed, Harness-Controlled Skill Runner is currently an Artifact 2
-baseline copied from the completed Artifact 1 harness, `Identity-Aware Stateful
-Agent Harness`.
+LLM-Proposed, Harness-Controlled Skill Runner is a local/demo agent execution
+harness for model-shaped skill plans.
 
-Artifact 2 skill-runner implementation has not started yet. `SkillSpec`,
-`SkillProposal`, proposal validation, fake proposer, real LLM proposer, and
-skill execution graph changes are planned for later sprints.
-
-The important idea is:
+The core idea is:
 
 ```text
-The LLM proposes. The harness decides.
+The LLM proposes.
+The harness validates, authorizes, approval-gates, executes, and audits.
 ```
 
-The inherited baseline uses deterministic task interpretation instead of an LLM
-so the project can prove the safety architecture first. Later Artifact 2 sprints
-can add LLM-proposed skills without changing identity, policy, approval,
-execution, or audit boundaries.
+The model or fake proposer can suggest a structured `SkillProposal`, but the
+harness controls validation, policy, approval, tool execution, and audit.
 
 ## Problem Solved
 
-Agent demos often let the model blur together intent, authorization, execution, and explanation.
+Many agent demos blur together intent, authorization, execution, and
+explanation. This project separates those concerns.
 
-The inherited baseline separates those concerns:
+The proposer is treated as an untrusted source of possible work. Its output is
+validated like an external API request before anything can execute.
 
-- the proposer interprets user intent
-- the server resolves identity
-- deterministic policy decides what is allowed
-- high-risk actions require approval
-- controlled tools execute dry-run actions
-- audit records what happened
+## What Artifact 2 Adds Over Artifact 1
 
-## Why It Is Not a Chatbot or RAG App
+Artifact 1 proved the harness foundation with deterministic task
+interpretation:
 
-The project is not centered on conversation or retrieval.
+- server-derived identity
+- deterministic policy
+- approval gate
+- dry-run tools
+- audit trail
+- checkpointed resume
 
-It is centered on execution control:
+Artifact 2 adds:
 
-- who is acting
-- what tool is selected
-- whether the actor has permission
-- whether approval is required
-- whether the tool actually executes
-- what audit trail is produced
+- explicit skill contracts
+- model-shaped `SkillProposal`
+- deterministic `ProposalValidator`
+- trusted `SkillRegistry`
+- fake proposer scenarios
+- optional mocked LLM proposer boundary
+- skill execution graph
 
-## Why Identity Is Server-Derived
+The important design move is that adding a proposer does not give the model
+authority.
 
-User-provided request bodies are not trusted for identity.
+## Why The Model Is Not Trusted
 
-Identity comes from `X-API-Key`, resolved by server code into an `IdentityContext`.
+The model may hallucinate:
 
-This prevents a client or model from claiming:
+- a skill
+- a tool
+- a lower risk level
+- missing required steps
+- malformed JSON
+- unsupported versions
 
-- admin role
-- extra scopes
-- different user ID
+The harness rejects those cases before policy evaluation or tool execution.
 
-## Why Policy Is Deterministic
+## Why ProposalValidator Exists
 
-Authorization should be predictable and testable.
+`ProposalValidator` checks untrusted proposals against trusted registry
+metadata.
 
-The policy guard uses identity, tool metadata, required scopes, and risk level. It does not ask a model whether something is safe.
+It validates:
 
-This makes policy behavior inspectable in unit tests and API tests.
+- known skill ID
+- supported skill version
+- non-empty steps
+- duplicate step IDs
+- known registered steps
+- allowed tool names
+- required scopes
+- risk consistency
+
+It derives final risk and approval requirement from registry metadata, not from
+the model.
+
+## Why Policy Is Still Needed
+
+Validation answers:
+
+```text
+Is this proposed skill structurally allowed for this registry and identity?
+```
+
+Policy answers:
+
+```text
+May this resolved identity execute or request this registered tool now?
+```
+
+That separation keeps proposal validation, authorization, approval, and
+execution independently testable.
 
 ## Why High-Risk Actions Require Approval
 
-High-risk actions are not allowed directly, even for admin identity.
+High-risk validated proposals do not execute directly.
 
-The graph pauses before high-risk execution and creates an approval request. Approval or rejection resumes the checkpointed graph.
+The graph creates an approval request, checkpoints state, and pauses. Approval
+or rejection later resumes the graph.
 
-This proves the safety invariant:
+Rejection finalizes without tool execution. Invalid approval actors fail safely.
 
-```text
-high-risk execution cannot happen before approval
-```
+## How The Optional LLM Boundary Works
 
-## How LangGraph Checkpoint/Resume Works Here
+`LLMProposer` is provider-neutral and receives an injected client. Tests use
+mocked clients only.
 
-The graph reaches an approval node and interrupts with approval context.
+Malformed model output becomes a malformed proposal with evidence in the
+rationale, then the validator rejects it. No tests require credentials, network
+access, or real model calls.
 
-State is checkpointed with LangGraph `InMemorySaver`.
+## Current API Boundary
 
-Later, the API injects an approval or rejection decision through `Command(resume=...)`.
+The FastAPI routes still expose the inherited deterministic task API from
+Artifact 1. They do not expose new skill-runner endpoints yet.
 
-The graph validates the decision and actor, then either:
+The Artifact 2 skill runner is currently demonstrated through
+`SkillGraphService` and tests.
 
-- executes the dry-run tool after approval
-- finalizes rejection without tool execution
-- fails safely for invalid approval actors
+That is intentional for Sprint 5: the sprint packages what exists without
+adding surface area.
 
-## How FastAPI Wraps the Graph
+## Current Limitations
 
-FastAPI routes stay thin:
+- local/demo artifact
+- no OAuth/OIDC or JWT validation
+- no MCP
+- no database persistence
+- no frontend
+- no multi-agent behavior
+- no real GitHub writes
+- no real workflow triggers
+- tools are dry-run only
+- proposed runtime tool arguments are not fully validated or executed yet
 
-```text
-route
--> identity dependency
--> rate limit dependency for protected writes
--> HarnessGraphService
--> public response schema
-```
+## Strong Interview Framing
 
-Routes do not evaluate policy, inspect roles/scopes manually, or execute tools.
+This is not "an LLM that can use tools."
 
-## What The Current Baseline Intentionally Does Not Include
-
-The current baseline does not include:
-
-- OAuth/OIDC
-- JWT validation
-- Redis
-- database persistence
-- frontend
-- real GitHub writes
-- real workflow triggers
-- LLM/OpenAI calls
-- `SkillSpec` or `SkillProposal`
-- proposal validation
-- fake or real LLM skill proposers
-- skill registry changes
-- skill execution graph changes
-- LangSmith tracing
-- multi-agent behavior
-- production deployment hardening
-
-These are omitted so the core harness invariant stays easy to inspect.
-
-## What I Would Improve in V2
-
-High-value extensions:
-
-- durable checkpointing with SQLite or Postgres
-- persisted audit trail
-- OAuth/OIDC identity
-- JWT validation and token-derived scopes
-- Redis or gateway rate limiting
-- real external tool adapters behind approval gates
-- observability and tracing
-- production deployment hardening
-
-The key design goal would remain the same:
-
-```text
-keep identity, policy, approval, execution, and audit outside the model
-```
+It is a harness that shows how a system can accept model-proposed work while
+keeping authority in deterministic, testable application layers.
