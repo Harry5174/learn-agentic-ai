@@ -1,0 +1,370 @@
+# Skill Runner API Contract
+
+## Status
+
+Sprint E1.0 defines the planned public API contract for Artifact 2.1 only.
+
+These routes are not implemented yet. Route implementation is planned for later
+Artifact 2.1 sprints.
+
+The future skill-runner API must preserve the Artifact 2 invariant:
+
+```text
+The LLM proposes.
+The harness validates, authorizes, approval-gates, executes, and audits.
+```
+
+Clients may submit task text and optional proposer preferences, but identity,
+policy, approval authority, tool trust, and execution remain server-side harness
+concerns.
+
+## Planned Endpoints
+
+```text
+GET  /skills
+POST /skill-runs
+GET  /skill-runs/{run_id}
+POST /skill-runs/{run_id}/approve
+POST /skill-runs/{run_id}/reject
+GET  /skill-runs/{run_id}/audit
+```
+
+All endpoint descriptions below are planned contracts, not implemented routes.
+
+## Authentication And Identity
+
+Future endpoints that create, approve, reject, or inspect protected skill-run
+state should use the existing server-derived identity boundary. Clients must
+send identity through the configured authentication mechanism, not through JSON
+request bodies.
+
+Request bodies must not accept:
+
+- `user_id`
+- `role`
+- `scopes`
+- `identity`
+- `api_key`
+- `api_key_id`
+- `policy_decision`
+- `approval_decision`
+- `risk_override`
+- `trusted_tool_names`
+- `approval_authority`
+
+Identity, role, scopes, API key ID, rate-limit keys, and approval authority are
+server-derived.
+
+## Shared Schemas
+
+### SkillStepSummaryResponse
+
+```json
+{
+  "step_id": "inspect_issues",
+  "description": "Inspect sandbox issues using dry-run data.",
+  "tool_name": "inspect_sandbox_issues",
+  "risk_level": "low",
+  "required_scopes": ["tools:inspect"]
+}
+```
+
+This response exposes safe step metadata only. It does not expose callables,
+handlers, implementation objects, graph state, or tool execution functions.
+
+### SkillSummaryResponse
+
+```json
+{
+  "skill_id": "inspect_sandbox_health",
+  "version": "1.0",
+  "name": "Inspect sandbox health",
+  "description": "Inspect predictable sandbox issue status data.",
+  "required_scopes": ["tools:inspect"],
+  "risk_level": "low",
+  "steps": []
+}
+```
+
+### SkillRunCreateRequest
+
+```json
+{
+  "task": "Inspect sandbox health.",
+  "proposer_mode": "fake",
+  "requested_skill_id": "inspect_sandbox_health"
+}
+```
+
+Allowed `proposer_mode` values:
+
+- `fake`
+- `llm`
+
+`proposer_mode` is a future routing preference only. Sprint E1.0 does not wire
+or change proposer behavior.
+
+### SkillRunSummaryResponse
+
+```json
+{
+  "run_id": "run-123",
+  "status": "paused_for_approval",
+  "task": "Simulate sandbox workflow.",
+  "proposer_mode": "fake",
+  "selected_skill_id": "simulate_sandbox_workflow",
+  "selected_skill_version": "1.0",
+  "validation_status": "accepted",
+  "approval_required": true,
+  "approval_status": "pending",
+  "risk_level": "high",
+  "final_report": null,
+  "error_message": null,
+  "created_at": "2026-06-11T00:00:00Z",
+  "updated_at": "2026-06-11T00:00:00Z",
+  "proposal": null,
+  "validation": null,
+  "execution": null
+}
+```
+
+The response is a public summary. It must not expose raw graph state,
+checkpointer state, LangGraph objects, server-derived identity objects,
+approval actors, or internal step argument stores.
+
+### SkillRunApprovalRequest
+
+```json
+{
+  "reason": "Approved for dry-run execution.",
+  "comment": "Reviewed for the local demo."
+}
+```
+
+Approval and rejection request bodies carry explanation text only. The approving
+or rejecting identity is derived server-side.
+
+### SkillRunAuditResponse
+
+```json
+{
+  "run_id": "run-123",
+  "events": [
+    {
+      "event_type": "proposal_validated",
+      "timestamp": "2026-06-11T00:00:00Z",
+      "message": "Proposal was accepted.",
+      "metadata": {
+        "risk_level": "low",
+        "approval_required": false
+      }
+    }
+  ]
+}
+```
+
+Audit event metadata must be JSON-friendly. The audit response must not expose
+non-serializable objects, callables, graph internals, checkpointer internals, or
+stack traces.
+
+### SkillRunErrorResponse
+
+```json
+{
+  "error_code": "skill_run_not_found",
+  "message": "Skill run not found.",
+  "details": {
+    "run_id": "run-123"
+  }
+}
+```
+
+Error responses should be stable and safe for clients. They must not expose
+Python stack traces, internal exception objects, checkpointer payloads, or raw
+graph state.
+
+## GET /skills
+
+Purpose: list public metadata for registered skills.
+
+Request body: none.
+
+Response shape:
+
+```json
+{
+  "skills": [
+    {
+      "skill_id": "inspect_sandbox_health",
+      "version": "1.0",
+      "name": "Inspect sandbox health",
+      "description": "Inspect predictable sandbox issue status data.",
+      "required_scopes": ["tools:inspect"],
+      "risk_level": "low",
+      "steps": []
+    }
+  ]
+}
+```
+
+Identity handling: future implementation may use server-derived identity if the
+catalog becomes identity-filtered. The response must not trust request body
+identity because this endpoint has no request body.
+
+Approval handling: none. Listing skills does not approve, reject, or execute
+anything.
+
+Errors:
+
+- `401 Unauthorized` if a later sprint makes the skill catalog protected
+- `500 Internal Server Error` with `SkillRunErrorResponse` shape for unexpected
+  server failures
+
+## POST /skill-runs
+
+Purpose: create a new skill run from user task text.
+
+Request shape:
+
+```json
+{
+  "task": "Inspect sandbox health.",
+  "proposer_mode": "fake",
+  "requested_skill_id": "inspect_sandbox_health"
+}
+```
+
+Response shape: `SkillRunSummaryResponse`.
+
+Identity handling: identity is resolved server-side. The request body cannot
+claim user ID, role, scopes, API key, API key ID, policy decision, approval
+decision, approval authority, risk override, or trusted tool names.
+
+Approval handling: if the validated proposal requires high-risk approval, the
+future route should return a paused summary with `approval_required: true` and
+`approval_status: "pending"`. It must not execute high-risk tools before
+approval.
+
+Errors:
+
+- `400 Bad Request` for invalid request shape
+- `401 Unauthorized` for missing or invalid identity
+- `404 Not Found` if `requested_skill_id` is unsupported by the future route
+- `429 Too Many Requests` for server-derived rate-limit overflow
+- `500 Internal Server Error` with `SkillRunErrorResponse` shape for unexpected
+  server failures
+
+## GET /skill-runs/{run_id}
+
+Purpose: fetch the current public summary for one skill run.
+
+Request body: none.
+
+Response shape: `SkillRunSummaryResponse`.
+
+Identity handling: future implementation should use server-derived identity for
+authorization. The route must not accept identity or scopes in query parameters
+or request bodies.
+
+Approval handling: paused runs may include public approval status, but should
+not expose approval actor identity objects or internal approval checkpoint data.
+
+Errors:
+
+- `401 Unauthorized` for missing or invalid identity when protected
+- `403 Forbidden` if the server-derived identity cannot view the run
+- `404 Not Found` if the run ID is unknown
+
+## POST /skill-runs/{run_id}/approve
+
+Purpose: approve and resume a paused high-risk skill run.
+
+Request shape:
+
+```json
+{
+  "reason": "Approved for dry-run execution.",
+  "comment": "Reviewed for the local demo."
+}
+```
+
+Response shape: `SkillRunSummaryResponse`.
+
+Identity handling: approval authority comes from server-derived identity. The
+request body cannot claim approver ID, role, scopes, approval authority, policy
+override, or approval decision.
+
+Approval handling: approval is only valid for a run paused for approval. Approval
+does not bypass deterministic validation, policy checks, or dry-run tool
+boundaries.
+
+Errors:
+
+- `400 Bad Request` for invalid request shape
+- `401 Unauthorized` for missing or invalid identity
+- `403 Forbidden` if the server-derived identity cannot approve
+- `404 Not Found` if the run ID is unknown
+- `409 Conflict` if the run is not paused for approval
+- `429 Too Many Requests` for server-derived rate-limit overflow
+
+## POST /skill-runs/{run_id}/reject
+
+Purpose: reject and finalize a paused high-risk skill run without executing the
+pending high-risk tool action.
+
+Request shape:
+
+```json
+{
+  "reason": "Rejected during review.",
+  "comment": "Do not run this workflow."
+}
+```
+
+Response shape: `SkillRunSummaryResponse`.
+
+Identity handling: rejection authority comes from server-derived identity. The
+request body cannot claim rejector ID, role, scopes, approval authority, policy
+override, or approval decision.
+
+Approval handling: rejection is only valid for a run paused for approval. A
+rejected run should not execute the pending high-risk tool action.
+
+Errors:
+
+- `400 Bad Request` for invalid request shape
+- `401 Unauthorized` for missing or invalid identity
+- `403 Forbidden` if the server-derived identity cannot reject
+- `404 Not Found` if the run ID is unknown
+- `409 Conflict` if the run is not paused for approval
+- `429 Too Many Requests` for server-derived rate-limit overflow
+
+## GET /skill-runs/{run_id}/audit
+
+Purpose: return a safe public audit trail for one skill run.
+
+Request body: none.
+
+Response shape: `SkillRunAuditResponse`.
+
+Identity handling: future implementation should use server-derived identity for
+audit visibility. The route must not accept user ID, role, scopes, or API key ID
+in the request body.
+
+Approval handling: audit events may describe approval requested, granted, or
+rejected events, but must not expose raw approval actor identity objects or
+checkpoint resume payloads.
+
+Errors:
+
+- `401 Unauthorized` for missing or invalid identity when protected
+- `403 Forbidden` if the server-derived identity cannot view the audit trail
+- `404 Not Found` if the run ID is unknown
+
+## Non-Implementation Statement
+
+Sprint E1.0 does not add route handlers, router registration, graph behavior,
+service behavior, proposer behavior, validator behavior, policy behavior,
+approval behavior, tool behavior, persistence, frontend behavior, MCP,
+OAuth/OIDC, JWT validation, database support, real GitHub writes, real workflow
+triggers, or model-proposed tool argument validation.
