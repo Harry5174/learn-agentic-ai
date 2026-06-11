@@ -1,67 +1,71 @@
-# Sprint 2: Tool Registry and Dry-Run Tools
+# Sprint 2: Proposal Validator
 
 ## Objective
-Implement a controlled tool registry and deterministic dry-run tools so future agent execution cannot call arbitrary functions.
+Implement a deterministic validator for untrusted `SkillProposal` objects before
+any policy, approval, graph execution, or tool execution can happen.
+
+The proposal validator treats model output like an external API request: it must
+be schema-valid, registry-allowed, identity-authorized, and risk-consistent
+before anything can execute.
 
 ## Scope
-- ToolExecutionResult schema
-- custom tool registry error
-- controlled ToolRegistry
-- default V1 registry
-- deterministic dry-run tools
-- registry tests
-- dry-run behavior tests
+- validator result contract
+- structured rejection reasons
+- `ProposalValidator`
+- skill/version validation through `SkillRegistry`
+- proposed step and tool validation against registered `SkillSpec` metadata
+- scope checks against `IdentityContext.scopes`
+- risk derivation from registry metadata
+- approval-required derivation for high-risk validated skills or steps
+- focused validator tests
 
 ## Non-Goals
-- policy guard
-- permission checks
-- approval logic
-- LangGraph
-- FastAPI
+- fake proposer
+- real LLM proposer
+- proposer interfaces
+- skill execution
+- tool invocation
+- LangGraph nodes
+- FastAPI routes
+- approval flow changes
+- policy behavior changes
+- identity behavior changes
+- tool registry behavior changes
+- audit persistence changes
 - OAuth/OIDC
 - JWT validation
-- database
-- checkpointing
-- rate limiting
-- LLM calls
-- real GitHub calls
-- real workflow triggers
+- database persistence
+- frontend
+- production deployment
+- dependencies
 
-## Implemented Files
-- `src/app/tools/errors.py`
-- `src/app/tools/dry_run_tools.py`
-- `src/app/tools/registry.py`
-- `src/app/tools/schemas.py`
-- `tests/test_dry_run_tools.py`
-- `tests/test_tool_registry.py`
+## Planned Files
+- `src/app/skills/schemas.py`
+- `src/app/skills/validator.py`
+- `tests/test_proposal_validator.py`
 
-## Approved V1 Tools
-
-1. `inspect_sandbox_issues`
-   - **Risk:** LOW
-   - **Required Scope:** `tools:inspect`
-   - **Behavior:** returns predictable sandbox issue data
-
-2. `draft_issue_comment`
-   - **Risk:** MEDIUM
-   - **Required Scope:** `tools:draft`
-   - **Behavior:** returns dry-run comment payload; does not post anything
-
-3. `trigger_workflow_dry_run`
-   - **Risk:** HIGH
-   - **Required Scope:** `tools:trigger_workflow`
-   - **Behavior:** returns simulated workflow trigger payload; does not trigger anything
-
-## Acceptance Criteria Status
-- controlled ToolRegistry tests passed
-- V1 tools metadata tests passed
-- UnknownToolError tests passed
-- dry-run execution tests passed
-
-## Important Boundary
-The registry does not perform authorization.
-Policy belongs to Sprint 3.
-
-The registry also does not know identity, roles, scopes, approval status, or request context. It exposes a controlled set of tool specs and dry-run callables only.
-
-All three V1 tools are deterministic dry-run tools. They make no real external calls, do not call GitHub, do not post issue comments, and do not trigger workflows.
+## Acceptance Criteria
+- `ProposalValidator` exists
+- validation result type exists
+- structured rejection reasons exist
+- validator uses `SkillRegistry`
+- validator accepts valid proposals for known skills
+- validator rejects unknown skills
+- validator rejects unsupported versions
+- validator rejects empty steps
+- validator rejects duplicate step IDs
+- validator rejects unknown steps
+- validator rejects tool mismatches or disallowed tools
+- validator rejects missing required scopes
+- validator rejects risk understatement from proposed step metadata
+- validator derives risk from registry metadata
+- validator derives `approval_required=True` for high-risk validated skills or steps
+- validator does not execute tools
+- validator does not call LLMs
+- validator does not wire LangGraph
+- validator does not modify API behavior
+- validator does not change identity semantics
+- validator does not change policy semantics
+- focused tests pass
+- full test suite passes
+- Ruff passes
