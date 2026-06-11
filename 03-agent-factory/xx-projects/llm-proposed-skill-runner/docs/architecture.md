@@ -189,6 +189,16 @@ Task routes wrap `HarnessGraphService` from `src/app/graph/`. Skill-run
 creation, read, approval, rejection, and audit routes wrap `SkillGraphService`
 from `src/app/skill_graph/`.
 
+The default HTTP skill-runner path uses fake proposer mode. HTTP
+`proposer_mode: "llm"` is disabled and returns `400 Bad Request` without calling
+a live model provider. The optional `LLMProposer` boundary remains internal and
+is tested with mocked clients.
+
+Invalid proposal, high-risk approval, high-risk rejection, and approved
+high-risk audit behavior are covered by API tests using scenario-configured fake
+proposer injection. The default running HTTP API does not currently expose a
+public request field for selecting those fake proposer scenarios.
+
 FastAPI routes must not:
 
 - trust role, scopes, user ID, or API key ID from request bodies

@@ -3,7 +3,7 @@
 ## Status
 
 The FastAPI surface is a local/demo API. It exposes the inherited deterministic
-task harness and the first Artifact 2.1 skill-runner routes.
+task harness and the completed Artifact 2.1 skill-runner routes.
 
 Base URL for local development:
 
@@ -298,6 +298,16 @@ Status codes:
 
 Returns the current public summary for a process-local skill run.
 
+Example:
+
+```bash
+curl -s http://127.0.0.1:8000/skill-runs/RUN_ID
+```
+
+Low-risk completed runs include public proposal, validation, and dry-run
+execution summaries. The response does not expose raw graph state, checkpointer
+state, identity objects, approval actor objects, or step argument stores.
+
 Status codes:
 
 - `200 OK`
@@ -315,6 +325,20 @@ Missing skill-run response:
 
 Approves and resumes a paused high-risk skill run using the server-derived
 identity from `X-API-Key`.
+
+Example:
+
+```bash
+curl -s -X POST http://127.0.0.1:8000/skill-runs/RUN_ID/approve \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: admin-dev-key" \
+  -d '{"reason": "Approved for dry-run workflow simulation.", "comment": "Reviewed for the local demo."}'
+```
+
+This endpoint requires an existing run in `paused_for_approval` state. The
+default running HTTP API does not currently expose a public request field for
+selecting the high-risk fake proposer scenario. High-risk approval behavior is
+covered by API tests using scenario-configured fake proposer injection.
 
 Response behavior:
 
@@ -338,6 +362,19 @@ Status codes:
 Rejects and resumes a paused high-risk skill run without executing the pending
 high-risk dry-run tool.
 
+Example:
+
+```bash
+curl -s -X POST http://127.0.0.1:8000/skill-runs/RUN_ID/reject \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: admin-dev-key" \
+  -d '{"reason": "Rejected during dry-run review.", "comment": "Do not run this workflow."}'
+```
+
+This endpoint requires an existing run in `paused_for_approval` state.
+Rejection finalizes the run without executing the pending high-risk dry-run
+tool.
+
 Status codes:
 
 - `200 OK`
@@ -351,10 +388,33 @@ Status codes:
 
 Returns a JSON-safe public audit trail for a process-local skill run.
 
+Example:
+
+```bash
+curl -s http://127.0.0.1:8000/skill-runs/RUN_ID/audit
+```
+
+Audit events provide proposal, validation, policy, approval, execution, and
+final-status evidence. Audit state is in memory and process-local.
+
 Status codes:
 
 - `200 OK`
 - `404 Not Found`
+
+## Skill-Runner Demo Walkthrough
+
+For a curl-oriented walkthrough of the Artifact 2.1 skill-runner lifecycle, see
+[skill-runner-demo.md](skill-runner-demo.md).
+
+The default HTTP API can demonstrate skill listing, low-risk skill-run creation,
+summary retrieval, audit retrieval, and safe rejection of disabled HTTP LLM
+mode.
+
+Invalid proposal, high-risk approval, high-risk rejection, and approved
+high-risk audit behavior are covered by API tests using scenario-configured fake
+proposer injection. The default running HTTP API does not currently expose a
+public request field for selecting those fake proposer scenarios.
 
 ## Public Task Summary Shape
 
@@ -400,6 +460,9 @@ is verified by tests such as:
 - in-memory audit events
 - in-memory rate limits
 - static demo API keys
+- default HTTP skill-runner proposer mode is fake
+- HTTP `llm` mode is disabled and returns `400`
+- model-proposed runtime tool arguments are not yet validated or executed
 - no OAuth/OIDC
 - no JWT validation
 - no database persistence

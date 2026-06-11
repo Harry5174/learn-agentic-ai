@@ -10,6 +10,18 @@ The demo boundary is:
 proposer -> SkillProposal -> ProposalValidator -> policy -> approval -> dry-run tools -> audit
 ```
 
+For Artifact 2.1 HTTP walkthroughs, see
+[skill-runner-demo.md](skill-runner-demo.md).
+
+The default running HTTP API uses fake proposer mode and can demonstrate
+`GET /skills`, low-risk `POST /skill-runs`, `GET /skill-runs/{run_id}`,
+`GET /skill-runs/{run_id}/audit`, and disabled HTTP `llm` mode returning `400`.
+
+Invalid proposal, high-risk approval, high-risk rejection, and approved
+high-risk audit behavior are covered by API tests using scenario-configured fake
+proposer injection. The default running HTTP API does not currently expose a
+public request field for selecting those fake proposer scenarios.
+
 ## Scenario 1: Valid Low-Risk Proposal Executes Dry-Run Tool
 
 Purpose:
@@ -29,6 +41,7 @@ Implemented path:
 Evidence:
 
 - `tests/test_skill_execution_graph.py::test_valid_low_risk_proposal_executes_dry_run_tool`
+- `tests/test_api_skill_runs.py::test_post_skill_runs_starts_low_risk_run_through_http`
 
 ## Scenario 2: Invalid Proposal Is Rejected Before Execution
 
@@ -49,6 +62,7 @@ Evidence:
 
 - `tests/test_skill_execution_graph.py::test_invalid_proposal_stops_before_policy_or_tool_execution`
 - `tests/test_proposal_validator.py::test_tool_mismatch_is_rejected`
+- `tests/test_api_skill_runs.py::test_invalid_proposal_is_rejected_before_execution_through_http`
 
 ## Scenario 3: Hallucinated Skill Or Tool Is Rejected
 
@@ -88,6 +102,7 @@ Implemented path:
 Evidence:
 
 - `tests/test_skill_execution_graph.py::test_high_risk_proposal_pauses_without_execution_before_approval`
+- `tests/test_api_skill_runs.py::test_high_risk_skill_run_is_observable_in_approval_required_state`
 
 ## Scenario 5: Approved High-Risk Proposal Resumes And Executes
 
@@ -107,6 +122,8 @@ Implemented path:
 Evidence:
 
 - `tests/test_skill_execution_graph.py::test_approved_high_risk_proposal_resumes_and_executes`
+- `tests/test_api_skill_runs.py::test_approve_skill_run_resumes_and_executes_dry_run_tool`
+- `tests/test_api_skill_runs.py::test_get_skill_run_audit_returns_lifecycle_evidence`
 
 ## Scenario 6: Rejected High-Risk Proposal Does Not Execute
 
@@ -126,6 +143,7 @@ Implemented path:
 Evidence:
 
 - `tests/test_skill_execution_graph.py::test_rejected_high_risk_approval_does_not_execute`
+- `tests/test_api_skill_runs.py::test_reject_skill_run_prevents_dry_run_tool_execution`
 
 ## Scenario 7: Malformed LLM Output Fails Safely
 
@@ -148,6 +166,6 @@ Evidence:
 
 ## Demo Choice
 
-Sprint 5 keeps these scenarios documentation-only. A separate demo script would
-not add new evidence beyond the existing focused tests, and adding one would
-increase maintenance surface without changing the implemented behavior.
+Sprint E1.3 keeps these scenarios documentation-only. A separate demo script is
+not required because the default API curl walkthrough and focused API tests
+provide the demo evidence without changing runtime behavior.

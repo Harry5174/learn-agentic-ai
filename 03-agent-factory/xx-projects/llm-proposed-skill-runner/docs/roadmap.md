@@ -18,28 +18,38 @@ Completed work includes:
 - dry-run tool execution
 - audit evidence for proposal, validation, policy, approval, and execution
 
-## Current Sprint: Documentation And Portfolio Packaging
+## Completed Artifact 2.1 API Surface
 
-Sprint 5 focuses on:
+Artifact 2.1 exposes the skill-runner lifecycle through the local/demo FastAPI
+surface:
 
-- portfolio README
-- architecture docs
-- demo scenarios
-- threat model
-- known limitations
-- Artifact 1 vs Artifact 2 distinction
-- sprint spec hygiene
+- `GET /skills`
+- `POST /skill-runs`
+- `GET /skill-runs/{run_id}`
+- `POST /skill-runs/{run_id}/approve`
+- `POST /skill-runs/{run_id}/reject`
+- `GET /skill-runs/{run_id}/audit`
 
-No runtime behavior is added in Sprint 5.
+Sprint E1.3 is documentation and demo-surface tightening only. No runtime
+behavior is added.
+
+## Next Step: Artifact 2.2
+
+The next useful implementation step is validated proposed tool arguments:
+
+- validated proposed tool arguments
+- execution using validated model-proposed runtime tool arguments
+- focused adversarial tests for argument-level failures
+
+Artifact 2.2 should preserve the existing safety boundary: model output remains
+untrusted, and the harness validates before policy, approval, or execution.
 
 ## Near-Term Follow-Ups
 
-Useful next steps after Sprint 5:
+Useful next steps after Artifact 2.2:
 
-- validated proposed tool arguments
 - small adversarial proposal test suite
-- clearer public response contract if skill-runner API endpoints are later added
-- optional demo-only script if documentation stops being enough
+- optional demo-only script if documentation and API tests stop being enough
 
 ## Future Integration Paths
 

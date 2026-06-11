@@ -7,7 +7,7 @@ Sprint E1.1 implemented the first public FastAPI surface for Artifact 2.1:
 - `GET /skills`
 - `POST /skill-runs`
 
-Sprint E1.2 implements the remaining public skill-run lifecycle routes:
+Sprint E1.2 implemented the remaining public skill-run lifecycle routes:
 
 - `GET /skill-runs/{run_id}`
 - `POST /skill-runs/{run_id}/approve`
@@ -25,6 +25,9 @@ Clients may submit task text and optional proposer preferences, but identity,
 policy, approval authority, tool trust, and execution remain server-side harness
 concerns.
 
+Sprint E1.3 documents the completed Artifact 2.1 API/demo surface. It does not
+change runtime behavior.
+
 ## Implemented In E1.1
 
 ```text
@@ -40,6 +43,23 @@ POST /skill-runs/{run_id}/approve
 POST /skill-runs/{run_id}/reject
 GET  /skill-runs/{run_id}/audit
 ```
+
+## Demo Surface In E1.3
+
+The default HTTP API can demonstrate:
+
+- `GET /skills`
+- low-risk `POST /skill-runs`
+- `GET /skill-runs/{run_id}`
+- `GET /skill-runs/{run_id}/audit`
+- disabled `proposer_mode: "llm"` returning `400 Bad Request`
+
+Invalid proposal, high-risk approval, high-risk rejection, and approved
+high-risk audit behavior are covered by API tests using scenario-configured fake
+proposer injection. The default running HTTP API does not currently expose a
+public request field for selecting those fake proposer scenarios.
+
+See [skill-runner-demo.md](skill-runner-demo.md) for curl-oriented walkthroughs.
 
 ## Authentication And Identity
 
@@ -114,6 +134,11 @@ In E1.1, omitted `proposer_mode` defaults to `fake`. `proposer_mode: "fake"`
 uses the existing deterministic fake proposer through `SkillGraphService`.
 `proposer_mode: "llm"` is disabled at the HTTP layer and returns a safe `400`
 response without calling a live model provider.
+
+`requested_skill_id` is accepted in the request schema for the API-facing
+contract, but the current HTTP route delegates to the configured proposer. It
+does not currently select fake proposer scenarios or force a specific skill from
+curl.
 
 ### SkillRunSummaryResponse
 
@@ -232,6 +257,10 @@ Errors:
 
 - `500 Internal Server Error` with `SkillRunErrorResponse` shape for unexpected
   server failures
+
+Default curl behavior: with the current app configuration, fake proposer mode
+creates the low-risk `inspect_sandbox_health` proposal. Other fake proposer
+scenarios are exercised by tests using scenario-configured service injection.
 
 ## POST /skill-runs
 
@@ -393,8 +422,8 @@ Errors:
 
 ## Non-Implementation Statement
 
-Sprint E1.2 does not add graph behavior, service behavior, proposer behavior,
+Sprint E1.3 does not add graph behavior, service behavior, proposer behavior,
 validator behavior, policy behavior, approval semantics, tool behavior,
 persistence, frontend behavior, MCP, OAuth/OIDC, JWT validation, database
-support, real GitHub writes, real workflow triggers, real LLM calls, or
-model-proposed tool argument validation.
+support, real GitHub writes, real workflow triggers, real LLM calls, provider
+frameworks, or model-proposed tool argument validation.

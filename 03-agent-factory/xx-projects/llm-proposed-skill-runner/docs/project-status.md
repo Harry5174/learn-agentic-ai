@@ -12,8 +12,8 @@ high-risk execution cannot happen before approval.
 
 ## Current Artifact Status
 
-Artifact 2 has completed the proposal-validation and skill-execution foundation
-for a local/demo skill runner.
+Artifact 2 has completed the proposal-validation, skill-execution, and
+Artifact 2.1 HTTP lifecycle foundation for a local/demo skill runner.
 
 Implemented:
 
@@ -26,17 +26,22 @@ Implemented:
 - policy and approval integration for validated skill proposals
 - dry-run tool execution through the existing `ToolRegistry`
 - audit events for proposal, validation, policy, approval, and execution
+- Artifact 2.1 skill-runner API routes for listing skills, creating runs,
+  reading runs, approving/rejecting paused runs, and retrieving audit events
 
-Sprint 5 is documentation, demo scenario, and portfolio packaging work only.
+Sprint E1.3 is documentation, demo walkthrough, and portfolio packaging work
+only. It does not change runtime behavior.
 
 ## Active Artifact 2 Sprint Specs
 
-The active Artifact 2 sprint specs are:
+The active Artifact 2 foundation sprint specs are:
 
 - `docs/sprint-2-spec.md`
 - `docs/sprint-3-spec.md`
 - `docs/sprint-4-spec.md`
 - `docs/sprint-5-spec.md`
+
+Artifact 2.1 extends that foundation with the skill-runner API lifecycle.
 
 Copied Artifact 1 sprint specs that could mislead future IDE agents are archived
 under:
@@ -62,7 +67,7 @@ move security-relevant decisions into the model.
 
 ## Current API Status
 
-The FastAPI surface includes the inherited local/demo task API and the first
+The FastAPI surface includes the inherited local/demo task API and the completed
 Artifact 2.1 skill-runner routes:
 
 - `GET /tools`
@@ -81,6 +86,12 @@ Artifact 2.1 skill-runner routes:
 
 Skill-run routes are exposed through `SkillGraphService` for process-local
 demo runs.
+
+The default HTTP skill-runner path uses fake proposer mode. HTTP
+`proposer_mode: "llm"` is disabled and returns a safe `400` response without
+calling a live model provider. Invalid proposal, high-risk approval, high-risk
+rejection, and approved high-risk audit behavior are covered by API tests using
+scenario-configured fake proposer injection.
 
 ## Current Persistence Status
 
@@ -107,7 +118,6 @@ No test depends on:
 
 ## Explicitly Not Implemented
 
-- public skill-runner API endpoints
 - OAuth/OIDC
 - JWT validation
 - MCP
@@ -120,9 +130,10 @@ No test depends on:
 - real workflow triggers
 - full proposed tool-argument validation framework
 - provider SDK integration
+- live LLM mode through HTTP
 
 ## Current Limitation To Keep Visible
 
 Skill specs contain argument-schema metadata, but the skill execution graph uses
 harness-owned default arguments for the dry-run tools. Validating and executing
-model-proposed runtime arguments is future work.
+model-proposed runtime arguments is planned as future Artifact 2.2 work.

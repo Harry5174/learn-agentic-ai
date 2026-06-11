@@ -264,6 +264,8 @@ Current limits include:
 - no real GitHub writes
 - no real workflow triggers
 - tools remain dry-run
+- HTTP skill-runner mode defaults to fake proposer behavior
+- HTTP `llm` proposer mode is disabled and rejected
 - real LLM proposer is optional and tests use mocked output
 - tool arguments remain limited and harness-owned defaults are used
 

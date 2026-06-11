@@ -117,14 +117,24 @@ access, or real model calls.
 
 ## Current API Boundary
 
-The FastAPI routes still expose the inherited deterministic task API from
-Artifact 1. They do not expose new skill-runner endpoints yet.
+The FastAPI routes expose the inherited deterministic task API from Artifact 1
+and the completed Artifact 2.1 skill-runner lifecycle:
 
-The Artifact 2 skill runner is currently demonstrated through
-`SkillGraphService` and tests.
+- `GET /skills`
+- `POST /skill-runs`
+- `GET /skill-runs/{run_id}`
+- `POST /skill-runs/{run_id}/approve`
+- `POST /skill-runs/{run_id}/reject`
+- `GET /skill-runs/{run_id}/audit`
 
-That is intentional for Sprint 5: the sprint packages what exists without
-adding surface area.
+The default HTTP API uses fake proposer mode and can demonstrate low-risk
+skill-run creation, summary retrieval, audit retrieval, and safe rejection of
+disabled HTTP LLM mode.
+
+Invalid proposal, high-risk approval, high-risk rejection, and approved
+high-risk audit behavior are covered by API tests using scenario-configured fake
+proposer injection. The default running HTTP API does not currently expose a
+public request field for selecting those fake proposer scenarios.
 
 ## Current Limitations
 
@@ -138,6 +148,7 @@ adding surface area.
 - no real workflow triggers
 - tools are dry-run only
 - proposed runtime tool arguments are not fully validated or executed yet
+- HTTP `llm` proposer mode is disabled and rejected
 
 ## Strong Interview Framing
 

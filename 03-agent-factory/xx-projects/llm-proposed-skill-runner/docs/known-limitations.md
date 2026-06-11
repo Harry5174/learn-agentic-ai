@@ -48,6 +48,14 @@ Current local/demo limitations:
 - skill-run state is process-local
 - skill-run audit is in-memory only
 - skill-run approval and rejection use demo API-key identity
+- default HTTP skill-run creation uses fake proposer mode
+- HTTP `proposer_mode: "llm"` is disabled and rejected with `400`
+- default curl requests cannot select invalid or high-risk fake proposer
+  scenarios
+
+Invalid proposal, high-risk approval, high-risk rejection, and approved
+high-risk audit behavior are covered by API tests using scenario-configured fake
+proposer injection.
 
 ## Tool Execution
 
@@ -75,11 +83,15 @@ Not implemented yet:
 
 `LLMProposer` is optional and provider-neutral. Tests use mocked clients.
 
+The HTTP API does not enable live LLM mode. Requests with
+`proposer_mode: "llm"` return a safe `400` response without calling a provider.
+
 Not implemented:
 
 - provider SDK integration
 - API credential loading
 - real model calls in tests
+- live LLM calls through the HTTP API
 - model-specific retry or streaming behavior
 
 ## Product Surface
