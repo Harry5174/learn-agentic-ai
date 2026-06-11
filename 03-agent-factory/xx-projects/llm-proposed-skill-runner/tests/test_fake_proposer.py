@@ -22,6 +22,7 @@ def test_fake_proposer_returns_deterministic_low_risk_proposal() -> None:
     assert proposal.steps[0].step_id == "inspect_issues"
     assert proposal.steps[0].tool_name == "inspect_sandbox_issues"
     assert proposal.steps[0].risk_level == RiskLevel.LOW
+    assert proposal.steps[0].arguments == {"repository": "sandbox/demo-repo"}
 
 
 def test_fake_proposer_returns_deterministic_high_risk_proposal() -> None:
@@ -34,6 +35,7 @@ def test_fake_proposer_returns_deterministic_high_risk_proposal() -> None:
     assert proposal.steps[0].step_id == "simulate_workflow"
     assert proposal.steps[0].tool_name == "trigger_workflow_dry_run"
     assert proposal.steps[0].risk_level == RiskLevel.HIGH
+    assert proposal.steps[0].arguments == {"workflow_name": "ci.yml", "ref": "main"}
 
 
 def test_fake_proposer_can_return_invalid_proposal() -> None:

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from app.identity.schemas import IdentityContext
+from app.skills.argument_schemas import ToolArgumentSpec
 from app.skills.registry import SkillRegistry
 from app.skills.schemas import SkillSpec
 
@@ -64,6 +65,7 @@ def build_registered_skill_summary(registry: SkillRegistry) -> str:
                     f"    - step_id: {step.step_id}",
                     f"      tool_name: {step.tool_name}",
                     f"      risk_level: {step.risk_level.value}",
+                    f"      arguments: {_argument_summary(step.argument_specs)}",
                 ]
             )
 
@@ -85,7 +87,10 @@ def build_skill_proposal_output_instructions() -> str:
       "tool_name": "registered tool_name for this step",
       "allowed_args_schema": {},
       "required_scopes": [],
-      "risk_level": "low | medium | high"
+      "risk_level": "low | medium | high",
+      "arguments": {
+        "argument_name": "proposed scalar value"
+      }
     }
   ]
 }
@@ -93,6 +98,9 @@ def build_skill_proposal_output_instructions() -> str:
 Rules:
 - Use only registered skill IDs and versions from the context.
 - Use only registered step IDs and tool names for the selected skill.
+- Include only registered argument names for the selected step.
+- Argument values may only be strings, integers, or booleans.
+- Do not include identity, scope, approval, policy, risk, tool, or skill-control fields as arguments.
 - Do not include authorization, approval, policy, execution, or audit decisions.
 - Do not define new trusted tools, scopes, risk semantics, or credentials.
 - Do not wrap the JSON in markdown or explanatory text."""
@@ -113,4 +121,15 @@ def _sorted_skills(registry: SkillRegistry) -> list[SkillSpec]:
     return sorted(
         registry.list_skills(),
         key=lambda skill: (skill.skill_id, skill.version),
+    )
+
+
+def _argument_summary(argument_specs: list[ToolArgumentSpec]) -> str:
+    if not argument_specs:
+        return "none"
+
+    return ", ".join(
+        f"{spec.name} ({spec.value_type.value}, "
+        f"{'required' if spec.required else 'optional'})"
+        for spec in argument_specs
     )

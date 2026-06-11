@@ -35,12 +35,23 @@ def _identity(scopes: list[str] | None = None) -> IdentityContext:
 
 def _valid_low_risk_output() -> dict[str, Any]:
     skill = build_default_skill_registry().get_skill("inspect_sandbox_health")
+    step = skill.steps[0]
 
     return {
         "proposed_skill_id": skill.skill_id,
         "proposed_skill_version": skill.version,
         "rationale": "The user asked to inspect sandbox issue health.",
-        "steps": [step.model_dump(mode="json") for step in skill.steps],
+        "steps": [
+            {
+                "step_id": step.step_id,
+                "description": step.description,
+                "tool_name": step.tool_name,
+                "allowed_args_schema": step.allowed_args_schema,
+                "required_scopes": step.required_scopes,
+                "risk_level": step.risk_level.value,
+                "arguments": {"repository": "sandbox/demo-repo"},
+            }
+        ],
     }
 
 
@@ -63,6 +74,7 @@ def test_llm_proposer_builds_prompt_and_parses_valid_json_string() -> None:
     assert proposal.steps[0].step_id == "inspect_issues"
     assert proposal.steps[0].tool_name == "inspect_sandbox_issues"
     assert proposal.steps[0].risk_level == RiskLevel.LOW
+    assert proposal.steps[0].arguments == {"repository": "sandbox/demo-repo"}
 
     prompt = client.prompt
     assert prompt is not None
@@ -72,17 +84,22 @@ def test_llm_proposer_builds_prompt_and_parses_valid_json_string() -> None:
     assert "version: 1.0" in prompt.user_prompt
     assert "step_id: inspect_issues" in prompt.user_prompt
     assert "allowed_tool_names: inspect_sandbox_issues" in prompt.user_prompt
+    assert "repository (string, optional)" in prompt.user_prompt
     assert "SkillProposal shape" in prompt.user_prompt
+    assert "arguments" in prompt.user_prompt
     assert "Do not include authorization" in prompt.user_prompt
 
 
-def test_llm_proposer_accepts_dict_output_without_model_credentials() -> None:
-    proposer = LLMProposer(client=CapturingClient(_valid_low_risk_output()))
+def test_llm_proposer_accepts_legacy_dict_output_without_arguments() -> None:
+    output = _valid_low_risk_output()
+    output["steps"][0].pop("arguments")
+    proposer = LLMProposer(client=CapturingClient(output))
 
     proposal = proposer.propose("Inspect sandbox issues.", _identity())
 
     assert proposal.proposed_skill_id == "inspect_sandbox_health"
     assert proposal.steps[0].tool_name == "inspect_sandbox_issues"
+    assert proposal.steps[0].arguments == {}
 
 
 def test_hallucinated_skill_still_flows_to_validator_rejection() -> None:
@@ -113,7 +130,18 @@ def test_risk_understatement_still_flows_to_validator_rejection() -> None:
         "proposed_skill_id": skill.skill_id,
         "proposed_skill_version": skill.version,
         "rationale": "The user asked to simulate a workflow.",
-        "steps": [step.model_dump(mode="json") for step in skill.steps],
+        "steps": [
+            {
+                "step_id": step.step_id,
+                "description": step.description,
+                "tool_name": step.tool_name,
+                "allowed_args_schema": step.allowed_args_schema,
+                "required_scopes": step.required_scopes,
+                "risk_level": step.risk_level.value,
+                "arguments": {"workflow_name": "ci.yml", "ref": "main"},
+            }
+            for step in skill.steps
+        ],
     }
     output["steps"][0]["risk_level"] = RiskLevel.LOW.value
 

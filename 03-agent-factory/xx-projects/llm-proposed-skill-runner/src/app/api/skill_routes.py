@@ -313,6 +313,8 @@ def _validation_summary(
     if validation_result is None:
         return None
 
+    validated_skill_plan = validation_result.validated_skill_plan
+
     return SkillValidationSummaryResponse(
         status=_validation_status(validation_result),
         rejection_reasons=[
@@ -320,6 +322,30 @@ def _validation_summary(
         ],
         required_scopes=list(validation_result.required_scopes),
         risk_level=validation_result.risk_level,
+        argument_validation_status=(
+            None if validated_skill_plan is None else validated_skill_plan.status.value
+        ),
+        validated_argument_names=(
+            {}
+            if validated_skill_plan is None
+            else {
+                step_arguments.step_id: list(step_arguments.arguments)
+                for step_arguments in validated_skill_plan.step_arguments
+            }
+        ),
+        redacted_argument_names=(
+            {}
+            if validated_skill_plan is None
+            else {
+                step_arguments.step_id: list(step_arguments.redacted_argument_names)
+                for step_arguments in validated_skill_plan.step_arguments
+            }
+        ),
+        argument_validation_issue_codes=(
+            []
+            if validated_skill_plan is None
+            else [issue.reason_code for issue in validated_skill_plan.issues]
+        ),
     )
 
 

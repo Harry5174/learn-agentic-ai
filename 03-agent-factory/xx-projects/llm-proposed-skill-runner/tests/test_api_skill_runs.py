@@ -4,7 +4,10 @@ from fastapi.testclient import TestClient
 from app.api import skill_routes
 from app.api.main import create_app
 from app.identity.config import ADMIN_API_KEY, VIEWER_API_KEY
+from app.identity.schemas import IdentityContext
 from app.proposer.fake import FakeProposer, FakeProposalScenario
+from app.skills.registry import build_default_skill_registry
+from app.skills.schemas import SkillProposal, SkillProposalStep
 from app.skill_graph.service import SkillGraphService
 
 
@@ -12,6 +15,40 @@ def _high_risk_service() -> SkillGraphService:
     return SkillGraphService(
         proposer=FakeProposer(FakeProposalScenario.VALID_HIGH_RISK)
     )
+
+
+class StaticArgumentProposer:
+    def __init__(
+        self,
+        skill_id: str,
+        arguments_by_step_id: dict[str, dict[str, object]],
+    ) -> None:
+        self._skill_id = skill_id
+        self._arguments_by_step_id = arguments_by_step_id
+
+    def propose(self, task: str, identity: IdentityContext) -> SkillProposal:
+        skill = build_default_skill_registry().get_skill(
+            self._skill_id,
+            version="1.0",
+        )
+
+        return SkillProposal(
+            proposed_skill_id=skill.skill_id,
+            proposed_skill_version=skill.version,
+            rationale=f"Static argument proposal for {identity.user_id}: {task}",
+            steps=[
+                SkillProposalStep(
+                    step_id=step.step_id,
+                    description=step.description,
+                    tool_name=step.tool_name,
+                    allowed_args_schema=step.allowed_args_schema,
+                    required_scopes=step.required_scopes,
+                    risk_level=step.risk_level,
+                    arguments=self._arguments_by_step_id.get(step.step_id, {}),
+                )
+                for step in skill.steps
+            ],
+        )
 
 
 def test_get_skills_returns_safe_registered_skill_summaries() -> None:
@@ -101,6 +138,12 @@ def test_post_skill_runs_starts_low_risk_run_through_http() -> None:
     assert body["proposal"]["proposed_skill_id"] == "inspect_sandbox_health"
     assert body["validation"]["status"] == "accepted"
     assert body["validation"]["rejection_reasons"] == []
+    assert body["validation"]["argument_validation_status"] == "accepted"
+    assert body["validation"]["validated_argument_names"] == {
+        "inspect_issues": ["repository"]
+    }
+    assert body["validation"]["redacted_argument_names"] == {"inspect_issues": []}
+    assert body["validation"]["argument_validation_issue_codes"] == []
     assert body["execution"] == {
         "attempted_step_count": 1,
         "completed_step_count": 1,
@@ -191,6 +234,10 @@ def test_invalid_proposal_is_rejected_before_execution_through_http(
     assert body["validation_status"] == "rejected"
     assert body["validation"]["status"] == "rejected"
     assert body["validation"]["rejection_reasons"] == ["tool_not_allowed"]
+    assert body["validation"]["argument_validation_status"] is None
+    assert body["validation"]["validated_argument_names"] == {}
+    assert body["validation"]["redacted_argument_names"] == {}
+    assert body["validation"]["argument_validation_issue_codes"] == []
     assert body["final_report"] == "Proposal validation rejected."
     assert body["execution"] == {
         "attempted_step_count": 0,
@@ -520,6 +567,11 @@ def test_get_skill_run_audit_returns_lifecycle_evidence(monkeypatch) -> None:
     assert any(
         event["metadata"].get("kind") == "proposal_validation"
         and event["metadata"]["approval_required"] is True
+        and event["metadata"]["argument_validation_status"] == "accepted"
+        and event["metadata"]["validated_argument_names"]
+        == {"simulate_workflow": ["workflow_name", "ref"]}
+        and event["metadata"]["redacted_argument_names"] == {"simulate_workflow": []}
+        and event["metadata"]["argument_validation_issue_codes"] == []
         for event in events
     )
     assert any(
@@ -533,6 +585,50 @@ def test_get_skill_run_audit_returns_lifecycle_evidence(monkeypatch) -> None:
         and event["metadata"].get("dry_run") is True
         and event["metadata"].get("success") is True
         for event in events
+    )
+
+
+def test_invalid_argument_values_are_absent_from_api_and_audit(monkeypatch) -> None:
+    raw_rejected_value = "RAW_SECRET_TOKEN_DO_NOT_LEAK"
+    invalid_service = SkillGraphService(
+        proposer=StaticArgumentProposer(
+            "inspect_sandbox_health",
+            {"inspect_issues": {"api_token": raw_rejected_value}},
+        )
+    )
+    monkeypatch.setattr(skill_routes, "_skill_run_service", invalid_service)
+    client = TestClient(create_app())
+
+    response = client.post(
+        "/skill-runs",
+        headers={"X-API-Key": VIEWER_API_KEY},
+        json={"task": "Inspect sandbox health."},
+    )
+
+    assert response.status_code == 202
+    assert raw_rejected_value not in response.text
+
+    body = response.json()
+    assert body["status"] == "failed"
+    assert body["validation"]["status"] == "rejected"
+    assert body["validation"]["rejection_reasons"] == ["invalid_arguments"]
+    assert body["validation"]["argument_validation_status"] == "rejected"
+    assert body["validation"]["validated_argument_names"] == {}
+    assert body["validation"]["redacted_argument_names"] == {}
+    assert body["validation"]["argument_validation_issue_codes"] == [
+        "forbidden_argument_name"
+    ]
+
+    audit_response = client.get(f"/skill-runs/{body['run_id']}/audit")
+
+    assert audit_response.status_code == 200
+    assert raw_rejected_value not in audit_response.text
+    assert any(
+        event["metadata"].get("kind") == "proposal_validation"
+        and event["metadata"]["argument_validation_status"] == "rejected"
+        and event["metadata"]["argument_validation_issue_codes"]
+        == ["forbidden_argument_name"]
+        for event in audit_response.json()["events"]
     )
 
 

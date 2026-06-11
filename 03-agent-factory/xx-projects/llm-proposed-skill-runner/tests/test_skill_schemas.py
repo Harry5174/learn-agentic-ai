@@ -1,8 +1,10 @@
 import pytest
 from pydantic import ValidationError
 
+from app.skills.argument_schemas import ArgumentValueType, ToolArgumentSpec
 from app.skills.schemas import (
     SkillProposal,
+    SkillProposalStep,
     SkillRunResult,
     SkillRunStatus,
     SkillSpec,
@@ -57,12 +59,13 @@ def test_skill_spec_creates_successfully() -> None:
 
 
 def test_skill_proposal_creates_successfully() -> None:
-    step = SkillStep(
+    step = SkillProposalStep(
         step_id="simulate_workflow",
         description="Simulate a workflow trigger.",
         tool_name="trigger_workflow_dry_run",
         required_scopes=["tools:trigger_workflow"],
         risk_level=RiskLevel.HIGH,
+        arguments={"workflow_name": "ci.yml", "ref": "main"},
     )
 
     proposal = SkillProposal(
@@ -75,6 +78,7 @@ def test_skill_proposal_creates_successfully() -> None:
     assert proposal.proposed_skill_id == "simulate_sandbox_workflow"
     assert proposal.proposed_skill_version == "1.0"
     assert proposal.steps == [step]
+    assert proposal.steps[0].arguments == {"workflow_name": "ci.yml", "ref": "main"}
 
 
 def test_skill_run_result_creates_successfully() -> None:
@@ -125,8 +129,35 @@ def test_mutable_defaults_are_not_shared() -> None:
 
     first_step.required_scopes.append("tools:inspect")
     first_step.allowed_args_schema["repository"] = "sandbox/demo-repo"
+    argument_spec = ToolArgumentSpec(
+        name="repository",
+        value_type=ArgumentValueType.STRING,
+    )
+    first_step.argument_specs.append(argument_spec)
 
     assert first_step.required_scopes == ["tools:inspect"]
     assert second_step.required_scopes == []
     assert first_step.allowed_args_schema == {"repository": "sandbox/demo-repo"}
     assert second_step.allowed_args_schema == {}
+    assert first_step.argument_specs == [argument_spec]
+    assert second_step.argument_specs == []
+
+
+def test_skill_proposal_step_argument_defaults_are_not_shared() -> None:
+    first_step = SkillProposalStep(
+        step_id="step_one",
+        description="First step.",
+        tool_name="inspect_sandbox_issues",
+        risk_level=RiskLevel.LOW,
+    )
+    second_step = SkillProposalStep(
+        step_id="step_two",
+        description="Second step.",
+        tool_name="inspect_sandbox_issues",
+        risk_level=RiskLevel.LOW,
+    )
+
+    first_step.arguments["repository"] = "sandbox/demo-repo"
+
+    assert first_step.arguments == {"repository": "sandbox/demo-repo"}
+    assert second_step.arguments == {}

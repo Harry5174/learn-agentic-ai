@@ -18,9 +18,11 @@ For the current project constitution, see
 Artifact 2 has completed the proposal-validation, skill-execution, and
 Artifact 2.1 HTTP lifecycle foundation for a local/demo skill runner.
 
-Artifact 2.2 has started with Sprint E2.0 argument contract design. Raw
-proposed arguments still do not execute. Validator and execution wiring are
-planned for later sprints.
+Artifact 2.2 has completed Sprint E2.0 argument contract design, Sprint E2.1
+validator argument checks, and Sprint E2.2 validated-argument execution wiring.
+Raw proposed arguments still do not execute directly. E2.3 adversarial suite
+and documentation follow-up remain before Artifact 2.2 should be marked
+complete.
 
 Implemented:
 
@@ -35,6 +37,10 @@ Implemented:
 - audit events for proposal, validation, policy, approval, and execution
 - Artifact 2.1 skill-runner API routes for listing skills, creating runs,
   reading runs, approving/rejecting paused runs, and retrieving audit events
+- Artifact 2.2 E2.1 validation of model-proposed scalar step arguments into a
+  trusted `ValidatedSkillPlan`
+- Artifact 2.2 E2.2 graph wiring so dry-run tools receive accepted validated
+  step arguments only
 
 Sprint E1.3 is documentation, demo walkthrough, and portfolio packaging work
 only. It does not change runtime behavior.
@@ -120,7 +126,7 @@ No test depends on:
 - real model calls
 - network access
 - API keys or credentials
-- real GitHub writes
+- GitHub write operations
 - real workflow triggers
 
 ## Explicitly Not Implemented
@@ -133,17 +139,19 @@ No test depends on:
 - frontend
 - production deployment
 - multi-agent behavior
-- real GitHub writes
+- GitHub write operations
 - real workflow triggers
-- proposed tool-argument validator behavior
-- execution wiring for model-proposed runtime tool arguments
+- Artifact 2.2 E2.3 adversarial argument suite and completion packaging
 - provider SDK integration
 - live LLM mode through HTTP
 
 ## Current Limitation To Keep Visible
 
-Skill specs contain argument-schema metadata, but the skill execution graph uses
-harness-owned default arguments for the dry-run tools. Validating and executing
-model-proposed runtime arguments is planned as later Artifact 2.2 work.
+Skill specs contain trusted argument metadata, and the proposal validator now
+checks model-proposed scalar runtime arguments. The skill execution graph now
+passes accepted `ValidatedSkillPlan` arguments to dry-run tools after proposal
+validation, policy checks, and any required approval gate.
 
-Sprint E2.0 defines argument contract schemas and documentation only.
+Raw proposed arguments do not flow directly to `ToolRegistry.execute()`. Public
+API and audit summaries expose safe argument-validation status, argument names,
+redaction names, and issue codes without raw rejected values.

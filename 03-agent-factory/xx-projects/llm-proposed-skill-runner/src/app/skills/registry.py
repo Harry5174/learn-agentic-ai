@@ -1,4 +1,5 @@
 from app.skills.errors import UnknownSkillError
+from app.skills.argument_schemas import ArgumentValueType, ToolArgumentSpec
 from app.skills.schemas import SkillSpec, SkillStep
 from app.tools.schemas import RiskLevel
 
@@ -57,6 +58,15 @@ def build_default_skill_registry() -> SkillRegistry:
                         "type": "object",
                         "properties": {"repository": {"type": "string"}},
                     },
+                    argument_specs=[
+                        ToolArgumentSpec(
+                            name="repository",
+                            value_type=ArgumentValueType.STRING,
+                            required=False,
+                            default="sandbox/demo-repo",
+                            description="Repository name to inspect in the dry-run sandbox.",
+                        )
+                    ],
                     required_scopes=["tools:inspect"],
                     risk_level=RiskLevel.LOW,
                 )
@@ -89,6 +99,20 @@ def build_default_skill_registry() -> SkillRegistry:
                             "comment_body": {"type": "string"},
                         },
                     },
+                    argument_specs=[
+                        ToolArgumentSpec(
+                            name="issue_id",
+                            value_type=ArgumentValueType.INTEGER,
+                            required=True,
+                            description="Issue id to use in the dry-run comment draft.",
+                        ),
+                        ToolArgumentSpec(
+                            name="comment_body",
+                            value_type=ArgumentValueType.STRING,
+                            required=True,
+                            description="Comment body to include in the dry-run draft.",
+                        ),
+                    ],
                     required_scopes=["tools:draft"],
                     risk_level=RiskLevel.MEDIUM,
                 )
@@ -124,6 +148,20 @@ def build_default_skill_registry() -> SkillRegistry:
                             "ref": {"type": "string"},
                         },
                     },
+                    argument_specs=[
+                        ToolArgumentSpec(
+                            name="workflow_name",
+                            value_type=ArgumentValueType.STRING,
+                            required=True,
+                            description="Workflow file name to simulate.",
+                        ),
+                        ToolArgumentSpec(
+                            name="ref",
+                            value_type=ArgumentValueType.STRING,
+                            required=True,
+                            description="Git ref to use for the dry-run workflow simulation.",
+                        ),
+                    ],
                     required_scopes=["tools:trigger_workflow"],
                     risk_level=RiskLevel.HIGH,
                 )

@@ -99,6 +99,10 @@ class SkillValidationSummaryResponse(BaseModel):
     rejection_reasons: list[str] = Field(default_factory=list)
     required_scopes: list[str] = Field(default_factory=list)
     risk_level: RiskLevel | None = None
+    argument_validation_status: str | None = None
+    validated_argument_names: dict[str, list[str]] = Field(default_factory=dict)
+    redacted_argument_names: dict[str, list[str]] = Field(default_factory=dict)
+    argument_validation_issue_codes: list[str] = Field(default_factory=list)
 
 
 class SkillExecutionSummaryResponse(BaseModel):

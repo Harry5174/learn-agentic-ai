@@ -2,9 +2,10 @@ from datetime import datetime, timezone
 from enum import StrEnum
 from typing import Any
 
-from pydantic import BaseModel, Field, computed_field
+from pydantic import BaseModel, Field, computed_field, field_validator
 
 from app.identity.schemas import Role
+from app.skills.argument_schemas import ToolArgumentSpec, ValidatedSkillPlan
 from app.tools.schemas import RiskLevel, ToolExecutionResult
 
 
@@ -27,6 +28,7 @@ class ProposalValidationReason(StrEnum):
     TOOL_NOT_ALLOWED = "tool_not_allowed"
     MISSING_REQUIRED_SCOPE = "missing_required_scope"
     RISK_MISMATCH = "risk_mismatch"
+    INVALID_ARGUMENTS = "invalid_arguments"
 
 
 class SkillRunStatus(StrEnum):
@@ -45,8 +47,21 @@ class SkillStep(BaseModel):
     description: str
     tool_name: str
     allowed_args_schema: dict[str, Any] = Field(default_factory=dict)
+    argument_specs: list[ToolArgumentSpec] = Field(default_factory=list)
     required_scopes: list[str] = Field(default_factory=list)
     risk_level: RiskLevel
+
+
+class SkillProposalStep(BaseModel):
+    """One untrusted step proposed by a model or proposer."""
+
+    step_id: str
+    description: str
+    tool_name: str
+    allowed_args_schema: dict[str, Any] = Field(default_factory=dict)
+    required_scopes: list[str] = Field(default_factory=list)
+    risk_level: RiskLevel
+    arguments: dict[str, Any] = Field(default_factory=dict)
 
 
 class SkillSpec(BaseModel):
@@ -77,7 +92,7 @@ class SkillProposal(BaseModel):
     proposed_skill_id: str
     proposed_skill_version: str
     rationale: str
-    steps: list[SkillStep]
+    steps: list[SkillProposalStep]
 
 
 class ProposalValidationResult(BaseModel):
@@ -90,6 +105,7 @@ class ProposalValidationResult(BaseModel):
     required_scopes: list[str] = Field(default_factory=list)
     risk_level: RiskLevel | None = None
     approval_required: bool = False
+    validated_skill_plan: ValidatedSkillPlan | None = None
 
 
 class SkillRunResult(BaseModel):
@@ -112,7 +128,7 @@ class ProposalAuditEvent(BaseModel):
     scopes: list[str] = Field(default_factory=list)
     proposed_skill_id: str
     proposed_skill_version: str
-    proposed_steps: list[SkillStep]
+    proposed_steps: list[SkillProposalStep]
     proposed_tool_names: list[str] = Field(default_factory=list)
     validation_status: ProposalValidationStatus = (
         ProposalValidationStatus.NOT_VALIDATED
@@ -121,3 +137,17 @@ class ProposalAuditEvent(BaseModel):
     risk_level: RiskLevel
     approval_required: bool
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+    @field_validator("proposed_steps", mode="before")
+    @classmethod
+    def validate_proposed_steps(cls, value: Any) -> Any:
+        if value is None:
+            return []
+
+        if not isinstance(value, list):
+            return value
+
+        return [
+            step.model_dump() if isinstance(step, SkillStep) else step
+            for step in value
+        ]

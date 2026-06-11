@@ -38,7 +38,8 @@ behavior is added.
 
 ## Active Step: Artifact 2.2
 
-Artifact 2.2 has started with Sprint E2.0 argument contract design.
+Artifact 2.2 has completed Sprint E2.0 argument contract design, Sprint E2.1
+validator argument checks, and Sprint E2.2 execution wiring.
 
 Artifact 2.2 targets:
 
@@ -47,12 +48,16 @@ Artifact 2.2 targets:
 - scalar-only V1 argument schema stubs
 - central forbidden argument names
 - redaction policy documentation
+- deterministic validator checks for proposed scalar step arguments
+- execution using accepted `ValidatedSkillPlan` arguments only
 - focused adversarial tests for argument-level failures
 
-Sprint E2.0 covers the contract design and schema stubs only.
+Sprint E2.0 covers the contract design and schema stubs. Sprint E2.1 validates
+proposed arguments into `ValidatedSkillPlan`. Sprint E2.2 wires accepted
+validated arguments into graph/tool execution.
 
-Raw proposed arguments still do not execute. Validator and execution wiring are
-planned for later sprints.
+Raw proposed arguments still do not execute directly. E2.3 adversarial suite and
+documentation follow-up remain before Artifact 2.2 should be marked complete.
 
 Artifact 2.2 must preserve the existing safety boundary: model output remains
 untrusted, and the harness validates before policy, approval, or execution.
@@ -61,7 +66,7 @@ untrusted, and the harness validates before policy, approval, or execution.
 
 Useful next steps after Artifact 2.2:
 
-- small adversarial proposal test suite
+- Sprint E2.3 adversarial proposal test suite and completion docs
 - optional demo-only script if documentation and API tests stop being enough
 
 ## Future Integration Paths
@@ -72,7 +77,7 @@ Possible future work:
 - OAuth/OIDC identity integration
 - durable task/run persistence
 - durable audit storage
-- real GitHub write tools behind approval gates
+- GitHub write tools behind approval gates
 - portfolio deployment demo
 
 ## Still Out Of Scope

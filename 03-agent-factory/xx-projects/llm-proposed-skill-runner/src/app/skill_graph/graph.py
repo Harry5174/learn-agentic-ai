@@ -21,6 +21,7 @@ from app.policy.guard import evaluate_tool_permission
 from app.policy.schemas import PolicyDecision, PolicyDecisionType
 from app.proposer.base import SkillProposer
 from app.proposer.fake import FakeProposer
+from app.skills.argument_schemas import ArgumentValidationStatus, ValidatedSkillPlan
 from app.skills.registry import SkillRegistry, build_default_skill_registry
 from app.skills.schemas import (
     ProposalValidationResult,
@@ -142,12 +143,43 @@ def build_skill_execution_graph(
         audit_trail = _audit_trail(state)
         policy_decisions: list[PolicyDecision] = []
         step_arguments: dict[str, dict[str, Any]] = {}
+        validated_steps = _validated_steps(validation_result)
+        validated_arguments_by_step_id = _validated_step_arguments_by_id(
+            validation_result
+        )
 
-        for step in _validated_steps(validation_result):
+        if validated_arguments_by_step_id is None:
+            return {
+                **state,
+                "status": TaskStatus.FAILED,
+                "error_message": (
+                    "Cannot evaluate policy without accepted validated arguments."
+                ),
+            }
+
+        missing_step_ids = [
+            step.step_id
+            for step in validated_steps
+            if step.step_id not in validated_arguments_by_step_id
+        ]
+
+        if missing_step_ids:
+            return {
+                **state,
+                "status": TaskStatus.FAILED,
+                "error_message": (
+                    "Validated arguments are missing for step(s): "
+                    f"{', '.join(missing_step_ids)}"
+                ),
+            }
+
+        for step in validated_steps:
             tool = active_tool_registry.get_tool(step.tool_name)
             decision = evaluate_tool_permission(identity=identity, tool=tool)
             policy_decisions.append(decision)
-            step_arguments[step.step_id] = _default_tool_arguments(step.tool_name)
+            step_arguments[step.step_id] = dict(
+                validated_arguments_by_step_id[step.step_id]
+            )
             audit_trail = append_audit_event(
                 audit_trail,
                 create_permission_checked_event(
@@ -330,12 +362,40 @@ def build_skill_execution_graph(
 
         audit_trail = _audit_trail(state)
         tool_results: list[ToolExecutionResult] = []
-        step_arguments = state.get("step_arguments", {})
+        validated_steps = _validated_steps(validation_result)
+        validated_arguments_by_step_id = _validated_step_arguments_by_id(
+            validation_result
+        )
 
-        for step in _validated_steps(validation_result):
+        if validated_arguments_by_step_id is None:
+            return {
+                **state,
+                "status": TaskStatus.FAILED,
+                "error_message": "Skill execution was missing validated arguments.",
+                "tool_results": [],
+            }
+
+        missing_step_ids = [
+            step.step_id
+            for step in validated_steps
+            if step.step_id not in validated_arguments_by_step_id
+        ]
+
+        if missing_step_ids:
+            return {
+                **state,
+                "status": TaskStatus.FAILED,
+                "error_message": (
+                    "Validated arguments are missing for step(s): "
+                    f"{', '.join(missing_step_ids)}"
+                ),
+                "tool_results": [],
+            }
+
+        for step in validated_steps:
             result = active_tool_registry.execute(
                 step.tool_name,
-                step_arguments.get(step.step_id, {}),
+                dict(validated_arguments_by_step_id[step.step_id]),
             )
             tool_results.append(result)
             audit_trail = append_audit_event(
@@ -524,6 +584,7 @@ def _create_validation_event(
             "required_scopes": list(validation_result.required_scopes),
             "risk_level": None if risk_level is None else risk_level.value,
             "approval_required": validation_result.approval_required,
+            **_argument_validation_metadata(validation_result),
         },
     )
 
@@ -588,12 +649,79 @@ def _status_from_policy_decisions(
 def _validation_accepted(
     validation_result: ProposalValidationResult | None,
 ) -> bool:
-    return (
-        validation_result is not None
-        and validation_result.status == ProposalValidationStatus.ACCEPTED
-        and validation_result.skill is not None
-        and validation_result.proposal is not None
-    )
+    return _accepted_validated_skill_plan(validation_result) is not None
+
+
+def _accepted_validated_skill_plan(
+    validation_result: ProposalValidationResult | None,
+) -> ValidatedSkillPlan | None:
+    if (
+        validation_result is None
+        or validation_result.status != ProposalValidationStatus.ACCEPTED
+        or validation_result.skill is None
+        or validation_result.proposal is None
+    ):
+        return None
+
+    validated_skill_plan = validation_result.validated_skill_plan
+
+    if (
+        validated_skill_plan is None
+        or validated_skill_plan.status != ArgumentValidationStatus.ACCEPTED
+        or validated_skill_plan.skill_id != validation_result.skill.skill_id
+        or validated_skill_plan.skill_version != validation_result.skill.version
+    ):
+        return None
+
+    return validated_skill_plan
+
+
+def _validated_step_arguments_by_id(
+    validation_result: ProposalValidationResult | None,
+) -> dict[str, dict[str, Any]] | None:
+    validated_skill_plan = _accepted_validated_skill_plan(validation_result)
+
+    if validated_skill_plan is None:
+        return None
+
+    arguments_by_step_id: dict[str, dict[str, Any]] = {}
+
+    for step_arguments in validated_skill_plan.step_arguments:
+        if step_arguments.step_id in arguments_by_step_id:
+            return None
+
+        arguments_by_step_id[step_arguments.step_id] = dict(step_arguments.arguments)
+
+    return arguments_by_step_id
+
+
+def _argument_validation_metadata(
+    validation_result: ProposalValidationResult,
+) -> dict[str, Any]:
+    validated_skill_plan = validation_result.validated_skill_plan
+
+    if validated_skill_plan is None:
+        return {
+            "argument_validation_status": None,
+            "validated_argument_names": {},
+            "redacted_argument_names": {},
+            "argument_validation_issue_codes": [],
+        }
+
+    return {
+        "argument_validation_status": validated_skill_plan.status.value,
+        "validated_argument_names": {
+            step_arguments.step_id: list(step_arguments.arguments)
+            for step_arguments in validated_skill_plan.step_arguments
+        },
+        "redacted_argument_names": {
+            step_arguments.step_id: list(step_arguments.redacted_argument_names)
+            for step_arguments in validated_skill_plan.step_arguments
+        },
+        "argument_validation_issue_codes": [
+            issue.reason_code for issue in validated_skill_plan.issues
+        ],
+    }
 
 
 def _validated_steps(
@@ -626,11 +754,14 @@ def _tool_arguments_for_decision(
     policy_decision: PolicyDecision,
 ) -> dict[str, Any]:
     validation_result = state.get("validation_result")
-    step_arguments = state.get("step_arguments", {})
+    validated_arguments_by_step_id = _validated_step_arguments_by_id(validation_result)
+
+    if validated_arguments_by_step_id is None:
+        return {}
 
     for step in _validated_steps(validation_result):
         if step.tool_name == policy_decision.tool_name:
-            return dict(step_arguments.get(step.step_id, {}))
+            return dict(validated_arguments_by_step_id.get(step.step_id, {}))
 
     return {}
 
@@ -642,6 +773,9 @@ def _execution_allowed(state: SkillGraphState) -> bool:
         return False
 
     policy_decisions = state.get("policy_decisions", [])
+
+    if not policy_decisions:
+        return False
 
     if any(
         decision.decision == PolicyDecisionType.DENY
@@ -666,23 +800,6 @@ def _execution_allowed(state: SkillGraphState) -> bool:
         approval_decision is not None
         and approval_decision.status == ApprovalStatus.APPROVED
     )
-
-
-def _default_tool_arguments(tool_name: str) -> dict[str, Any]:
-    if tool_name == "inspect_sandbox_issues":
-        return {"repository": "sandbox/demo-repo"}
-
-    if tool_name == "draft_issue_comment":
-        return {
-            "issue_id": 1,
-            "comment_body": "Draft response generated by skill graph.",
-        }
-
-    if tool_name == "trigger_workflow_dry_run":
-        return {"workflow_name": "ci.yml", "ref": "main"}
-
-    return {}
-
 
 def _coerce_approval_decision(value: Any) -> ApprovalDecision | None:
     if isinstance(value, ApprovalDecision):

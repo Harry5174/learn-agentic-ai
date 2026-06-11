@@ -56,10 +56,41 @@ class ToolArgumentSpec(BaseModel):
     name: str
     value_type: ArgumentValueType
     required: bool = False
+    default: ScalarArgumentValue | None = None
+    allowed_values: list[ScalarArgumentValue] = Field(default_factory=list)
+    max_length: int | None = None
     sensitive: bool = False
     description: str | None = None
     notes: str | None = None
     constraints: list[str] = Field(default_factory=list)
+
+    @field_validator("default", mode="before")
+    @classmethod
+    def validate_scalar_default(cls, value: Any) -> Any:
+        if value is None:
+            return None
+
+        if not isinstance(value, str | int | bool):
+            raise ValueError("default must be string, integer, or boolean")
+
+        return value
+
+    @field_validator("allowed_values", mode="before")
+    @classmethod
+    def validate_scalar_allowed_values(cls, value: Any) -> Any:
+        if value is None:
+            return []
+
+        if not isinstance(value, list):
+            raise ValueError("allowed_values must be a list")
+
+        for allowed_value in value:
+            if not isinstance(allowed_value, str | int | bool):
+                raise ValueError(
+                    "allowed_values must contain only string, integer, or boolean"
+                )
+
+        return value
 
 
 class ProposedStepArguments(BaseModel):
