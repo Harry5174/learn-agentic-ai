@@ -2,12 +2,18 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.api.dependencies import enforce_skill_run_create_rate_limit
+from app.api.dependencies import (
+    enforce_approval_action_rate_limit,
+    enforce_skill_run_create_rate_limit,
+)
 from app.api.skill_schemas import (
     ProposerMode,
     SkillExecutionSummaryResponse,
     SkillProposalSummaryResponse,
+    SkillRunApprovalRequest,
     SkillRunApprovalStatusResponse,
+    SkillRunAuditEventResponse,
+    SkillRunAuditResponse,
     SkillRunCreateRequest,
     SkillRunStatusResponse,
     SkillRunSummaryResponse,
@@ -17,8 +23,13 @@ from app.api.skill_schemas import (
     SkillValidationSummaryResponse,
 )
 from app.approval.schemas import ApprovalStatus
+from app.audit.schemas import AuditEvent
 from app.identity.schemas import IdentityContext
-from app.skill_graph.service import SkillGraphService
+from app.skill_graph.service import (
+    SkillGraphService,
+    SkillRunNotFoundError,
+    SkillRunNotPausedError,
+)
 from app.skill_graph.state import SkillGraphState
 from app.skills.registry import build_default_skill_registry
 from app.skills.schemas import ProposalValidationResult, SkillProposal, SkillSpec
@@ -66,6 +77,116 @@ def create_skill_run(
     return skill_run_summary_from_state(
         state=state,
         proposer_mode=proposer_mode,
+    )
+
+
+@router.get("/skill-runs/{run_id}", response_model=SkillRunSummaryResponse)
+def get_skill_run(run_id: str) -> SkillRunSummaryResponse:
+    """Return the current public state for an existing skill run."""
+
+    try:
+        state = _skill_run_service.get_run(run_id)
+    except SkillRunNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Skill run not found.",
+        ) from exc
+
+    return skill_run_summary_from_state(
+        state=state,
+        proposer_mode=ProposerMode.FAKE,
+    )
+
+
+@router.post("/skill-runs/{run_id}/approve", response_model=SkillRunSummaryResponse)
+def approve_skill_run(
+    run_id: str,
+    identity: Annotated[IdentityContext, Depends(enforce_approval_action_rate_limit)],
+    request: SkillRunApprovalRequest | None = None,
+) -> SkillRunSummaryResponse:
+    """Approve and resume a paused skill run for the current identity."""
+
+    try:
+        if request is None or request.reason is None:
+            state = _skill_run_service.approve_run(
+                run_id=run_id,
+                approver=identity,
+            )
+        else:
+            state = _skill_run_service.approve_run(
+                run_id=run_id,
+                approver=identity,
+                reason=request.reason,
+            )
+    except SkillRunNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Skill run not found.",
+        ) from exc
+    except SkillRunNotPausedError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Skill run is not paused for approval.",
+        ) from exc
+
+    return skill_run_summary_from_state(
+        state=state,
+        proposer_mode=ProposerMode.FAKE,
+    )
+
+
+@router.post("/skill-runs/{run_id}/reject", response_model=SkillRunSummaryResponse)
+def reject_skill_run(
+    run_id: str,
+    identity: Annotated[IdentityContext, Depends(enforce_approval_action_rate_limit)],
+    request: SkillRunApprovalRequest | None = None,
+) -> SkillRunSummaryResponse:
+    """Reject and resume a paused skill run for the current identity."""
+
+    try:
+        if request is None or request.reason is None:
+            state = _skill_run_service.reject_run(
+                run_id=run_id,
+                rejector=identity,
+            )
+        else:
+            state = _skill_run_service.reject_run(
+                run_id=run_id,
+                rejector=identity,
+                reason=request.reason,
+            )
+    except SkillRunNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Skill run not found.",
+        ) from exc
+    except SkillRunNotPausedError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Skill run is not paused for approval.",
+        ) from exc
+
+    return skill_run_summary_from_state(
+        state=state,
+        proposer_mode=ProposerMode.FAKE,
+    )
+
+
+@router.get("/skill-runs/{run_id}/audit", response_model=SkillRunAuditResponse)
+def get_skill_run_audit(run_id: str) -> SkillRunAuditResponse:
+    """Return the structured audit trail for an existing skill run."""
+
+    try:
+        audit_trail = _skill_run_service.get_audit(run_id)
+    except SkillRunNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Skill run not found.",
+        ) from exc
+
+    return SkillRunAuditResponse(
+        run_id=run_id,
+        events=[_audit_event_response(event) for event in audit_trail],
     )
 
 
@@ -210,4 +331,18 @@ def _execution_summary(state: SkillGraphState) -> SkillExecutionSummaryResponse:
         completed_step_count=sum(1 for result in tool_results if result.success),
         tool_names=[result.tool_name for result in tool_results],
         dry_run=all(result.dry_run for result in tool_results),
+    )
+
+
+def _audit_event_response(event: AuditEvent) -> SkillRunAuditEventResponse:
+    metadata = event.model_dump(mode="json")["metadata"]
+
+    if event.tool_name is not None:
+        metadata["tool_name"] = event.tool_name
+
+    return SkillRunAuditEventResponse(
+        event_type=event.event_type.value,
+        timestamp=event.timestamp,
+        message=event.message,
+        metadata=metadata,
     )

@@ -2,15 +2,19 @@
 
 ## Status
 
-Sprint E1.1 implements the first public FastAPI surface for Artifact 2.1:
+Sprint E1.1 implemented the first public FastAPI surface for Artifact 2.1:
 
 - `GET /skills`
 - `POST /skill-runs`
 
-Sprint E1.2 is planned to add skill-run fetch, approval, rejection, and audit
-routes. Those E1.2 routes are documented below as planned contracts only.
+Sprint E1.2 implements the remaining public skill-run lifecycle routes:
 
-The future skill-runner API must preserve the Artifact 2 invariant:
+- `GET /skill-runs/{run_id}`
+- `POST /skill-runs/{run_id}/approve`
+- `POST /skill-runs/{run_id}/reject`
+- `GET /skill-runs/{run_id}/audit`
+
+The skill-runner API must preserve the Artifact 2 invariant:
 
 ```text
 The LLM proposes.
@@ -28,7 +32,7 @@ GET  /skills
 POST /skill-runs
 ```
 
-## Planned For E1.2
+## Implemented In E1.2
 
 ```text
 GET  /skill-runs/{run_id}
@@ -37,13 +41,10 @@ POST /skill-runs/{run_id}/reject
 GET  /skill-runs/{run_id}/audit
 ```
 
-Only `GET /skills` and `POST /skill-runs` are implemented in E1.1.
-
 ## Authentication And Identity
 
-Skill-run creation uses the existing server-derived identity boundary. Future
-endpoints that approve, reject, or inspect protected skill-run state should use
-the same boundary. Clients must send identity through the configured
+Skill-run creation, approval, and rejection use the existing server-derived
+identity boundary. Clients must send identity through the configured
 authentication mechanism, not through JSON request bodies.
 
 Request bodies must not accept:
@@ -141,6 +142,10 @@ response without calling a live model provider.
 The response is a public summary. It must not expose raw graph state,
 checkpointer state, LangGraph objects, server-derived identity objects,
 approval actors, or internal step argument stores.
+
+Current E1.2 limitation: read, approval, and rejection responses report
+`proposer_mode: "fake"` because the HTTP layer only supports fake proposer mode
+and the in-memory graph state does not persist proposer mode separately.
 
 ### SkillRunApprovalRequest
 
@@ -275,7 +280,7 @@ Errors:
 
 ## GET /skill-runs/{run_id}
 
-Status: planned for E1.2; not implemented in E1.1.
+Status: implemented in E1.2.
 
 Purpose: fetch the current public summary for one skill run.
 
@@ -283,22 +288,19 @@ Request body: none.
 
 Response shape: `SkillRunSummaryResponse`.
 
-Identity handling: future implementation should use server-derived identity for
-authorization. The route must not accept identity or scopes in query parameters
-or request bodies.
+Identity handling: this local/demo read endpoint does not accept request body
+identity, role, or scopes.
 
 Approval handling: paused runs may include public approval status, but should
 not expose approval actor identity objects or internal approval checkpoint data.
 
 Errors:
 
-- `401 Unauthorized` for missing or invalid identity when protected
-- `403 Forbidden` if the server-derived identity cannot view the run
 - `404 Not Found` if the run ID is unknown
 
 ## POST /skill-runs/{run_id}/approve
 
-Status: planned for E1.2; not implemented in E1.1.
+Status: implemented in E1.2.
 
 Purpose: approve and resume a paused high-risk skill run.
 
@@ -321,18 +323,20 @@ Approval handling: approval is only valid for a run paused for approval. Approva
 does not bypass deterministic validation, policy checks, or dry-run tool
 boundaries.
 
+If the server-derived identity lacks the required approval scope, the existing
+graph/service boundary returns a failed run summary without executing tools.
+
 Errors:
 
 - `400 Bad Request` for invalid request shape
 - `401 Unauthorized` for missing or invalid identity
-- `403 Forbidden` if the server-derived identity cannot approve
 - `404 Not Found` if the run ID is unknown
 - `409 Conflict` if the run is not paused for approval
 - `429 Too Many Requests` for server-derived rate-limit overflow
 
 ## POST /skill-runs/{run_id}/reject
 
-Status: planned for E1.2; not implemented in E1.1.
+Status: implemented in E1.2.
 
 Purpose: reject and finalize a paused high-risk skill run without executing the
 pending high-risk tool action.
@@ -355,18 +359,20 @@ override, or approval decision.
 Approval handling: rejection is only valid for a run paused for approval. A
 rejected run should not execute the pending high-risk tool action.
 
+If the server-derived identity lacks the required rejection scope, the existing
+graph/service boundary returns a failed run summary without executing tools.
+
 Errors:
 
 - `400 Bad Request` for invalid request shape
 - `401 Unauthorized` for missing or invalid identity
-- `403 Forbidden` if the server-derived identity cannot reject
 - `404 Not Found` if the run ID is unknown
 - `409 Conflict` if the run is not paused for approval
 - `429 Too Many Requests` for server-derived rate-limit overflow
 
 ## GET /skill-runs/{run_id}/audit
 
-Status: planned for E1.2; not implemented in E1.1.
+Status: implemented in E1.2.
 
 Purpose: return a safe public audit trail for one skill run.
 
@@ -374,9 +380,8 @@ Request body: none.
 
 Response shape: `SkillRunAuditResponse`.
 
-Identity handling: future implementation should use server-derived identity for
-audit visibility. The route must not accept user ID, role, scopes, or API key ID
-in the request body.
+Identity handling: this local/demo audit endpoint does not accept request body
+identity, role, scopes, or API key ID.
 
 Approval handling: audit events may describe approval requested, granted, or
 rejected events, but must not expose raw approval actor identity objects or
@@ -384,14 +389,12 @@ checkpoint resume payloads.
 
 Errors:
 
-- `401 Unauthorized` for missing or invalid identity when protected
-- `403 Forbidden` if the server-derived identity cannot view the audit trail
 - `404 Not Found` if the run ID is unknown
 
 ## Non-Implementation Statement
 
-Sprint E1.0 does not add route handlers, router registration, graph behavior,
-service behavior, proposer behavior, validator behavior, policy behavior,
-approval behavior, tool behavior, persistence, frontend behavior, MCP,
-OAuth/OIDC, JWT validation, database support, real GitHub writes, real workflow
-triggers, or model-proposed tool argument validation.
+Sprint E1.2 does not add graph behavior, service behavior, proposer behavior,
+validator behavior, policy behavior, approval semantics, tool behavior,
+persistence, frontend behavior, MCP, OAuth/OIDC, JWT validation, database
+support, real GitHub writes, real workflow triggers, real LLM calls, or
+model-proposed tool argument validation.

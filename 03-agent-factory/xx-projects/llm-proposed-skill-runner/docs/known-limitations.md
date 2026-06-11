@@ -40,15 +40,14 @@ Current limits:
 
 ## API Surface
 
-The current FastAPI routes expose the inherited task API plus `GET /skills` and
-`POST /skill-runs`.
+The current FastAPI routes expose the inherited task API plus skill-run
+metadata, creation, read, approval, rejection, and audit endpoints.
 
-Not implemented:
+Current local/demo limitations:
 
-- skill-run fetch API
-- skill-run approval API
-- skill-run rejection API
-- skill-run audit API
+- skill-run state is process-local
+- skill-run audit is in-memory only
+- skill-run approval and rejection use demo API-key identity
 
 ## Tool Execution
 

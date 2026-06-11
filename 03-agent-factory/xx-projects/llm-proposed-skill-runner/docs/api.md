@@ -41,7 +41,9 @@ Protected route groups:
 
 - task creation: `POST /tasks`, 5 requests per 60 seconds per API key
 - skill-run creation: `POST /skill-runs`, 5 requests per 60 seconds per API key
-- approval actions: `POST /tasks/{task_id}/approve` and `POST /tasks/{task_id}/reject`, 10 requests per 60 seconds per API key
+- approval actions: `POST /tasks/{task_id}/approve`,
+  `POST /tasks/{task_id}/reject`, `POST /skill-runs/{run_id}/approve`, and
+  `POST /skill-runs/{run_id}/reject`, 10 requests per 60 seconds per API key
 
 Rate limit response:
 
@@ -64,9 +66,10 @@ Invalid or missing API keys return `401` before rate limiting.
 - `POST /tasks/{task_id}/reject`
 - `GET /tasks/{task_id}/audit`
 - `POST /skill-runs`
-
-Skill-run fetch, approval, rejection, and audit routes are planned for E1.2 and
-are not implemented yet.
+- `GET /skill-runs/{run_id}`
+- `POST /skill-runs/{run_id}/approve`
+- `POST /skill-runs/{run_id}/reject`
+- `GET /skill-runs/{run_id}/audit`
 
 ## `GET /identity/me`
 
@@ -291,6 +294,68 @@ Status codes:
 - `422 Unprocessable Entity`
 - `429 Too Many Requests`
 
+## `GET /skill-runs/{run_id}`
+
+Returns the current public summary for a process-local skill run.
+
+Status codes:
+
+- `200 OK`
+- `404 Not Found`
+
+Missing skill-run response:
+
+```json
+{
+  "detail": "Skill run not found."
+}
+```
+
+## `POST /skill-runs/{run_id}/approve`
+
+Approves and resumes a paused high-risk skill run using the server-derived
+identity from `X-API-Key`.
+
+Response behavior:
+
+- valid admin approval -> `completed`
+- invalid approver -> failed skill-run summary without tool execution
+- missing run -> `404`
+- non-paused run -> `409`
+- over approval rate limit -> `429`
+
+Status codes:
+
+- `200 OK`
+- `401 Unauthorized`
+- `404 Not Found`
+- `409 Conflict`
+- `422 Unprocessable Entity`
+- `429 Too Many Requests`
+
+## `POST /skill-runs/{run_id}/reject`
+
+Rejects and resumes a paused high-risk skill run without executing the pending
+high-risk dry-run tool.
+
+Status codes:
+
+- `200 OK`
+- `401 Unauthorized`
+- `404 Not Found`
+- `409 Conflict`
+- `422 Unprocessable Entity`
+- `429 Too Many Requests`
+
+## `GET /skill-runs/{run_id}/audit`
+
+Returns a JSON-safe public audit trail for a process-local skill run.
+
+Status codes:
+
+- `200 OK`
+- `404 Not Found`
+
 ## Public Task Summary Shape
 
 Task endpoints return:
@@ -317,15 +382,16 @@ Artifact 2 skill-runner behavior lives in:
 - `src/app/proposer/`
 - `src/app/skill_graph/`
 
-It is exposed through `GET /skills` and `POST /skill-runs`, and is verified by
-tests such as:
+It is exposed through `GET /skills`, `POST /skill-runs`,
+`GET /skill-runs/{run_id}`, `POST /skill-runs/{run_id}/approve`,
+`POST /skill-runs/{run_id}/reject`, and `GET /skill-runs/{run_id}/audit`, and
+is verified by tests such as:
 
 - `tests/test_proposal_validator.py`
 - `tests/test_fake_proposer.py`
 - `tests/test_llm_proposer.py`
 - `tests/test_skill_execution_graph.py`
-
-Skill-run fetch, approval, rejection, and audit routes remain planned for E1.2.
+- `tests/test_api_skill_runs.py`
 
 ## Known API Limitations
 
@@ -337,6 +403,5 @@ Skill-run fetch, approval, rejection, and audit routes remain planned for E1.2.
 - no OAuth/OIDC
 - no JWT validation
 - no database persistence
-- no skill-run fetch, approval, rejection, or audit endpoints yet
 - no real GitHub writes
 - no real workflow triggers

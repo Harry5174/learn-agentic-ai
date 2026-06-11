@@ -93,7 +93,7 @@ The default skill registry contains three local/demo skills:
 - `draft_sandbox_issue_comment`: medium-risk draft generation using `draft_issue_comment`
 - `simulate_sandbox_workflow`: high-risk workflow simulation using `trigger_workflow_dry_run`
 
-The required Sprint 5 scenarios are documented in
+The Artifact 2.1 demo scenarios are documented in
 [docs/demo-scenarios.md](docs/demo-scenarios.md):
 
 - valid low-risk proposal executes a dry-run tool
@@ -107,7 +107,7 @@ The required Sprint 5 scenarios are documented in
 ## Current API Boundary
 
 The FastAPI routes expose the inherited local/demo task API from Artifact 1 and
-the first Artifact 2.1 skill-runner API routes:
+the completed Artifact 2.1 skill-runner API surface:
 
 - `GET /tools`
 - `GET /identity/me`
@@ -118,12 +118,41 @@ the first Artifact 2.1 skill-runner API routes:
 - `POST /tasks/{task_id}/reject`
 - `GET /tasks/{task_id}/audit`
 - `POST /skill-runs`
+- `GET /skill-runs/{run_id}`
+- `POST /skill-runs/{run_id}/approve`
+- `POST /skill-runs/{run_id}/reject`
+- `GET /skill-runs/{run_id}/audit`
 
 Task routes still wrap the deterministic task harness in `src/app/graph/`.
-Skill-run creation wraps the Artifact 2 `SkillGraphService`. Skill-run fetch,
-approval, rejection, and audit routes are not implemented yet.
+Skill-run routes wrap the Artifact 2 `SkillGraphService` and expose creation,
+read, approval, rejection, and audit for process-local demo runs.
 
-See [docs/api.md](docs/api.md).
+See:
+
+- [docs/api.md](docs/api.md)
+- [docs/skill-runner-api.md](docs/skill-runner-api.md)
+- [docs/skill-runner-demo.md](docs/skill-runner-demo.md)
+
+## Skill-Runner HTTP Demo
+
+The default HTTP skill-runner demo uses `proposer_mode: "fake"`. If omitted,
+the API defaults to fake proposer mode.
+
+The default running API can demonstrate:
+
+- skill listing with `GET /skills`
+- low-risk skill-run creation with `POST /skill-runs`
+- skill-run summary retrieval with `GET /skill-runs/{run_id}`
+- skill-run audit retrieval with `GET /skill-runs/{run_id}/audit`
+- safe rejection of HTTP `proposer_mode: "llm"` with `400 Bad Request`
+
+Invalid proposal, high-risk approval, high-risk rejection, and approved
+high-risk audit behavior are covered by API tests using scenario-configured fake
+proposer injection. The default curl flow does not currently expose a public
+request field for selecting those fake proposer scenarios.
+
+See [docs/skill-runner-demo.md](docs/skill-runner-demo.md) for curl-oriented
+walkthroughs.
 
 ## Identity, Policy, Approval, And Audit
 
@@ -157,9 +186,9 @@ Skill specs include argument-schema metadata, but current skill execution does
 not validate or execute arbitrary model-proposed runtime arguments.
 
 The graph uses harness-owned default arguments for the registered dry-run tools.
-This keeps Sprint 5 honest: Artifact 2 validates which skill, steps, tools,
+This keeps Artifact 2.1 honest: Artifact 2 validates which skill, steps, tools,
 scopes, and risk levels are allowed, but a full proposed-argument validation
-framework is future work.
+framework is future Artifact 2.2 work.
 
 ## Quickstart
 

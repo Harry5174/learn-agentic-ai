@@ -74,9 +74,13 @@ Artifact 2.1 skill-runner routes:
 - `POST /tasks/{task_id}/reject`
 - `GET /tasks/{task_id}/audit`
 - `POST /skill-runs`
+- `GET /skill-runs/{run_id}`
+- `POST /skill-runs/{run_id}/approve`
+- `POST /skill-runs/{run_id}/reject`
+- `GET /skill-runs/{run_id}/audit`
 
-Skill-run creation is exposed through `SkillGraphService`. Skill-run fetch,
-approval, rejection, and audit routes are not implemented yet.
+Skill-run routes are exposed through `SkillGraphService` for process-local
+demo runs.
 
 ## Current Persistence Status
 
