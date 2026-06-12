@@ -1,9 +1,8 @@
 # Constitution Roadmap
 
-This roadmap records sequencing discipline for future coding agents. It does not
-start Artifact 2.2.
+This roadmap records sequencing discipline for future coding agents.
 
-## Completed Artifact 1
+## Completed Artifact 1 - Identity-Aware Stateful Agent Harness
 
 Artifact 1 proved the base execution harness:
 
@@ -23,7 +22,7 @@ Artifact 1's key lesson:
 Do not let request bodies control identity, policy, approval, or execution.
 ```
 
-## Completed Artifact 2.0
+## Completed Artifact 2.0 - LLM-Proposed, Harness-Controlled Skill Runner
 
 Artifact 2.0 added model-shaped skill proposals while keeping authority in the
 harness:
@@ -42,7 +41,7 @@ Artifact 2.0's key lesson:
 The proposer proposes. The harness decides.
 ```
 
-## Completed Artifact 2.1
+## Completed Artifact 2.1 - Skill Runner API and Demo Surface
 
 Artifact 2.1 exposes the skill-runner lifecycle through the local/demo FastAPI
 surface:
@@ -68,22 +67,33 @@ Artifact 2.1 supports:
 - fake proposer default over HTTP
 - disabled/rejected HTTP LLM mode
 
-## Next Recommended Step: Artifact 2.2
+## Completed Artifact 2.2 - Validated Model-Proposed Tool Arguments
 
-The next implementation step should be:
+Artifact 2.2 validates model-proposed runtime tool arguments while preserving
+the harness boundary:
 
 ```text
-Validated Model-Proposed Tool Arguments
+A model-shaped SkillProposal can include runtime tool arguments,
+but only registry-declared, scalar, validator-normalized arguments can reach
+dry-run execution.
 ```
 
-Artifact 2.2 should validate and execute model-proposed runtime tool arguments
-against trusted skill/tool metadata before policy, approval, or execution.
+Artifact 2.2 includes:
 
-Do not skip this step before adding infrastructure integrations.
+- E2.0 - argument contract schemas and spec
+- E2.1 - validator argument checks
+- E2.2 - execution with validated arguments only
+- E2.3 - adversarial argument-boundary suite and docs
+
+Raw proposed arguments must never flow directly into `ToolRegistry.execute()`.
+
+## Next Recommended Step
+
+Stabilize portfolio packaging or prepare the next artifact proposal.
 
 ## Sequencing Rule
 
-Do Artifact 2.2 argument validation before:
+Do not add these as incidental cleanup:
 
 - MCP
 - database persistence
@@ -92,9 +102,8 @@ Do Artifact 2.2 argument validation before:
 - real GitHub writes
 - live LLM demo mode exposed through HTTP
 
-Argument validation is the missing contract between model-shaped plans and
-runtime execution. Infrastructure expansion before that contract would make the
-harness harder to reason about.
+Any future infrastructure expansion must preserve validation, approval, audit,
+redaction, and raw-argument non-execution boundaries.
 
 ## Later Possible Extensions
 
@@ -105,6 +114,7 @@ These are future work only:
 - durable audit storage
 - OAuth/OIDC identity integration
 - MCP tool integration
+- richer argument schemas after a separate threat-modeling pass
 - frontend or demo UI
 - real GitHub write tools behind strong approval and audit gates
 - deployment demo

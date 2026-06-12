@@ -1,11 +1,14 @@
 # Documentation Index
 
-This directory is organized so Artifact 2.1 is easy to read from GitHub and easy
+This directory is organized so Artifact 2 is easy to read from GitHub and easy
 for future IDE agents to navigate.
 
 Artifact 2.1 is the Skill Runner API and Demo Surface. It is complete as a
-local/demo HTTP surface; this documentation packaging patch does not start
-Artifact 2.2.
+local/demo HTTP surface.
+
+Artifact 2.2 is complete as a local/demo, dry-run, scalar-argument safety
+artifact. It validates model-proposed runtime tool arguments before execution
+and keeps raw proposed arguments out of `ToolRegistry.execute()`.
 
 ## Start Here
 
@@ -13,10 +16,17 @@ Artifact 2.2.
   curl walkthrough for `/skills` and `/skill-runs`.
 - [Skill-runner API contract](api/skill-runner-api.md): public contract for the
   Artifact 2.1 skill-runner lifecycle.
+- [Artifact 2.2 argument validation spec](specs/artifact-2.2-argument-validation.md):
+  validated model-proposed scalar tool argument boundary.
+- [Adversarial argument validation](adversarial-argument-validation.md):
+  E2.3 adversarial boundary evidence for unsafe argument rejection and raw
+  argument non-execution.
 - [Architecture](architecture/architecture.md): harness flow, trust boundaries,
   graph behavior, state, and persistence limits.
 - [Known limitations](status/known-limitations.md): local/demo constraints and
   non-goals.
+- [Project status](status/project-status.md): current Artifact 2.2 completion
+  status.
 - [Interview notes](status/interview-notes.md): concise portfolio framing.
 
 ## API References
@@ -56,6 +66,7 @@ Artifact 2.2.
 ## Process And Specs
 
 - [Development rules](process/development-rules.md)
+- [Artifact 2.2 argument validation spec](specs/artifact-2.2-argument-validation.md)
 - [Sprint 2 spec](specs/sprint-2-spec.md)
 - [Sprint 3 spec](specs/sprint-3-spec.md)
 - [Sprint 4 spec](specs/sprint-4-spec.md)
@@ -75,6 +86,9 @@ Artifact 2.2.
 - Invalid-proposal and high-risk skill-run examples are test-backed with
   scenario-configured fake proposer injection when default curl cannot trigger
   them.
-- Runtime tool argument validation for model-proposed arguments is future
-  Artifact 2.2 work.
+- Model-proposed runtime tool arguments are validated against trusted
+  `ToolArgumentSpec` metadata before dry-run execution.
+- Only registry-declared scalar string/integer/boolean arguments can reach
+  execution; object/list/nested payloads and partial acceptance are not
+  supported.
 - The project remains local/demo, process-local, in-memory, and dry-run only.

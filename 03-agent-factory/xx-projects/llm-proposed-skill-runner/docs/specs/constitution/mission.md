@@ -4,8 +4,8 @@
 
 **Name:** LLM-Proposed, Harness-Controlled Skill Runner
 
-**Current status:** Artifact 2.1 is complete as a local/demo Skill Runner API and
-Demo Surface.
+**Current status:** Artifact 2.2 is complete as a local/demo validated-argument
+skill runner.
 
 Artifact 2.1 exposes the skill-runner lifecycle through FastAPI:
 
@@ -15,6 +15,11 @@ Artifact 2.1 exposes the skill-runner lifecycle through FastAPI:
 - `POST /skill-runs/{run_id}/approve`
 - `POST /skill-runs/{run_id}/reject`
 - `GET /skill-runs/{run_id}/audit`
+
+Artifact 2.2 adds validated model-proposed scalar tool arguments. Model-shaped
+`SkillProposal` objects may include runtime tool arguments, but only
+registry-declared, scalar, validator-normalized arguments can reach dry-run
+execution.
 
 ## Mission Statement
 
@@ -42,6 +47,8 @@ The current harness uses:
 - server-derived identity from local demo API keys
 - trusted `SkillRegistry` metadata
 - deterministic `ProposalValidator` checks
+- trusted `ToolArgumentSpec` metadata
+- validated scalar arguments from `ValidatedSkillPlan`
 - deterministic policy checks
 - approval pause/resume for high-risk work
 - registered dry-run tools only
@@ -49,7 +56,8 @@ The current harness uses:
 - process-local, in-memory state
 
 Request bodies and model output must not define identity, role, scopes, policy
-decisions, approval authority, trusted tools, or final risk.
+decisions, approval authority, trusted tools, final risk, or control-plane
+runtime arguments.
 
 ## Engineering Skill Demonstrated
 
@@ -73,9 +81,10 @@ demo, but it is not the primary Artifact 2.1 demo surface.
 
 ## Non-Goals
 
-Artifact 2.1 does not include:
+Artifact 2.2 does not include:
 
-- model-proposed runtime tool argument validation or execution
+- object/list/nested argument support
+- partial acceptance of mixed valid and invalid argument plans
 - live LLM mode through HTTP
 - MCP
 - OAuth/OIDC or JWT validation
@@ -98,4 +107,7 @@ Future agents should:
 - keep routes thin and avoid moving policy decisions into HTTP handlers
 - keep tests deterministic and free of live model/network requirements
 - describe limitations plainly instead of implying production readiness
-- implement Artifact 2.2 argument validation before infrastructure expansion
+- do not weaken the argument boundary
+- do not allow raw proposed arguments to reach `ToolRegistry.execute()`
+- do not add infrastructure integrations before preserving validation,
+  approval, audit, and redaction boundaries

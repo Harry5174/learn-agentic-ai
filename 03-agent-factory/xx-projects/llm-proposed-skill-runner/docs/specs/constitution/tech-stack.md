@@ -1,6 +1,6 @@
 # Tech Stack
 
-This file records the current Artifact 2.1 technology choices and the boundaries
+This file records the current Artifact 2 technology choices and the boundaries
 future agents should preserve.
 
 ## Runtime And Application Stack
@@ -54,7 +54,7 @@ Specifically:
 
 ## LLM Boundary
 
-HTTP `proposer_mode: "llm"` is disabled and rejected in Artifact 2.1. Enabling a
+HTTP `proposer_mode: "llm"` is disabled and rejected. Enabling a
 live LLM demo mode would be future work and must be explicit, configured, and
 testable without requiring live calls.
 
@@ -70,8 +70,19 @@ contracts are stable.
 
 ## Tool Argument Boundary
 
-Skill specs include argument-schema metadata, but Artifact 2.1 uses
-harness-owned default arguments for registered dry-run tools.
+Artifact 2.2 validates proposed runtime arguments against trusted
+`ToolArgumentSpec` metadata.
 
-Validated model-proposed runtime tool arguments are the recommended next
-Artifact 2.2 step.
+Skill graph execution uses validator-approved scalar arguments from
+`ValidatedSkillPlan`.
+
+Raw proposal arguments are never passed directly to `ToolRegistry.execute()`.
+
+The V1 scope remains intentionally narrow:
+
+- string, integer, and boolean arguments only
+- object/list/nested argument support deferred
+- partial acceptance unsupported
+- dry-run tools only
+- process-local state
+- in-memory audit

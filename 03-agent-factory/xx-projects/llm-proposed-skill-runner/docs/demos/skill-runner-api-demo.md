@@ -12,6 +12,12 @@ The harness validates, authorizes, approval-gates, executes, and audits.
 The default HTTP API uses fake proposer mode. If `proposer_mode` is omitted,
 `POST /skill-runs` defaults to `fake`.
 
+Artifact 2.2 adds validated runtime tool arguments to the demo boundary. The
+default fake proposer provides registered scalar arguments for demo dry-run
+tools. The validator checks arguments before execution. Graph execution uses
+only validated arguments. Audit/API summaries expose safe argument-validation
+evidence.
+
 HTTP `proposer_mode: "llm"` is intentionally disabled and returns `400 Bad
 Request` without calling a live model provider. The real `LLMProposer` boundary
 exists internally and is tested with mocked clients only.

@@ -131,6 +131,23 @@ Mitigation:
 - no external side-effecting tool adapters are implemented
 - proposed tool names are checked against registered skill metadata
 
+## Runtime Argument Risks
+
+Risk:
+
+The model proposes malformed arguments, unknown argument names, object/list
+payloads, or control-plane fields that try to influence identity, policy,
+approval, risk, tool selection, or skill selection.
+
+Mitigation:
+
+- model-proposed runtime arguments are accepted only after registry-schema
+  validation
+- only validator-normalized scalar arguments reach dry-run execution
+- unsafe, malformed, unknown, or control-plane arguments are rejected before
+  execution
+- raw proposed arguments never flow directly into `ToolRegistry.execute()`
+
 ## Audit Risks
 
 Risk:
@@ -155,4 +172,6 @@ Limitation:
 - no frontend
 - no multi-agent behavior
 - no production deployment
-- proposed runtime tool arguments are not fully validated or executed yet
+- scalar string/integer/boolean arguments only
+- no object/list/nested argument support
+- no partial acceptance

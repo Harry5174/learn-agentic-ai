@@ -85,8 +85,11 @@ the model.
 
 ## What Artifact 2.2 Adds
 
-Artifact 2.2 lets a model-shaped proposal include runtime tool arguments while
-keeping execution authority in the harness.
+Artifact 2.2 added validated model-proposed tool arguments and adversarial
+boundary tests.
+
+It lets a model-shaped proposal include runtime tool arguments while keeping
+execution authority in the harness.
 
 The validator accepts only registry-declared scalar arguments. Unknown,
 missing, wrong-type, overlong, forbidden control-plane, object, and list
@@ -170,7 +173,8 @@ public request field for selecting those fake proposer scenarios.
 
 ## Strong Interview Framing
 
-This is not "an LLM that can use tools."
+This is not merely an LLM tool-use demo.
 
-It is a harness that shows how a system can accept model-proposed work while
-keeping authority in deterministic, testable application layers.
+It is a harness that accepts model-proposed skill plans and runtime arguments
+while keeping identity, authorization, approval, argument validation,
+execution, and audit in deterministic application layers.
