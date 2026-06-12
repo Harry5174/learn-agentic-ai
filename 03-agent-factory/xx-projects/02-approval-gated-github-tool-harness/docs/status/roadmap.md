@@ -2,7 +2,8 @@
 
 This roadmap is intentionally narrow. Artifact 3 — Approval-Gated GitHub Tool
 Harness starts at A3.0 as a copied baseline from the finalized Artifact 2.2
-project, not as a production platform plan.
+project, then uses A3.1 to define the future real side-effect boundary before
+any GitHub write path is implemented.
 
 For the project-level sequencing rules, see
 [../specs/constitution/roadmap.md](../specs/constitution/roadmap.md).
@@ -17,6 +18,19 @@ The current Artifact 3 baseline still inherits Artifact 2.2 local/demo dry-run
 scalar argument validation behavior.
 
 Artifact 3 has not yet implemented real GitHub side effects.
+
+## A3.1 Real Side-Effect Boundary Spec
+
+A3.1 defines the future boundary for an approval-gated GitHub issue-comment
+tool named `post_github_issue_comment` with scalar arguments `repository`,
+`issue_number`, and `comment_body`.
+
+A3.1 is documentation/specification only. It does not implement GitHub
+execution, a GitHub client, fake GitHub client, side-effect ledger,
+`side_effect_id`, `post_github_issue_comment`, repository allowlist logic,
+real-mode configuration, tool registry entries, policy implementation, graph
+execution changes, API route changes, proposer changes, validator changes, or
+tool execution changes.
 
 ## Inherited Artifact 2 Foundation
 
@@ -78,10 +92,10 @@ untrusted, and the harness validates before policy, approval, or execution.
 
 ## Near-Term Follow-Ups
 
-Useful next steps after A3.0:
+Useful next steps after A3.1:
 
-- A3.1/A3.2 design and implementation work for an approval-gated GitHub
-  issue-comment tool, if explicitly approved
+- A3.2 implementation work only if explicitly approved and scoped against the
+  A3.1 boundary spec
 - future tool name: `post_github_issue_comment`
 - future scalar arguments: `repository`, `issue_number`, and `comment_body`
 - richer argument schema support only after an explicit future design pass
@@ -101,10 +115,12 @@ Possible future work:
 
 ## Still Out Of Scope
 
-- real GitHub side effects in A3.0
-- GitHub client code in A3.0
-- side-effect ledger or `side_effect_id` in A3.0
-- real-mode configuration in A3.0
+- real GitHub side effects in A3.1
+- GitHub client code in A3.1
+- fake GitHub client code in A3.1
+- side-effect ledger or `side_effect_id` in A3.1
+- `post_github_issue_comment` implementation in A3.1
+- real-mode configuration in A3.1
 - autonomous production writes without approval
 - broad chatbot or RAG features
 - multi-agent behavior

@@ -2,12 +2,12 @@
 
 ## One-Minute Summary
 
-Artifact 3 — Approval-Gated GitHub Tool Harness is currently at A3.0: a
-baseline copy and rename from the finalized Artifact 2.2 project.
+Artifact 3 — Approval-Gated GitHub Tool Harness started at A3.0 as a baseline
+copy and rename from the finalized Artifact 2.2 project.
 
-In this sprint, it is still a local/demo agent execution harness for
-model-shaped skill plans. Artifact 3 has not yet implemented real GitHub side
-effects.
+A3.1 defines the future real side-effect boundary for an approval-gated GitHub
+issue-comment tool. It is still documentation/specification only. Artifact 3
+has not yet implemented real GitHub side effects.
 
 The core idea is:
 
@@ -115,6 +115,22 @@ Future Artifact 3 sprints may introduce an approval-gated GitHub issue-comment
 tool named `post_github_issue_comment` with scalar arguments `repository`,
 `issue_number`, and `comment_body`.
 
+## What A3.1 Adds
+
+A3.1 defines the future real side-effect boundary before any GitHub write path
+exists.
+
+It specifies future requirements for explicit real-mode enablement,
+server-side GitHub token/config handling, repository allowlist policy, approval
+binding to the exact validated action, deterministic `side_effect_id`
+derivation, side-effect ledger checks, GitHub issue-comment client boundaries,
+dry-run vs real behavior, failure behavior, and audit evidence.
+
+A3.1 does not add a GitHub client, fake GitHub client, side-effect ledger,
+`side_effect_id`, `post_github_issue_comment`, registry entries, policy
+implementation, real-mode config implementation, API routes, graph execution
+changes, proposer changes, validator changes, or tool execution changes.
+
 ## Why Policy Is Still Needed
 
 Validation answers:
@@ -174,8 +190,9 @@ public request field for selecting those fake proposer scenarios.
 ## Current Limitations
 
 - local/demo artifact
-- A3.0 baseline copy only
+- A3.1 boundary specification only
 - no GitHub client code
+- no fake GitHub client code
 - no side-effect ledger or `side_effect_id`
 - no `post_github_issue_comment`
 - no real-mode configuration

@@ -5,11 +5,11 @@ artifact.
 
 ## Local/Demo Scope
 
-Artifact 3 — Approval-Gated GitHub Tool Harness is currently an A3.0 baseline
+Artifact 3 — Approval-Gated GitHub Tool Harness started as an A3.0 baseline
 copy from the finalized Artifact 2.2 project.
 
-The project is still a local/demo harness. A3.0 is only a baseline copy and
-rename sprint.
+The project is still a local/demo harness. A3.1 defines the future real
+side-effect boundary in documentation only.
 
 Artifact 2.2 remains the completed dry-run scalar argument validation artifact.
 The current Artifact 3 baseline still inherits Artifact 2.2 local/demo dry-run
@@ -69,16 +69,18 @@ proposer injection.
 
 Tools are dry-run only.
 
-Artifact 3 has not yet implemented real GitHub side effects. A future sprint
-may introduce an approval-gated GitHub issue-comment tool named
+Artifact 3 has not yet implemented real GitHub side effects. A3.1 defines the
+future boundary for an approval-gated GitHub issue-comment tool named
 `post_github_issue_comment` with scalar arguments `repository`, `issue_number`,
 and `comment_body`.
 
 Not implemented:
 
 - GitHub client code
+- fake GitHub client code
 - side-effect ledger
 - `side_effect_id` generation
+- `post_github_issue_comment`
 - real-mode environment configuration
 - repository allowlist logic
 - real GitHub writes

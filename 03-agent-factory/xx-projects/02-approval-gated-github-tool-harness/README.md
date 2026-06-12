@@ -2,9 +2,13 @@
 
 Artifact 3 is the Approval-Gated GitHub Tool Harness project.
 
-A3.0 is only a baseline copy and rename sprint. This project was copied from
+A3.0 was only a baseline copy and rename sprint. This project was copied from
 the finalized Artifact 2.2 baseline, and Artifact 2.2 remains the completed
 dry-run scalar argument validation artifact.
+
+A3.1 is a documentation/specification-only sprint that defines the future real
+side-effect boundary for an approval-gated GitHub issue-comment tool. It does
+not implement GitHub execution.
 
 The current baseline still inherits Artifact 2.2 local/demo dry-run scalar
 argument validation behavior. Artifact 3 has not yet implemented real GitHub
@@ -49,9 +53,10 @@ Inherited baseline capabilities include:
 - Artifact 2.2 validation for model-proposed scalar tool arguments before
   dry-run execution
 
-Future Artifact 3 sprints may introduce an approval-gated GitHub issue-comment
-tool named `post_github_issue_comment` with scalar arguments `repository`,
-`issue_number`, and `comment_body`.
+Artifact 3 A3.1 defines the future boundary for an approval-gated GitHub
+issue-comment tool named `post_github_issue_comment` with scalar arguments
+`repository`, `issue_number`, and `comment_body`. This is a spec only; the tool
+is not implemented.
 
 ## What This Is Not
 
@@ -63,10 +68,11 @@ The repo intentionally does not include OAuth/OIDC, JWT validation, database
 persistence, frontend UI, real GitHub writes, real workflow triggers, MCP,
 multi-agent behavior, or production deployment hardening.
 
-A3.0 does not include a GitHub client, side-effect ledger, `side_effect_id`,
-real-mode configuration, token handling, repository allowlist logic, live LLM
-HTTP mode, OAuth/OIDC, MCP, database persistence, frontend, workflow dispatch,
-PR creation, or repo file-write tooling.
+A3.1 does not include a GitHub client, fake GitHub client, side-effect ledger,
+`side_effect_id`, `post_github_issue_comment`, real-mode configuration, token
+handling, repository allowlist logic, live LLM HTTP mode, OAuth/OIDC, MCP,
+database persistence, frontend, workflow dispatch, PR creation, or repo
+file-write tooling.
 
 ## Quickstart
 
@@ -126,6 +132,7 @@ Use [docs/README.md](docs/README.md) as the documentation index.
 High-value entry points:
 
 - [Project constitution](docs/specs/constitution/mission.md)
+- [Artifact 3 real tool boundary](docs/specs/artifact-3-real-tool-boundary.md)
 - [Skill-runner API contract](docs/api/skill-runner-api.md)
 - [Inherited task API reference](docs/api/task-api.md)
 - [Architecture](docs/architecture/architecture.md)
@@ -139,8 +146,9 @@ High-value entry points:
 
 ## Current Boundaries
 
-Artifact 3 A3.0 is a copied baseline only. It has not yet added any
-GitHub-specific tool behavior or real GitHub side effects.
+Artifact 3 A3.1 defines the future real GitHub side-effect boundary in
+documentation only. It has not yet added any GitHub-specific tool behavior or
+real GitHub side effects.
 
 The default HTTP skill-runner demo uses fake proposer mode. HTTP
 `proposer_mode: "llm"` is disabled and rejected without calling a live model

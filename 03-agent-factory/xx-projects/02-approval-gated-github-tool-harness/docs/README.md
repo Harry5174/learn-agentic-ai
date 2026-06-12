@@ -3,9 +3,12 @@
 This directory is organized so Artifact 3 is easy to read from GitHub and easy
 for future IDE agents to navigate.
 
-Artifact 3 — Approval-Gated GitHub Tool Harness is currently in A3.0 baseline
-copy and rename status only. It was copied from the finalized Artifact 2.2
-baseline.
+Artifact 3 — Approval-Gated GitHub Tool Harness started at A3.0 as a baseline
+copy and rename from the finalized Artifact 2.2 baseline.
+
+A3.1 is documentation/specification only. It defines the future real
+side-effect boundary for an approval-gated GitHub issue-comment tool, but it
+does not implement GitHub execution.
 
 Artifact 2.2 remains the completed dry-run scalar argument validation artifact.
 The current Artifact 3 baseline still inherits Artifact 2.2 local/demo dry-run
@@ -22,7 +25,9 @@ and keeps raw proposed arguments out of `ToolRegistry.execute()`.
 ## Start Here
 
 - [Project status](status/project-status.md): current Artifact 3 A3.0 baseline
-  copy status.
+  copy status plus A3.1 boundary-spec status.
+- [Artifact 3 real tool boundary](specs/artifact-3-real-tool-boundary.md):
+  future real side-effect boundary for approval-gated GitHub issue comments.
 - [Skill-runner API demo](demos/skill-runner-api-demo.md): primary Artifact 2.1
   curl walkthrough for `/skills` and `/skill-runs`.
 - [Skill-runner API contract](api/skill-runner-api.md): public contract for the
@@ -75,6 +80,7 @@ and keeps raw proposed arguments out of `ToolRegistry.execute()`.
 ## Process And Specs
 
 - [Development rules](process/development-rules.md)
+- [Artifact 3 real tool boundary](specs/artifact-3-real-tool-boundary.md)
 - [Artifact 2.2 argument validation spec](specs/artifact-2.2-argument-validation.md)
 - [Sprint 2 spec](specs/sprint-2-spec.md)
 - [Sprint 3 spec](specs/sprint-3-spec.md)
@@ -90,10 +96,11 @@ and keeps raw proposed arguments out of `ToolRegistry.execute()`.
 
 ## Current Boundaries
 
-- A3.0 is only a copied baseline and rename sprint.
+- A3.0 was only a copied baseline and rename sprint.
+- A3.1 is documentation/specification only.
 - Artifact 3 has not yet implemented real GitHub side effects.
-- A later Artifact 3 sprint may introduce an approval-gated GitHub
-  issue-comment tool named `post_github_issue_comment`.
+- A3.1 defines the future boundary for an approval-gated GitHub issue-comment
+  tool named `post_github_issue_comment`, but the tool is not implemented.
 - The default HTTP skill-runner API uses fake proposer mode.
 - HTTP `proposer_mode: "llm"` is disabled and rejected.
 - Invalid-proposal and high-risk skill-run examples are test-backed with

@@ -2,7 +2,8 @@
 
 ## Scope
 
-This threat model covers the local/demo Artifact 2 skill runner.
+This threat model covers the local/demo Artifact 2 skill runner inherited by
+Artifact 3 and the A3.1 future real side-effect boundary specification.
 
 It focuses on model-proposed skill execution where an untrusted proposer returns
 a structured `SkillProposal` and the harness remains responsible for validation,
@@ -130,6 +131,94 @@ Mitigation:
 - tools are dry-run only
 - no external side-effecting tool adapters are implemented
 - proposed tool names are checked against registered skill metadata
+
+## Future Real GitHub Side-Effect Risks
+
+A3.1 defines these mitigations for implementation in later A3.x sprints. It
+does not implement real GitHub execution, a GitHub client, a side-effect
+ledger, `side_effect_id`, or `post_github_issue_comment`.
+
+Risk:
+
+Duplicate GitHub comments are caused by replay, resume, retry, or repeated
+approval paths.
+
+Future mitigation:
+
+- derive a deterministic `side_effect_id` from `skill_run_id`, `step_id`,
+  `tool_name`, and `validated_arguments_hash`
+- check a side-effect ledger before any real GitHub call
+- skip duplicate real calls when the ledger already records the side effect
+- audit ledger hits, misses, executed effects, skipped effects, and failures
+
+Risk:
+
+Approval mismatches or stale approvals authorize a different action than the
+human approved.
+
+Future mitigation:
+
+- bind approval to the exact validated action, not only the run ID
+- include `skill_run_id`, `step_id`, `tool_name`, `validated_arguments_hash`,
+  and `side_effect_id` in the approval binding
+- reject or repause execution if the validated action changes before resume
+
+Risk:
+
+Repository targeting abuse causes comments to be posted to an unintended
+repository.
+
+Future mitigation:
+
+- allow real comments only for repositories explicitly configured in a
+  server-owned allowlist
+- keep allowlist policy outside model output and request-provided arguments
+- audit repository allowed and repository denied decisions
+
+Risk:
+
+Token or client configuration is injected through proposed arguments.
+
+Future mitigation:
+
+- treat GitHub tokens and client configuration as server-side configuration
+  only
+- reject model-proposed tokens, authorization headers, API base URLs, client
+  config, and transport config
+- preserve the Artifact 2.2-style scalar argument validation boundary before
+  policy, approval, or side-effect execution
+
+Risk:
+
+Real mode is accidentally enabled because a token is present.
+
+Future mitigation:
+
+- require explicit future configuration such as `REAL_GITHUB_ENABLED=true`
+- keep the default as false / dry-run
+- never infer real mode from token presence alone
+
+Risk:
+
+GitHub API failures create ambiguity about whether a comment was posted.
+
+Future mitigation:
+
+- capture GitHub client failures as structured failure results
+- audit failures without exposing secrets
+- avoid automatic retries that could duplicate comments
+- do not convert ambiguous outcomes into success
+
+Risk:
+
+Audit gaps make real side effects hard to explain.
+
+Future mitigation:
+
+- emit audit evidence before and after the side-effect attempt
+- include real-mode, repository policy, `side_effect_id`, ledger, client-called,
+  client-not-called, executed, skipped, and failed events
+- avoid exposing secrets or raw rejected payloads in audit output
 
 ## Runtime Argument Risks
 

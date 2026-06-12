@@ -6,7 +6,9 @@
 
 **Copied baseline:** LLM-Proposed, Harness-Controlled Skill Runner
 
-**A3.0 status:** Baseline copy and rename only.
+**A3.0 status:** Baseline copy and rename complete.
+
+**A3.1 status:** Real side-effect boundary specification only.
 
 **Principle:** The LLM proposes. The harness validates, authorizes,
 approval-gates, executes, and audits.
@@ -19,9 +21,12 @@ For the current project constitution, see
 
 ## Current Artifact Status
 
-Artifact 3 has started with A3.0, a copied baseline from the finalized Artifact
-2.2 project. This copied project now carries the Artifact 3 identity, but it
-has not yet implemented real GitHub side effects.
+Artifact 3 started with A3.0, a copied baseline from the finalized Artifact 2.2
+project. This copied project now carries the Artifact 3 identity.
+
+A3.1 defines the future real side-effect boundary for an approval-gated GitHub
+issue-comment tool. It is documentation/specification only and does not
+implement real GitHub side effects.
 
 Artifact 2.2 remains the completed dry-run scalar argument validation artifact.
 The current Artifact 3 baseline still inherits Artifact 2.2 local/demo dry-run
@@ -77,7 +82,8 @@ The copied baseline still includes the Artifact 2 foundation sprint specs:
 - `../specs/sprint-5-spec.md`
 
 Artifact 2.1 extends that foundation with the skill-runner API lifecycle.
-A3.0 does not start A3.1 and does not add a GitHub issue-comment tool.
+A3.1 adds a real side-effect boundary spec only and does not add a GitHub
+issue-comment tool.
 
 Copied Artifact 1 sprint specs that could mislead future IDE agents are archived
 under:
@@ -156,6 +162,7 @@ No test depends on:
 ## Explicitly Not Implemented
 
 - GitHub client code
+- fake GitHub client code
 - side-effect ledger
 - `side_effect_id` generation
 - `post_github_issue_comment`
@@ -174,6 +181,25 @@ No test depends on:
 - real workflow triggers
 - provider SDK integration
 - live LLM mode through HTTP
+
+## A3.1 Boundary Spec Status
+
+A3.1 defines future implementation requirements for:
+
+- real execution preconditions
+- explicit real-mode configuration
+- GitHub token/config boundaries
+- repository allowlist policy
+- approval binding to the exact validated action
+- deterministic `side_effect_id` derivation
+- `SideEffectLedger` and `SideEffectRecord` contracts
+- GitHub issue-comment client boundaries
+- dry-run vs real behavior
+- structured failure behavior
+- audit event requirements
+
+These are documented future contracts only. They are not runtime behavior in
+A3.1.
 
 ## Current Limitation To Keep Visible
 
