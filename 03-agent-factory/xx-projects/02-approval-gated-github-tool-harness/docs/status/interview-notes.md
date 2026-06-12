@@ -9,6 +9,10 @@ A3.1 defines the future real side-effect boundary for an approval-gated GitHub
 issue-comment tool. It is still documentation/specification only. Artifact 3
 has not yet implemented real GitHub side effects.
 
+A3.2 adds isolated fake/in-memory supporting boundaries for a future GitHub
+issue-comment client and side-effect ledger. These are not wired into the skill
+runner runtime.
+
 The core idea is:
 
 ```text
@@ -131,6 +135,23 @@ A3.1 does not add a GitHub client, fake GitHub client, side-effect ledger,
 implementation, real-mode config implementation, API routes, graph execution
 changes, proposer changes, validator changes, or tool execution changes.
 
+## What A3.2 Adds
+
+A3.2 adds the isolated supporting boundaries that A3.1 specified:
+
+- typed GitHub issue-comment request, result, and failure schemas
+- `GitHubIssueCommentClient` protocol
+- deterministic `FakeGitHubIssueCommentClient`
+- deterministic validated argument hashing
+- deterministic side-effect id generation
+- `SideEffectRecord`
+- `SideEffectLedger`
+- `InMemorySideEffectLedger`
+
+These are direct unit-test targets only. They do not register
+`post_github_issue_comment`, add a GitHub comment skill, wire runtime approval
+or graph execution, load tokens, or call GitHub.
+
 ## Why Policy Is Still Needed
 
 Validation answers:
@@ -190,12 +211,15 @@ public request field for selecting those fake proposer scenarios.
 ## Current Limitations
 
 - local/demo artifact
-- A3.1 boundary specification only
-- no GitHub client code
-- no fake GitHub client code
-- no side-effect ledger or `side_effect_id`
+- A3.2 isolated boundary modules only
+- no real GitHub client code
+- no runtime GitHub client wiring
+- no runtime side-effect ledger wiring
+- no durable side-effect ledger
 - no `post_github_issue_comment`
+- no approval-gated GitHub comment skill
 - no real-mode configuration
+- no repository allowlist runtime policy
 - no OAuth/OIDC or JWT validation
 - no MCP
 - no database persistence

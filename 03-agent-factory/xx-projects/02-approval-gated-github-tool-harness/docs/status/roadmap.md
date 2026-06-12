@@ -3,7 +3,8 @@
 This roadmap is intentionally narrow. Artifact 3 — Approval-Gated GitHub Tool
 Harness starts at A3.0 as a copied baseline from the finalized Artifact 2.2
 project, then uses A3.1 to define the future real side-effect boundary before
-any GitHub write path is implemented.
+any GitHub write path is implemented. A3.2 adds isolated supporting boundaries
+without wiring them into runtime execution.
 
 For the project-level sequencing rules, see
 [../specs/constitution/roadmap.md](../specs/constitution/roadmap.md).
@@ -31,6 +32,25 @@ execution, a GitHub client, fake GitHub client, side-effect ledger,
 real-mode configuration, tool registry entries, policy implementation, graph
 execution changes, API route changes, proposer changes, validator changes, or
 tool execution changes.
+
+## A3.2 GitHub Client And Side-Effect Ledger Boundaries
+
+A3.2 adds isolated boundary modules for:
+
+- GitHub issue-comment request/result/failure schemas
+- `GitHubIssueCommentClient`
+- deterministic `FakeGitHubIssueCommentClient`
+- deterministic validated argument hashing
+- deterministic side-effect id generation
+- `SideEffectRecord`
+- `SideEffectLedger`
+- `InMemorySideEffectLedger`
+
+A3.2 does not register `post_github_issue_comment`, add an approval-gated
+GitHub comment skill, modify the skill registry, modify graph execution,
+modify approval/resume behavior, modify API routes, wire real-mode
+configuration, wire repository allowlist policy, load GitHub tokens, or make
+GitHub network calls.
 
 ## Inherited Artifact 2 Foundation
 
@@ -92,10 +112,10 @@ untrusted, and the harness validates before policy, approval, or execution.
 
 ## Near-Term Follow-Ups
 
-Useful next steps after A3.1:
+Useful next steps after A3.2:
 
-- A3.2 implementation work only if explicitly approved and scoped against the
-  A3.1 boundary spec
+- A3.3 runtime integration work only if explicitly approved and scoped against
+  the A3.1/A3.2 boundaries
 - future tool name: `post_github_issue_comment`
 - future scalar arguments: `repository`, `issue_number`, and `comment_body`
 - richer argument schema support only after an explicit future design pass
@@ -115,12 +135,15 @@ Possible future work:
 
 ## Still Out Of Scope
 
-- real GitHub side effects in A3.1
-- GitHub client code in A3.1
-- fake GitHub client code in A3.1
-- side-effect ledger or `side_effect_id` in A3.1
-- `post_github_issue_comment` implementation in A3.1
-- real-mode configuration in A3.1
+- real GitHub side effects in A3.2
+- real GitHub client code in A3.2
+- runtime use of the A3.2 fake GitHub client in skill execution
+- runtime use of the A3.2 side-effect ledger in skill execution
+- `post_github_issue_comment` implementation in A3.2
+- approval-gated GitHub comment skill in A3.2
+- real-mode configuration in A3.2
+- repository allowlist runtime policy in A3.2
+- durable side-effect ledger in A3.2
 - autonomous production writes without approval
 - broad chatbot or RAG features
 - multi-agent behavior

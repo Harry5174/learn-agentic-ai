@@ -11,6 +11,11 @@ A3.1 does not implement GitHub execution. A3.1 does not add a GitHub client.
 A3.1 does not add a side-effect ledger implementation. A3.1 does not add the
 `post_github_issue_comment` tool.
 
+A3.2 adds isolated GitHub issue-comment client and side-effect ledger
+boundaries. A3.2 does not wire those boundaries into skill execution, approval
+resume, API routes, runtime config, repository policy, or real GitHub
+execution.
+
 The goal is to document the future contract before any real GitHub write path
 exists, so later A3.x implementation work can stay narrow, auditable, and
 fail-closed.
@@ -88,7 +93,7 @@ Real mode must never be inferred from the presence of a GitHub token alone. A
 configured token without explicit real-mode enablement must still leave the
 harness in dry-run behavior.
 
-A3.1 does not implement this configuration.
+A3.2 does not implement this configuration.
 
 ## 5. GitHub Token Boundary
 
@@ -125,7 +130,7 @@ ALLOWED_GITHUB_REPOSITORIES=Harry5174/learn-agentic-ai
 The repository allowlist is a server-owned policy input. It must not be
 provided by the model, request body, or proposed tool arguments.
 
-A3.1 does not implement this configuration or policy.
+A3.2 does not implement this configuration or policy.
 
 ## 7. Approval Binding Model
 
@@ -204,8 +209,9 @@ Conceptual `SideEffectRecord` fields:
 - failure reason code, if one exists
 - audit event references
 
-A3.1 does not implement `SideEffectLedger`, `SideEffectRecord`, or
-`side_effect_id`.
+A3.2 implements isolated `SideEffectLedger`, `SideEffectRecord`,
+`InMemorySideEffectLedger`, validated argument hashing, and side-effect id
+helpers. A3.2 does not wire them into skill execution or real GitHub execution.
 
 ## 9. GitHub Client Boundary
 
@@ -230,7 +236,9 @@ choose API endpoints. The harness should construct the configured client from
 server-side configuration after validation, policy, approval, and idempotency
 checks pass.
 
-A3.1 does not add fake or real GitHub clients.
+A3.2 implements `GitHubIssueCommentClient` and
+`FakeGitHubIssueCommentClient` only. `RealGitHubIssueCommentClient` remains
+deferred.
 
 ## 10. Dry-Run vs Real Behavior
 
@@ -316,13 +324,13 @@ A3.1 explicitly excludes:
 - autonomous real execution
 - multiple real tools
 
-A3.1 also excludes runtime implementation of:
+A3.2 still excludes runtime implementation of:
 
 - GitHub execution
-- GitHub client code
-- fake GitHub client code
-- side-effect ledger code
-- `side_effect_id`
+- real GitHub client code
+- GitHub client runtime wiring
+- side-effect ledger runtime wiring
+- durable side-effect ledger
 - `post_github_issue_comment`
 - tool registry entries
 - repository allowlist logic

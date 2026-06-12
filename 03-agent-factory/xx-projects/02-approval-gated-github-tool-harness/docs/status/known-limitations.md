@@ -8,8 +8,8 @@ artifact.
 Artifact 3 — Approval-Gated GitHub Tool Harness started as an A3.0 baseline
 copy from the finalized Artifact 2.2 project.
 
-The project is still a local/demo harness. A3.1 defines the future real
-side-effect boundary in documentation only.
+The project is still a local/demo harness. A3.2 adds isolated fake/in-memory
+supporting boundaries only.
 
 Artifact 2.2 remains the completed dry-run scalar argument validation artifact.
 The current Artifact 3 baseline still inherits Artifact 2.2 local/demo dry-run
@@ -44,6 +44,7 @@ Current limits:
 - checkpoints do not survive process restart
 - task/run state is not stored in a database
 - audit events are not durably persisted
+- the A3.2 side-effect ledger is in-memory only and not wired into runtime
 - rate limit windows reset on process restart
 
 ## API Surface
@@ -69,20 +70,22 @@ proposer injection.
 
 Tools are dry-run only.
 
-Artifact 3 has not yet implemented real GitHub side effects. A3.1 defines the
+Artifact 3 has not implemented real GitHub side effects. A3.1 defines the
 future boundary for an approval-gated GitHub issue-comment tool named
 `post_github_issue_comment` with scalar arguments `repository`, `issue_number`,
-and `comment_body`.
+and `comment_body`. A3.2 adds isolated GitHub issue-comment client and
+side-effect ledger boundaries for later use.
 
 Not implemented:
 
-- GitHub client code
-- fake GitHub client code
-- side-effect ledger
-- `side_effect_id` generation
+- real GitHub client code
+- GitHub client runtime integration
+- side-effect ledger runtime integration
+- durable side-effect ledger
 - `post_github_issue_comment`
+- approval-gated GitHub comment skill
 - real-mode environment configuration
-- repository allowlist logic
+- repository allowlist runtime policy
 - real GitHub writes
 - real issue comments
 - real workflow triggers
@@ -132,3 +135,7 @@ Not implemented:
 
 This project demonstrates a safer harness shape for model-proposed execution.
 It should not be described as production security infrastructure.
+
+A3.2 does not provide production replay protection. It adds a process-local
+idempotency boundary that future implementation can wire into a runtime path
+after separate approval.

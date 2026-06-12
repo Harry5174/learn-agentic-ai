@@ -17,6 +17,14 @@ def test_default_registry_includes_exactly_three_tools() -> None:
     }
 
 
+def test_post_github_issue_comment_is_not_registered_yet() -> None:
+    registry = build_default_tool_registry()
+
+    tool_names = {tool.name for tool in registry.list_tools()}
+
+    assert "post_github_issue_comment" not in tool_names
+
+
 def test_list_tools_returns_metadata_for_all_tools() -> None:
     registry = build_default_tool_registry()
 

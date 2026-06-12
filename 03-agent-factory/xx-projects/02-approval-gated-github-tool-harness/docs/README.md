@@ -10,6 +10,10 @@ A3.1 is documentation/specification only. It defines the future real
 side-effect boundary for an approval-gated GitHub issue-comment tool, but it
 does not implement GitHub execution.
 
+A3.2 adds isolated GitHub issue-comment client and side-effect ledger
+boundaries. These are fake/in-memory supporting boundaries only and are not
+wired into skill execution, approval, API routes, or real GitHub execution.
+
 Artifact 2.2 remains the completed dry-run scalar argument validation artifact.
 The current Artifact 3 baseline still inherits Artifact 2.2 local/demo dry-run
 scalar argument validation behavior and has not yet implemented real GitHub
@@ -24,8 +28,8 @@ and keeps raw proposed arguments out of `ToolRegistry.execute()`.
 
 ## Start Here
 
-- [Project status](status/project-status.md): current Artifact 3 A3.0 baseline
-  copy status plus A3.1 boundary-spec status.
+- [Project status](status/project-status.md): current Artifact 3 A3.2 isolated
+  boundary status.
 - [Artifact 3 real tool boundary](specs/artifact-3-real-tool-boundary.md):
   future real side-effect boundary for approval-gated GitHub issue comments.
 - [Skill-runner API demo](demos/skill-runner-api-demo.md): primary Artifact 2.1
@@ -97,10 +101,13 @@ and keeps raw proposed arguments out of `ToolRegistry.execute()`.
 ## Current Boundaries
 
 - A3.0 was only a copied baseline and rename sprint.
-- A3.1 is documentation/specification only.
+- A3.1 was documentation/specification only.
+- A3.2 adds isolated fake/in-memory supporting boundaries only.
 - Artifact 3 has not yet implemented real GitHub side effects.
 - A3.1 defines the future boundary for an approval-gated GitHub issue-comment
   tool named `post_github_issue_comment`, but the tool is not implemented.
+- A3.2 did not wire the GitHub client or side-effect ledger into runtime skill
+  execution.
 - The default HTTP skill-runner API uses fake proposer mode.
 - HTTP `proposer_mode: "llm"` is disabled and rejected.
 - Invalid-proposal and high-risk skill-run examples are test-backed with

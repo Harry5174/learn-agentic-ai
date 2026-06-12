@@ -10,6 +10,8 @@
 
 **A3.1 status:** Real side-effect boundary specification only.
 
+**A3.2 status:** Isolated GitHub client and side-effect ledger boundaries.
+
 **Principle:** The LLM proposes. The harness validates, authorizes,
 approval-gates, executes, and audits.
 
@@ -27,6 +29,11 @@ project. This copied project now carries the Artifact 3 identity.
 A3.1 defines the future real side-effect boundary for an approval-gated GitHub
 issue-comment tool. It is documentation/specification only and does not
 implement real GitHub side effects.
+
+A3.2 adds isolated supporting boundaries for a future GitHub issue-comment
+client and side-effect idempotency ledger. These modules are not wired into
+skill execution, approval/resume behavior, API routes, skill registry behavior,
+or real GitHub side effects.
 
 Artifact 2.2 remains the completed dry-run scalar argument validation artifact.
 The current Artifact 3 baseline still inherits Artifact 2.2 local/demo dry-run
@@ -67,6 +74,10 @@ Implemented:
   step arguments only
 - Artifact 2.2 E2.3 adversarial tests for argument attacks, raw non-execution,
   safe audit/API evidence, and approval preservation
+- A3.2 isolated `GitHubIssueCommentClient` protocol,
+  `FakeGitHubIssueCommentClient`, issue-comment request/result/failure schemas,
+  deterministic side-effect id helpers, `SideEffectRecord`,
+  `SideEffectLedger`, and `InMemorySideEffectLedger`
 
 Historical note: Artifact 2.1 included E1.3 documentation, demo walkthrough,
 and portfolio packaging work. Current status: Artifact 2.2 is complete within
@@ -82,8 +93,8 @@ The copied baseline still includes the Artifact 2 foundation sprint specs:
 - `../specs/sprint-5-spec.md`
 
 Artifact 2.1 extends that foundation with the skill-runner API lifecycle.
-A3.1 adds a real side-effect boundary spec only and does not add a GitHub
-issue-comment tool.
+A3.2 adds isolated supporting boundary modules only and does not add a GitHub
+issue-comment tool or skill.
 
 Copied Artifact 1 sprint specs that could mislead future IDE agents are archived
 under:
@@ -151,6 +162,9 @@ This means:
 
 Tests use deterministic fake outputs or mocked LLM-client outputs.
 
+A3.2 tests use deterministic fake GitHub issue-comment clients and an
+in-memory side-effect ledger only.
+
 No test depends on:
 
 - real model calls
@@ -161,11 +175,12 @@ No test depends on:
 
 ## Explicitly Not Implemented
 
-- GitHub client code
-- fake GitHub client code
-- side-effect ledger
-- `side_effect_id` generation
+- real GitHub client code
+- GitHub client runtime wiring
+- side-effect ledger runtime wiring
+- durable side-effect ledger
 - `post_github_issue_comment`
+- approval-gated GitHub comment skill
 - real GitHub issue comments
 - real-mode environment configuration
 - repository allowlist logic
@@ -200,6 +215,25 @@ A3.1 defines future implementation requirements for:
 
 These are documented future contracts only. They are not runtime behavior in
 A3.1.
+
+## A3.2 Boundary Module Status
+
+A3.2 implements only isolated support boundaries:
+
+- `GitHubIssueCommentRequest`
+- `GitHubIssueCommentResult`
+- `GitHubIssueCommentFailure`
+- `GitHubIssueCommentClient`
+- `FakeGitHubIssueCommentClient`
+- deterministic `validated_arguments_hash`
+- deterministic side-effect id generation
+- `SideEffectRecord`
+- `SideEffectLedger`
+- `InMemorySideEffectLedger`
+
+These boundaries are tested directly, but they are not registered as tools and
+are not used by the skill graph, approval flow, API routes, runtime config, or
+repository policy logic.
 
 ## Current Limitation To Keep Visible
 
