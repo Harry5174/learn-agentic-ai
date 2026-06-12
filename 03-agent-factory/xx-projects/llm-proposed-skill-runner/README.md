@@ -10,9 +10,10 @@ The LLM proposes.
 The harness validates, authorizes, approval-gates, executes, and audits.
 ```
 
-An LLM, fake proposer, or mocked proposer can suggest a `SkillProposal`, but the
-model is not trusted to authorize work, approve high-risk actions, choose
-unregistered tools, or execute anything directly.
+A fake proposer, mocked LLM proposer boundary, or future configured proposer can
+suggest a `SkillProposal`, but the model is not trusted to authorize work,
+approve high-risk actions, choose unregistered tools, or execute anything
+directly.
 
 ## What This Is
 

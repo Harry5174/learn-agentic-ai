@@ -33,8 +33,9 @@ surface:
 - `POST /skill-runs/{run_id}/reject`
 - `GET /skill-runs/{run_id}/audit`
 
-Sprint E1.3 is documentation and demo-surface tightening only. No runtime
-behavior is added.
+Historical note: Artifact 2.1 included E1.3 documentation/demo-surface
+tightening work. Current status: Artifact 2.2 is complete within local/demo
+scalar-argument scope.
 
 ## Completed Artifact 2.2 Argument Boundary
 

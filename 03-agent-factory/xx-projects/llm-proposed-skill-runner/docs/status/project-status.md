@@ -45,8 +45,9 @@ Implemented:
 - Artifact 2.2 E2.3 adversarial tests for argument attacks, raw non-execution,
   safe audit/API evidence, and approval preservation
 
-Sprint E1.3 is documentation, demo walkthrough, and portfolio packaging work
-only. It does not change runtime behavior.
+Historical note: Artifact 2.1 included E1.3 documentation, demo walkthrough,
+and portfolio packaging work. Current status: Artifact 2.2 is complete within
+local/demo scalar-argument scope.
 
 ## Active Artifact 2 Sprint Specs
 
