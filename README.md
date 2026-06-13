@@ -2,7 +2,7 @@
 
 A long-running learning and portfolio repository focused on **applied AI systems**, **agentic AI**, **backend AI engineering**, and **controlled tool-use harnesses**.
 
-Each module is an isolated, runnable project managed with [uv](https://docs.astral.sh/uv/). The repository has evolved from early framework explorations into a structured portfolio track — **Agent Factory** — that demonstrates production-oriented harness design for AI tool execution.
+Each module is an isolated, runnable project managed with [uv](https://docs.astral.sh/uv/). The repository has evolved from early framework explorations into a structured portfolio track - **Agent Factory** - that demonstrates production-oriented harness design for AI tool execution.
 
 **Project thesis:**
 > Agents are useful only when the application harness controls identity, validation, policy, approval, execution, and audit.
@@ -11,12 +11,12 @@ Each module is an isolated, runnable project managed with [uv](https://docs.astr
 
 ## Repository Structure
 
-```
+```text
 learn-agentic-ai/
 ├── 00-uv/                          # uv package manager fundamentals
-├── 01-lite-llm/uv-proj/            # LiteLLM unified LLM API gateway
+├── 01-lite-llm/uv-proj/             # LiteLLM unified LLM API gateway
 ├── 02-crewai/00-hello-crewai/      # CrewAI multi-agent framework
-├── 03-agent-factory/               # ★ Main portfolio / system-building track
+├── 03-agent-factory/               # Main portfolio / system-building track
 │   ├── 00-about-and-thesis/
 │   ├── 01-ai-prompting-2026/
 │   ├── 02-how-to-think-ai-era/
@@ -25,54 +25,39 @@ learn-agentic-ai/
 │   └── xx-projects/                # Numbered artifact sequence
 │       ├── 00-identity-aware-agent-harness
 │       ├── 01-llm-proposed-skill-runner
-│       └── 02-approval-gated-github-tool-harness
+│       ├── 02-approval-gated-github-tool-harness
+│       └── 03-durable-side-effect-ledger
 ```
 
-**`03-agent-factory`** is the main portfolio and system-building track. It contains coursework, thesis notes, and the `xx-projects/` artifact sequence — a series of progressively more capable controlled-agent harnesses.
+**`03-agent-factory`** is the main portfolio and system-building track. It contains coursework, thesis notes, and the `xx-projects/` artifact sequence - a series of progressively more capable controlled-agent harnesses.
 
 ---
 
-## Agent Factory — Artifact Sequence
+## Agent Factory - Artifact Sequence
 
 The Agent Factory track builds a series of numbered artifacts, each adding a new layer of controlled AI tool execution.
 
 | # | Artifact | Path | Status | Core Claim |
 |---|---------|------|--------|------------|
 | 1 | Identity-Aware Stateful Agent Harness | [00-identity-aware-agent-harness](03-agent-factory/xx-projects/00-identity-aware-agent-harness) | Complete / preserved | Server-derived identity, role/scope policy, stateful task lifecycle, approval gates, audit trail, LangGraph checkpoint/resume |
-| 2 / 2.2 | LLM-Proposed, Harness-Controlled Skill Runner | [01-llm-proposed-skill-runner](03-agent-factory/xx-projects/01-llm-proposed-skill-runner) | Complete / tagged `artifact-2.2` | Model-shaped skill proposals (SkillSpec / SkillStep / SkillProposal), proposal validation, policy and approval lifecycle, Skill Runner API, validated scalar arguments, safe rejection of unsafe/control-plane/malformed args |
-| 3 | Approval-Gated GitHub Tool Harness | [02-approval-gated-github-tool-harness](03-agent-factory/xx-projects/02-approval-gated-github-tool-harness) | Complete as local/demo fake-client artifact | One approval-gated GitHub issue-comment skill path, validated scalar arguments, trusted repository policy, explicit approval, side-effect idempotency (in-memory ledger), FakeGitHubIssueCommentClient execution, audit evidence, adversarial safety tests |
+| 2 / 2.2 | LLM-Proposed, Harness-Controlled Skill Runner | [01-llm-proposed-skill-runner](03-agent-factory/xx-projects/01-llm-proposed-skill-runner) | Complete / tagged `artifact-2.2` | Model-shaped skill proposals, proposal validation, policy and approval lifecycle, Skill Runner API, validated scalar arguments, safe rejection of unsafe/control-plane/malformed args |
+| 3 | Approval-Gated GitHub Tool Harness | [02-approval-gated-github-tool-harness](03-agent-factory/xx-projects/02-approval-gated-github-tool-harness) | Complete as local/demo fake-client artifact | One approval-gated GitHub issue-comment skill path, validated scalar arguments, trusted repository policy, explicit approval, side-effect idempotency through an in-memory ledger, fake-client execution, audit evidence, adversarial safety tests |
+| 4 | Durable Side-Effect Ledger and Approval Binding | [03-durable-side-effect-ledger](03-agent-factory/xx-projects/03-durable-side-effect-ledger) | In progress / A4.0 durable-state spec | Durable-state design for future restart-safe side-effect records, approval bindings, audit evidence, and SQLite persistence before real GitHub writes |
 
 ### Key Design Boundaries
 
 - **Artifact 1:** Request bodies cannot claim identity, role, or scopes. Identity is server-derived.
 - **Artifact 2 / 2.2:** The proposer proposes. The harness validates, authorizes, approval-gates, executes, and audits. Dry-run only; scalar args only; no real GitHub writes; no live LLM HTTP mode.
 - **Artifact 3:** Local/demo fake-client only. No real GitHub API calls. Not production-ready.
+- **Artifact 4 A4.0:** Baseline/spec only. SQLite persistence, durable approval binding, durable audit storage, and restart-safe execution are designed but not implemented.
 
 ---
 
-## What Artifact 3 Demonstrates
+## Current Leading Artifact
 
-Artifact 3 demonstrates a local/demo approval-gated GitHub issue-comment harness path where:
+Artifact 4 is currently in A4.0 baseline/spec state. It was copied from completed Artifact 3 and defines planned SQLite persistence semantics for durable side-effect records, approval bindings, and audit events.
 
-- Model-proposed scalar arguments are validated
-- Repository policy is checked against a trusted-repository allowlist
-- Explicit approval is required before execution
-- Side-effect idempotency is checked with an in-memory ledger
-- Fake-client execution is used (no real GitHub network calls)
-- Audit evidence is recorded for every decision
-- Adversarial safety tests verify rejection of unsafe inputs
-
-### What Artifact 3 Does Not Claim
-
-Artifact 3 does **not** claim or implement:
-
-- Real GitHub comments are posted
-- Production readiness
-- Durable replay protection
-- OAuth-secured identity
-- Arbitrary repository support
-- General GitHub automation platform capabilities
-- Autonomous repository modification
+A4.0 does not implement SQLite persistence, durable runtime behavior, real GitHub execution, GitHub token loading, OAuth/OIDC, MCP, frontend, deployment, or production hardening.
 
 ---
 
@@ -81,9 +66,9 @@ Artifact 3 does **not** claim or implement:
 1. Start with this root README.
 2. Open [03-agent-factory/README.md](03-agent-factory/README.md).
 3. Open [03-agent-factory/xx-projects/README.md](03-agent-factory/xx-projects/README.md).
-4. Review [Artifact 3 README](03-agent-factory/xx-projects/02-approval-gated-github-tool-harness/docs/README.md).
-5. Review [Artifact 3 demo](03-agent-factory/xx-projects/02-approval-gated-github-tool-harness/docs/demos/github-comment-tool-demo.md).
-6. Review [Artifact 3 adversarial evidence](03-agent-factory/xx-projects/02-approval-gated-github-tool-harness/docs/adversarial-github-side-effect-safety.md).
+4. Review [Artifact 4 README](03-agent-factory/xx-projects/03-durable-side-effect-ledger/README.md).
+5. Review [Artifact 4 durable-state spec](03-agent-factory/xx-projects/03-durable-side-effect-ledger/docs/specs/artifact-4-durable-side-effect-ledger.md).
+6. Review [Artifact 4 persistence boundary](03-agent-factory/xx-projects/03-durable-side-effect-ledger/docs/architecture/persistence-boundary.md).
 
 ---
 
@@ -91,14 +76,15 @@ Artifact 3 does **not** claim or implement:
 
 This repository contains learning and portfolio artifacts, not a deployed production service.
 
-**Current Artifact 3 limitations:**
+**Current Artifact 4 A4.0 limitations:**
 
-- Local/demo only
-- Fake GitHub client only
+- Baseline/spec only
+- No SQLite implementation
+- No durable side-effect ledger runtime code
+- No durable approval binding runtime code
+- No durable audit store runtime code
 - No real GitHub API / network execution
 - No GitHub token loading
-- No durable side-effect ledger
-- No durable audit store
 - No OAuth/OIDC production identity provider
 - No frontend / operator console
 - No MCP integration
@@ -110,25 +96,24 @@ This repository contains learning and portfolio artifacts, not a deployed produc
 
 The early modules remain as reference material from the initial learning phase.
 
-### `00-uv` — uv Package Manager
+### `00-uv` - uv Package Manager
 
 | Project | Description |
 |---------|-------------|
-| `00_hello_world` | Minimal uv project — `pyproject.toml`, virtual environments, script entry points |
+| `00_hello_world` | Minimal uv project - `pyproject.toml`, virtual environments, script entry points |
 | `01_blog_flow_uv` | Blog generation pipeline built with CrewAI Flows, managed via uv |
 
-### `01-lite-llm` — LiteLLM
+### `01-lite-llm` - LiteLLM
 
 | Project | Description |
 |---------|-------------|
 | `uv-proj` | Calls Google Gemini 2.0 using LiteLLM's `completion()` API |
 
-### `02-crewai` — CrewAI
+### `02-crewai` - CrewAI
 
 | Project | Description |
 |---------|-------------|
-| `00_hello_crewai` | First multi-agent crew — agents with roles, goals, tasks |
-
+| `00_hello_crewai` | First multi-agent crew - agents with roles, goals, tasks |
 
 ---
 
@@ -160,4 +145,4 @@ The early modules remain as reference material from the initial learning phase.
 
 ## Author
 
-**Harry5174** — [harisjaved010@gmail.com](mailto:harisjaved010@gmail.com)
+**Harry5174** - [harisjaved010@gmail.com](mailto:harisjaved010@gmail.com)
