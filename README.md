@@ -26,7 +26,6 @@ learn-agentic-ai/
 │       ├── 00-identity-aware-agent-harness
 │       ├── 01-llm-proposed-skill-runner
 │       └── 02-approval-gated-github-tool-harness
-└── 04-deeplearning-ai-labs/        # DeepLearning.AI course notebooks
 ```
 
 **`03-agent-factory`** is the main portfolio and system-building track. It contains coursework, thesis notes, and the `xx-projects/` artifact sequence — a series of progressively more capable controlled-agent harnesses.
@@ -130,9 +129,6 @@ The early modules remain as reference material from the initial learning phase.
 |---------|-------------|
 | `00_hello_crewai` | First multi-agent crew — agents with roles, goals, tasks |
 
-### `04-deeplearning-ai-labs` — DeepLearning.AI Labs
-
-Course notebooks and lab exercises from DeepLearning.AI courses.
 
 ---
 
