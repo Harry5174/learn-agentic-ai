@@ -10,6 +10,10 @@ A4.2 implements the `DurableApprovalBindingStore` backed by SQLite. A4.2 persist
 
 A4.3 integrates the durable ledger and durable approval binding into the fake-client GitHub issue-comment execution path. A4.3 demonstrates restart-replay duplicate suppression for the local/demo fake-client GitHub comment path using SQLite-backed side-effect and approval records. A4.3 does not add durable audit store, real GitHub execution, GitHub token loading, or production-grade exactly-once semantics.
 
+A4.3.1 modularizes the restart/replay implementation and graph/tool boundaries without adding runtime behavior.
+
+A4.4 implements local/demo durable audit events and adversarial persistence tests. A4.4 adds `durable_audit_events` and `DurableAuditStore` for restart-surviving evidence about execution, duplicate suppression, blocked attempts, and fake-client failures. A4.4 does not add real GitHub execution, GitHub token loading, production-grade audit, or universal exactly-once claims.
+
 This spec defines the records, approval bindings, state transitions, restart-replay guarantees, and acceptance requirements that must exist before the harness can safely move toward real side effects.
 
 ## 2. Durable-State Mission
@@ -30,6 +34,7 @@ A4.3 durable execution proof:
 SkillGraphService
 -> DurableApprovalBindingStore
 -> DurableSideEffectLedger
+-> DurableAuditStore
 -> SQLite
 -> FakeGitHubIssueCommentClient
 ```
@@ -38,7 +43,7 @@ SQLite is the persistence boundary for Artifact 4. Fake GitHub client remains th
 
 The durable stores must be owned by harness code, not model output. Model-proposed arguments remain untrusted until validated by existing registry and proposal-validation layers.
 
-A4.1 implements `DurableSideEffectLedger`. A4.2 implements `DurableApprovalBindingStore`. Both are backed by SQLite. A4.3 wires them into the fake-client GitHub comment execution path through explicit runtime injection. Future A4.4 may add `DurableAuditStore`.
+A4.1 implements `DurableSideEffectLedger`. A4.2 implements `DurableApprovalBindingStore`. A4.4 implements `DurableAuditStore`. These stores are backed by SQLite. A4.3 wires the side-effect and approval stores into the fake-client GitHub comment execution path through explicit runtime injection. A4.4 adds optional runtime-only durable audit-store injection.
 
 ## 4. Storage Decision
 
@@ -51,7 +56,7 @@ Implementation guidance:
 - use temporary SQLite files in tests
 - do not use Postgres, Redis, Docker Compose, or cloud infrastructure
 
-A basic SQLite ledger implementation exists in A4.1. A durable approval binding store exists in A4.2. A4.3 wires both into the fake-client GitHub comment execution path for the restart-replay proof.
+A basic SQLite ledger implementation exists in A4.1. A durable approval binding store exists in A4.2. A4.3 wires both into the fake-client GitHub comment execution path for the restart-replay proof. A durable audit store exists in A4.4.
 
 ## 5. Side-Effect Record Schema
 
@@ -191,7 +196,7 @@ Implemented in A4.2.
 
 ## 7. Durable Audit Event Schema
 
-Future conceptual table/record:
+Implemented table:
 
 ```text
 durable_audit_events
@@ -212,7 +217,27 @@ created_at
 
 This is not a production compliance-grade audit system. It is a local/demo durable evidence store for side-effect lifecycle events.
 
-Not yet implemented.
+Implemented in A4.4.
+
+Minimum A4.4 event types:
+
+```text
+side_effect_planned
+approval_binding_created
+approval_approved
+approval_rejected
+approval_expired
+execution_requested
+approval_authorized
+execution_started
+fake_client_called
+execution_succeeded
+execution_failed
+duplicate_suppressed
+execution_blocked
+```
+
+A4.4 orders durable audit lists deterministically with `ORDER BY created_at, event_id`. Metadata is stored as safe JSON text. Known unsafe metadata keys and token-like values are rejected instead of being persisted raw.
 
 ## 8. Status Lifecycle
 
@@ -293,7 +318,7 @@ blocked must be auditable
 
 `skipped_duplicate` is available in the V1 lifecycle, but A4.3 does not rewrite a succeeded record to `skipped_duplicate` during duplicate replay. The A4.3 integrated path preserves `side_effect_records.status = succeeded` and returns already_succeeded / duplicate-suppressed result evidence.
 
-Future durable audit events can record duplicate replay attempts without weakening the original succeeded side-effect record.
+A4.4 durable audit events record duplicate replay attempts without weakening the original succeeded side-effect record.
 
 ## 10. Restart-Replay Semantics
 
@@ -311,12 +336,12 @@ Core proof sequence:
 9. Fake client is not called again.
 10. Durable ledger remains succeeded.
 11. Tool result returns already_succeeded / duplicate-suppressed evidence.
-12. Future durable audit can explain replay attempts when A4.4 exists.
+12. Durable audit events explain replay attempts.
 ```
 
 A restart-replay test must instantiate a fresh repository/service object against the same SQLite file. Calling the same object twice is not sufficient.
 
-A4.3 proves this for the local/demo fake-client GitHub comment path using fresh store/context/fake-client objects against the same SQLite file.
+A4.4 proves this for the local/demo fake-client GitHub comment path using fresh store/context/fake-client objects against the same SQLite file and durable audit events that survive store re-instantiation.
 
 A4.3 demonstrates duplicate suppression after durable success exists. It does not prove production-grade exactly-once semantics for the crash window where the fake client succeeds but the process dies before `side_effect_records` is marked `succeeded`.
 
@@ -346,7 +371,7 @@ failure does not trigger automatic retry
 failure does not expose secrets
 ```
 
-Failure metadata must avoid secrets and full sensitive payloads. A redacted failure shape is persisted in `failure_json`. Durable audit events remain future A4.4 work.
+Failure metadata must avoid secrets and full sensitive payloads. A redacted failure shape is persisted in `failure_json`. A4.4 also records `execution_failed` durable audit evidence for fake-client failures.
 
 ## 13. Non-Goals
 
@@ -421,8 +446,22 @@ This checklist tracks the implementation of Artifact 4.
 - Mark fake-client failure as failed and do not auto-retry failed side effects.
 - Do not add durable audit store in A4.3.
 
-### A4.4 Durable Audit Store (Future)
+### A4.4 Durable Audit Store and Adversarial Persistence Suite (Completed)
 
 - Add `durable_audit_events` table.
 - Add `DurableAuditStore` class.
+- Add durable audit event schema and event-type enum.
 - Persist durable audit explanation for lifecycle events.
+- List events by run_id.
+- List events by side_effect_id.
+- Prove events survive store re-instantiation.
+- Reject duplicate event_id safely.
+- Reject invalid event types safely.
+- Reject unsafe metadata before raw SQLite persistence.
+- Record successful fake-client execution audit events.
+- Record duplicate replay audit evidence.
+- Record blocked execution audit evidence.
+- Record fake-client failure audit evidence.
+- Keep `DurableAuditStore` as a runtime dependency, not checkpointed graph state.
+- Add adversarial persistence tests for approval mismatch, side-effect statuses, restart/replay, failure, metadata safety, and fake-client-only execution boundaries.
+- Do not add real GitHub execution, GitHub token loading, production-grade audit claims, or universal exactly-once claims.

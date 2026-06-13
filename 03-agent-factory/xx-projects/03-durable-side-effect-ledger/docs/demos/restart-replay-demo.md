@@ -1,6 +1,6 @@
-# A4.3 Restart-Replay Demo
+# A4.3/A4.4 Restart-Replay Demo
 
-This demo describes the A4.3 local/demo proof. It does not post real GitHub comments, does not load GitHub tokens, and does not use a real GitHub client.
+This demo describes the A4.3 local/demo restart/replay proof and the A4.4 durable audit evidence added around that path. It does not post real GitHub comments, does not load GitHub tokens, and does not use a real GitHub client.
 
 ## What A4.3 Demonstrates
 
@@ -22,6 +22,7 @@ The proof sequence is:
 11. The fresh fake client is not called.
 12. The tool result reports already_succeeded / duplicate-suppressed evidence.
 13. side_effect_records.status remains succeeded.
+14. In A4.4, durable_audit_events records duplicate_suppressed evidence when DurableAuditStore is injected.
 ```
 
 ## Execution Boundary
@@ -40,6 +41,8 @@ fake client is not called again
 
 It does not rewrite `succeeded` to `skipped_duplicate`.
 
+In A4.4, duplicate replay is also visible in `durable_audit_events` as local/demo audit evidence.
+
 ## Unsafe-To-Retry Case
 
 If restart/replay sees:
@@ -52,4 +55,6 @@ A4.3 does not call the fake client. It returns unsafe-to-retry / already-executi
 
 ## Limitation
 
-A4.3 proves duplicate suppression after durable success exists. It does not prove production-grade exactly-once semantics across every crash window. If the fake client succeeds but the process dies before `side_effect_records` is marked `succeeded`, A4.3 does not prove universal duplicate suppression for that interrupted attempt.
+A4.4 adds durable local/demo audit evidence around the same path, but it is not production-grade audit or compliance audit.
+
+A4.4 proves duplicate suppression after durable success exists. It does not prove production-grade exactly-once semantics across every crash window. If the fake client succeeds but the process dies before `side_effect_records` is marked `succeeded`, A4.4 does not prove universal duplicate suppression for that interrupted attempt.

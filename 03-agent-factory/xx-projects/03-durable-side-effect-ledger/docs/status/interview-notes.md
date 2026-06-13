@@ -12,7 +12,7 @@ Artifact 4 asks the next safety question:
 If the same approved side effect is replayed after process restart, can the harness prove it will not execute twice?
 ```
 
-A4.1 implements a SQLite-backed side-effect ledger. A4.2 implements durable approval binding. A4.3 integrates both stores into the fake-client GitHub comment execution path and proves restart/replay duplicate suppression after durable success has been recorded.
+A4.1 implements a SQLite-backed side-effect ledger. A4.2 implements durable approval binding. A4.3 integrates both stores into the fake-client GitHub comment execution path and proves restart/replay duplicate suppression after durable success has been recorded. A4.3.1 modularized that runtime boundary without behavior change. A4.4 adds local/demo durable audit events and adversarial persistence tests.
 
 ## What A4.1 Adds
 
@@ -58,6 +58,19 @@ A4.3 adds restart-replay integration for the local/demo fake-client GitHub comme
 
 A4.3 does not implement durable audit store. A4.3 does not add real GitHub execution, GitHub token loading, or production-grade exactly-once execution.
 
+## What A4.4 Adds
+
+A4.4 adds durable local/demo audit evidence for the fake-client GitHub comment path:
+
+- `durable_audit_events` SQLite table
+- `DurableAuditStore`
+- event types for execution requested, approval authorized, execution started, fake client called, execution succeeded, execution failed, duplicate suppressed, and execution blocked
+- restart-surviving audit evidence for successful execution, duplicate replay, blocked attempts, and fake-client failure
+- targeted metadata safety checks for known unsafe keys and token-like values
+- adversarial persistence tests for approval mismatch, side-effect status, restart/replay, failure, metadata safety, and fake-client-only boundaries
+
+A4.4 still does not execute real GitHub calls, load GitHub tokens, add a second GitHub tool, provide production-grade audit, or claim universal exactly-once execution.
+
 ## What Remains Inherited
 
 The copied runtime still inherits Artifact 3 fake-client local/demo behavior:
@@ -92,7 +105,7 @@ A4.2 proves this invariant at the store level. A4.3 enforces it in the fake-clie
 
 SQLite is the planned Artifact 4 persistence boundary because it is local, file-backed, deterministic in tests, and available through Python stdlib `sqlite3`.
 
-A4.1 added SQLite code for the side-effect ledger. A4.2 adds SQLite code for approval bindings. A4.3 proves those stores can suppress duplicate fake-client execution after fresh objects are recreated with the same SQLite file.
+A4.1 added SQLite code for the side-effect ledger. A4.2 adds SQLite code for approval bindings. A4.3 proves those stores can suppress duplicate fake-client execution after fresh objects are recreated with the same SQLite file. A4.4 adds durable audit events to explain execution outcomes across fresh store instances.
 
 ## Strong Interview Framing
 
@@ -100,10 +113,10 @@ This is not a real GitHub automation tool and not production infrastructure.
 
 It is a staged harness design showing how model-proposed side effects should be validated, approval-bound, recorded, replay-checked, and audited before any real external write is enabled.
 
-A4.3 demonstrates restart-replay duplicate suppression for the local/demo fake-client GitHub comment path using SQLite-backed side-effect and approval records.
+A4.4 demonstrates restart-replay duplicate suppression and local/demo durable audit evidence for the fake-client GitHub comment path using SQLite-backed side-effect, approval, and audit records.
 
-A4.3 does not prove production-grade exactly-once semantics across every crash window. If the fake client succeeds but the process dies before durable success is marked, that interrupted attempt remains outside the A4.3 proof.
+A4.4 does not prove production-grade exactly-once semantics across every crash window. If the fake client succeeds but the process dies before durable success is marked, that interrupted attempt remains outside the A4.4 proof.
 
 ## Current Non-Implementation Line
 
-A4.3 did not add durable audit store runtime code, API behavior changes, a real GitHub client, token loading, OAuth/OIDC, MCP, frontend, deployment, production-readiness claims, or universal exactly-once claims.
+A4.4 did not add API behavior changes, a real GitHub client, token loading, OAuth/OIDC, MCP, frontend, deployment, production-grade audit claims, production-readiness claims, or universal exactly-once claims.

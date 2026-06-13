@@ -2,7 +2,7 @@
 
 Artifact 4 adds a durable-state design boundary before any real GitHub write can be considered.
 
-A4.0 documents the future shape and acceptance requirements. A4.1 implements the side-effect ledger. A4.2 implements the approval binding store. A4.3 integrates both stores into the fake-client GitHub comment execution path through explicit runtime injection. A4.3.1 modularizes that restart/replay implementation and graph/tool boundaries without adding runtime behavior.
+A4.0 documents the future shape and acceptance requirements. A4.1 implements the side-effect ledger. A4.2 implements the approval binding store. A4.3 integrates both stores into the fake-client GitHub comment execution path through explicit runtime injection. A4.3.1 modularizes that restart/replay implementation and graph/tool boundaries without adding runtime behavior. A4.4 implements the durable audit store and adversarial persistence suite.
 
 ## Why Artifact 3 Is Not Enough
 
@@ -29,13 +29,11 @@ Durable records implemented:
 
 - side-effect records keyed by `side_effect_id` (A4.1)
 - approval bindings keyed to `side_effect_id` and `validated_arguments_hash` (A4.2)
+- durable audit events keyed by `event_id` with run_id and side_effect_id lookup (A4.4)
 - status timestamps for planned, approved, executing, succeeded, failed, skipped duplicate, rejected, and blocked states
 - safe hashes and previews for comment bodies, not full comment bodies by default
 - succeeded and failed fake-client execution evidence for the A4.3 durable GitHub comment path
-
-Future durable records:
-
-- durable audit events for lifecycle evidence (not yet implemented)
+- restart-surviving audit evidence for execution, duplicate suppression, blocked attempts, and fake-client failures
 
 ## Current Durable Stores
 
@@ -54,9 +52,20 @@ Key properties:
 - expired approval does not mutate side-effect status
 - `assert_approved_for_action` is a pure read check: no mutation, no execution
 
-### A4.3 Durable GitHub Comment Execution
+### DurableAuditStore (A4.4)
 
-A4.3 injects both durable stores into the existing `post_github_issue_comment` path when tests or callers provide them explicitly. Default app startup remains compatible with the inherited in-memory path and does not require a SQLite file.
+SQLite-backed store for local/demo durable audit events. Persists lifecycle evidence for the durable fake-client path. It remains an optional runtime dependency and is not placed in checkpointed graph state.
+
+Key properties:
+- `durable_audit_events` table
+- list by run_id and side_effect_id
+- deterministic ordering by `created_at, event_id`
+- targeted unsafe metadata rejection before SQLite persistence
+- local/demo audit evidence only, not production-grade audit
+
+### A4.4 Durable GitHub Comment Execution
+
+A4.4 injects durable side-effect, approval, and audit stores into the existing `post_github_issue_comment` path when tests or callers provide them explicitly. Default app startup remains compatible with the inherited in-memory path and does not require a SQLite file.
 
 Execution sequence:
 
@@ -65,16 +74,22 @@ validated GitHub comment arguments
 -> deterministic validated_arguments_hash
 -> deterministic side_effect_id
 -> DurableSideEffectLedger lookup
+-> DurableAuditStore execution_requested event when provided
 -> already succeeded: return duplicate-suppressed evidence, no fake-client call
 -> executing: return unsafe-to-retry evidence, no fake-client call
 -> DurableApprovalBindingStore.assert_approved_for_action
+-> DurableAuditStore approval_authorized event when provided
 -> require side_effect_records.status = approved
+-> DurableAuditStore execution_started event when provided
 -> mark executing
+-> DurableAuditStore fake_client_called event when provided
 -> call FakeGitHubIssueCommentClient
 -> mark succeeded or failed
+-> DurableAuditStore execution_succeeded or execution_failed event when provided
 ```
 
 The replay path preserves `succeeded`; it does not rewrite the durable side-effect record to `skipped_duplicate`.
+Duplicate replay records `duplicate_suppressed` durable audit evidence when `DurableAuditStore` is provided.
 
 ## Process-Local Data That Remains
 
@@ -101,20 +116,20 @@ Validated action
 -> side_effect_id
 -> approval binding
 -> durable side-effect record
+-> durable audit event
 -> fake-client execution / skipped duplicate
 ```
 
-Current A4.3 durable execution boundary:
+Current A4.4 durable execution boundary:
 
 ```text
 SkillGraphService
 -> DurableApprovalBindingStore
 -> DurableSideEffectLedger
+-> DurableAuditStore
 -> SQLite
 -> FakeGitHubIssueCommentClient
 ```
-
-Future A4.4 may add `DurableAuditStore`.
 
 ## Not Production Persistence
 
@@ -134,6 +149,6 @@ It is not:
 
 A valid restart-replay proof must create a fresh repository/service object against the same SQLite file after the first execution. Calling the same object twice only proves in-process idempotency and is not enough for Artifact 4.
 
-A4.3 proves this for the fake-client GitHub comment path with fresh store/context/fake-client objects against the same SQLite file. The second fake client is not called, and the durable side-effect record remains `succeeded`.
+A4.4 proves this for the fake-client GitHub comment path with fresh store/context/fake-client objects against the same SQLite file. The second fake client is not called, the durable side-effect record remains `succeeded`, and durable audit events remain queryable after restart.
 
-A4.3 demonstrates duplicate suppression after durable success exists. It does not prove production-grade exactly-once semantics for the crash window where the fake client succeeds but the process dies before `side_effect_records` is marked `succeeded`.
+A4.4 demonstrates duplicate suppression after durable success exists. It does not prove production-grade exactly-once semantics for the crash window where the fake client succeeds but the process dies before `side_effect_records` is marked `succeeded`. A4.4 provides local/demo durable audit evidence, not production-grade audit or compliance audit.

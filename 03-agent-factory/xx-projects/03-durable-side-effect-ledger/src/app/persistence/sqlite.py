@@ -64,8 +64,23 @@ class SQLiteConnectionManager:
             expires_at TEXT
         );
         """
+
+        # A4.4: durable local/demo audit events for side-effect decisions.
+        create_durable_audit_events_sql = """
+        CREATE TABLE IF NOT EXISTS durable_audit_events (
+            event_id TEXT PRIMARY KEY,
+            run_id TEXT NOT NULL,
+            side_effect_id TEXT,
+            event_type TEXT NOT NULL,
+            actor_id TEXT,
+            message TEXT NOT NULL,
+            metadata_json TEXT,
+            created_at TEXT NOT NULL
+        );
+        """
         
         with self.get_connection() as conn:
             conn.execute(create_side_effect_records_sql)
             conn.execute(create_approval_bindings_sql)
+            conn.execute(create_durable_audit_events_sql)
             conn.commit()

@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from app.audit.durable_store import DurableAuditStore
 from app.github.fake_client import FakeGitHubIssueCommentClient
 from app.persistence.sqlite import SQLiteConnectionManager
 from app.side_effects.approval_binding import DurableApprovalBindingStore
@@ -55,6 +56,7 @@ def context(
     fake_client: FakeGitHubIssueCommentClient,
     *,
     run_id: str = "run-durable-1",
+    audit_store: DurableAuditStore | None = None,
 ) -> ToolExecutionContext:
     return ToolExecutionContext(
         run_id=run_id,
@@ -62,6 +64,7 @@ def context(
         github_issue_comment_client=fake_client,
         durable_side_effect_ledger=ledger,
         durable_approval_binding_store=approval_store,
+        durable_audit_store=audit_store,
     )
 
 

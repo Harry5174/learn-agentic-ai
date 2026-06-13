@@ -14,6 +14,8 @@ A4.3 integrates the durable ledger and durable approval binding into the fake-cl
 
 A4.3.1 modularized the restart/replay implementation and graph/tool boundaries without adding runtime behavior.
 
+A4.4 implements local/demo durable audit events and adversarial persistence tests. A4.4 adds `durable_audit_events` and `DurableAuditStore` for restart-surviving evidence about execution, duplicate suppression, blocked attempts, and fake-client failures. A4.4 still does not execute real GitHub calls, load GitHub tokens, provide production-grade audit, or claim universal exactly-once execution.
+
 ## Mission
 
 Make approval-gated side-effect execution durable, replay-safe, and auditable across process restarts before enabling any real GitHub write.
@@ -28,7 +30,7 @@ A4.3 answers that question for the local/demo fake-client GitHub comment path af
 
 ## Current State
 
-Current A4.3.1 state:
+Current A4.4 state:
 
 - copied baseline from completed Artifact 3
 - Artifact 4 project identity and documentation baseline
@@ -49,10 +51,16 @@ Current A4.3.1 state:
 - replay after durable success preserves `side_effect_records.status = succeeded`
 - persisted `executing` and failed terminal records are not automatically retried
 - A4.3.1 splits restart/replay tests and extracts graph/tool helper modules without changing execution semantics
+- SQLite-backed `durable_audit_events` store implemented in A4.4
+- durable audit store can be injected as an optional runtime dependency
+- successful durable fake-client execution records execution_requested, approval_authorized, execution_started, fake_client_called, and execution_succeeded evidence
+- duplicate replay records duplicate_suppressed evidence without calling the fake client
+- blocked attempts record execution_blocked evidence without calling the fake client
+- fake-client failures record execution_failed evidence and remain terminal
+- adversarial persistence tests cover approval mismatch, side-effect status, restart/replay, failure, metadata safety, and fake-client-only boundaries
 
 Not implemented yet:
 
-- durable audit store runtime code
 - default API startup requiring a SQLite file
 - real GitHub client
 - GitHub token loading
@@ -82,7 +90,7 @@ model-shaped proposal
 -> audit evidence
 ```
 
-Artifact 3 demonstrated that path with an in-memory ledger and `FakeGitHubIssueCommentClient`. Artifact 4 keeps default app startup compatible with that behavior while allowing A4.3 tests to inject durable stores into the same GitHub comment tool path. A4.1 implements the SQLite side-effect ledger. A4.2 implements the durable approval binding store. A4.3 integrates those stores for the fake-client restart-replay proof.
+Artifact 3 demonstrated that path with an in-memory ledger and `FakeGitHubIssueCommentClient`. Artifact 4 keeps default app startup compatible with that behavior while allowing durable stores to be injected into the same GitHub comment tool path. A4.1 implements the SQLite side-effect ledger. A4.2 implements the durable approval binding store. A4.3 integrates those stores for the fake-client restart-replay proof. A4.3.1 modularized the runtime boundaries without behavior change. A4.4 adds local/demo durable audit events and adversarial persistence tests.
 
 ## Durable-State Design
 
@@ -98,11 +106,12 @@ The A4.3 durable execution proof uses:
 SkillGraphService
 -> DurableApprovalBindingStore
 -> DurableSideEffectLedger
+-> DurableAuditStore
 -> SQLite
 -> FakeGitHubIssueCommentClient
 ```
 
-A4.3 keeps `DurableApprovalBindingStore` and `DurableSideEffectLedger` backed by SQLite. The durable audit store is not yet implemented. SQLite is the persistence boundary for the local/demo proof. The fake GitHub client remains the execution boundary. Real GitHub execution remains out of scope.
+A4.4 keeps `DurableApprovalBindingStore`, `DurableSideEffectLedger`, and `DurableAuditStore` backed by SQLite. SQLite is the persistence boundary for the local/demo proof. The fake GitHub client remains the execution boundary. Real GitHub execution remains out of scope.
 
 ## Quickstart
 
@@ -160,11 +169,12 @@ High-value entry points:
 - [Artifact 3 vs Artifact 4](docs/comparisons/artifact-3-vs-artifact-4.md)
 - [Inherited GitHub comment demo](docs/demos/github-comment-tool-demo.md)
 - [Restart replay demo](docs/demos/restart-replay-demo.md)
+- [Durable audit demo](docs/demos/durable-audit-demo.md)
 - [Inherited adversarial GitHub side-effect safety](docs/adversarial-github-side-effect-safety.md)
 
 ## Current Boundaries
 
-Artifact 4 A4.3 implements the `DurableApprovalBindingStore` and `DurableSideEffectLedger` backed by SQLite and integrates them into the fake-client GitHub comment execution path through explicit runtime injection. A4.3 proves that an approved side effect that has already been marked succeeded is not executed again after fresh service/store/fake-client objects are created against the same SQLite file.
+Artifact 4 A4.4 implements the `DurableApprovalBindingStore`, `DurableSideEffectLedger`, and `DurableAuditStore` backed by SQLite and integrates them into the fake-client GitHub comment execution path through explicit runtime injection. A4.4 proves that an approved side effect that has already been marked succeeded is not executed again after fresh service/store/fake-client objects are created against the same SQLite file, and that durable local/demo audit events survive restart.
 
 The default copied runtime still inherits Artifact 3 local/demo behavior:
 
@@ -178,4 +188,4 @@ The default copied runtime still inherits Artifact 3 local/demo behavior:
 
 The project remains local/demo and fake-client-only. No real GitHub API call. No token required. No network call.
 
-A4.3 does not prove production-grade exactly-once execution across every crash window. If the fake client succeeds but the process dies before `side_effect_records` is marked `succeeded`, A4.3 does not prove universal duplicate suppression for that interrupted attempt.
+A4.4 does not prove production-grade exactly-once execution across every crash window. If the fake client succeeds but the process dies before `side_effect_records` is marked `succeeded`, A4.4 does not prove universal duplicate suppression for that interrupted attempt. A4.4 provides local/demo durable audit evidence, not production-grade audit or compliance audit.

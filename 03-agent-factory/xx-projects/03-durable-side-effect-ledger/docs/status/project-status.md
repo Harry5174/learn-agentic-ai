@@ -14,13 +14,15 @@
 
 **A4.3.1 status:** Modularization and Runtime Boundary Cleanup implemented.
 
+**A4.4 status:** Durable Audit Store and Adversarial Persistence Suite implemented.
+
 **Principle:** The LLM proposes. The harness validates, authorizes, approval-gates, executes, and audits.
 
 **Safety invariant:** Side-effect execution must require a matching persisted approval binding for the same `side_effect_id` and `validated_arguments_hash` before any replay-safe durable execution proof can be accepted.
 
 ## Current Artifact Status
 
-Artifact 4 is currently at A4.3.1. It started with A4.0, a copied baseline from completed Artifact 3.
+Artifact 4 is currently at A4.4. It started with A4.0, a copied baseline from completed Artifact 3.
 
 The current Artifact 4 folder is:
 
@@ -42,7 +44,7 @@ A4.3 integrates the durable ledger and durable approval binding into the fake-cl
 
 A4.3.1 modularized the restart/replay implementation and graph/tool boundaries without adding runtime behavior.
 
-Artifact 4 has not implemented durable audit store yet. The default API startup still does not require a SQLite file.
+A4.4 implements local/demo durable audit events and adversarial persistence tests. It adds `durable_audit_events`, `DurableAuditStore`, optional runtime audit-store injection, and restart-surviving evidence for successful execution, duplicate suppression, blocked attempts, and fake-client failure. The default API startup still does not require a SQLite file.
 
 Real GitHub execution remains out of scope.
 
@@ -111,6 +113,25 @@ A4.3.1 implements behavior-preserving modularization:
 
 A4.3.1 does not add durable audit store, real GitHub execution, token loading, API behavior changes, or production-grade exactly-once claims.
 
+## Implemented In A4.4
+
+A4.4 implements durable local/demo audit evidence and adversarial persistence tests:
+
+- `durable_audit_events` SQLite table
+- `DurableAuditStore` using Python stdlib `sqlite3`
+- durable audit event model and event-type enum
+- deterministic audit listing with `ORDER BY created_at, event_id`
+- targeted metadata safety checks that reject known unsafe keys and token-like values
+- optional `durable_audit_store` runtime dependency on `ToolExecutionContext`
+- durable audit events for successful execution: execution_requested, approval_authorized, execution_started, fake_client_called, execution_succeeded
+- durable audit events for duplicate replay: execution_requested, duplicate_suppressed
+- durable audit events for blocked attempts: execution_requested, execution_blocked
+- durable audit events for fake-client failure: execution_requested, approval_authorized, execution_started, fake_client_called, execution_failed
+- fail-closed behavior when required pre-execution audit evidence cannot be written
+- adversarial persistence tests for approval mismatch, side-effect status, restart/replay, failure, metadata safety, and fake-client-only boundaries
+
+A4.4 does not add real GitHub execution, GitHub token loading, a second GitHub tool, API startup changes, production-grade audit, compliance audit, or universal exactly-once claims.
+
 ## Inherited Runtime Baseline
 
 The default copied runtime still inherits completed Artifact 3 behavior:
@@ -134,37 +155,39 @@ The SQLite-backed durable stores are integrated into the fake-client GitHub comm
 
 - `DurableSideEffectLedger` persists side-effect records in SQLite
 - `DurableApprovalBindingStore` persists approval bindings in SQLite
-- Both stores survive re-instantiation using the same SQLite file
+- `DurableAuditStore` persists local/demo audit events in SQLite when explicitly injected
+- Durable stores survive re-instantiation using the same SQLite file
 - Approve/reject update both stores atomically in a single transaction
 - A4.3 execution requires an approved binding for the exact side effect before the fake client can be called
 - A4.3 replay after durable success does not call the fake client again
+- A4.4 durable audit events survive fresh store re-instantiation and explain execution, duplicate, blocked, and failed outcomes
 
 Still inherited from Artifact 3/default runtime:
 
 - graph checkpoints use in-memory state
 - task/run state is process-local
 - default app startup uses process-local side-effect ledger behavior
-- audit events are not durably persisted
+- durable audit events are only persisted when `DurableAuditStore` is explicitly injected
 
 A4.3 does not turn the default API into a durable SQLite-backed product surface.
 
 ## Future Durable-State Target
 
-Current A4.3 durable execution proof:
+Current A4.4 durable execution proof:
 
 ```text
 SkillGraphService
 -> DurableApprovalBindingStore
 -> DurableSideEffectLedger
+-> DurableAuditStore
 -> SQLite
 -> FakeGitHubIssueCommentClient
 ```
 
-Future A4.4 may add `DurableAuditStore`. SQLite is the persistence boundary for the local/demo proof. Fake client execution remains the execution boundary. Real GitHub client remains out of scope.
+SQLite is the persistence boundary for the local/demo proof. Fake client execution remains the execution boundary. Real GitHub client remains out of scope.
 
 ## Explicitly Not Implemented
 
-- durable audit store runtime code
 - API behavior changes
 - real GitHub client
 - GitHub token loading
@@ -178,17 +201,17 @@ Future A4.4 may add `DurableAuditStore`. SQLite is the persistence boundary for 
 
 ## Restart-Replay Limitation
 
-A4.3 demonstrates duplicate suppression after durable success has been recorded. It does not prove production-grade exactly-once semantics across every crash window. If the fake client call succeeds but the process dies before `side_effect_records` is marked `succeeded`, A4.3 does not prove universal duplicate suppression for that interrupted attempt.
+A4.4 demonstrates duplicate suppression and durable local/demo audit evidence after durable success has been recorded. It does not prove production-grade exactly-once semantics across every crash window. If the fake client call succeeds but the process dies before `side_effect_records` is marked `succeeded`, A4.4 does not prove universal duplicate suppression for that interrupted attempt. A4.4 is not production-grade audit.
 
 ## Latest Baseline Evidence
 
-A4.3.1 should be validated with:
+A4.4 should be validated with:
 
-- split restart/replay tests
+- focused durable audit and adversarial persistence tests
 - `uv run pytest`
 - `uv run ruff check .`
 - `git diff --check`
 - overclaim grep
 - network/token grep
 
-The latest validation results belong in the A4.3.1 IDE evidence report after the commit is created.
+The latest validation results belong in the A4.4 IDE evidence report after the commit is created.

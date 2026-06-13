@@ -1,3 +1,4 @@
+from app.audit.durable_store import DurableAuditStore
 from app.github.client import GitHubIssueCommentClient
 from app.side_effects.approval_binding import DurableApprovalBindingStore
 from app.side_effects.durable_ledger import DurableSideEffectLedger
@@ -15,6 +16,7 @@ def github_comment_execution_context(
     github_issue_comment_client: GitHubIssueCommentClient,
     durable_side_effect_ledger: DurableSideEffectLedger | None,
     durable_approval_binding_store: DurableApprovalBindingStore | None,
+    durable_audit_store: DurableAuditStore | None = None,
 ) -> ToolExecutionContext | None:
     if tool_name != GITHUB_COMMENT_TOOL_NAME:
         return None
@@ -26,4 +28,5 @@ def github_comment_execution_context(
         github_issue_comment_client=github_issue_comment_client,
         durable_side_effect_ledger=durable_side_effect_ledger,
         durable_approval_binding_store=durable_approval_binding_store,
+        durable_audit_store=durable_audit_store,
     )

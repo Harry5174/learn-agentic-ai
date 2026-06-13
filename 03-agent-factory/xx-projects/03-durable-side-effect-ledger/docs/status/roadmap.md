@@ -95,15 +95,27 @@ A4.3.1 does not add durable audit store, real GitHub execution, token loading, A
 
 Status: Completed.
 
-## A4.4 Durable Audit Store
+## A4.4 Durable Audit Store and Adversarial Persistence Suite
 
-Future work only.
+A4.4 implements local/demo durable audit evidence and adversarial persistence tests.
 
-Potential scope:
+Scope implemented:
 
 - `durable_audit_events` table
 - `DurableAuditStore`
-- persist durable audit explanation for lifecycle events
+- durable audit event model and event-type enum
+- safe JSON metadata serialization with targeted unsafe metadata rejection
+- deterministic audit listing ordered by `created_at, event_id`
+- optional runtime-only audit-store injection
+- successful execution audit evidence
+- duplicate replay audit evidence
+- blocked execution audit evidence
+- fake-client failure audit evidence
+- adversarial persistence tests for approval mismatches, side-effect statuses, restart/replay, failure, metadata safety, and fake-client-only execution boundaries
+
+A4.4 does not execute real GitHub calls, load GitHub tokens, add a second GitHub tool, or claim production-grade audit. A4.4 does not claim universal exactly-once execution.
+
+Status: Completed.
 
 ## Still Out Of Scope
 

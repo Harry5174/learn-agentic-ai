@@ -4,14 +4,14 @@ This directory is organized so Artifact 4 is easy to review from GitHub and easy
 
 Artifact 4 - Durable Side-Effect Ledger and Approval Binding starts at A4.0 as a baseline copy from the completed Artifact 3 project.
 
-A4.1 implements SQLite-backed side-effect records. A4.2 implements durable approval binding. A4.3 integrates those stores into the fake-client GitHub comment execution path and proves restart/replay duplicate suppression after durable success has been recorded.
+A4.1 implements SQLite-backed side-effect records. A4.2 implements durable approval binding. A4.3 integrates those stores into the fake-client GitHub comment execution path and proves restart/replay duplicate suppression after durable success has been recorded. A4.3.1 modularized the restart/replay runtime boundary without behavior change. A4.4 implements local/demo durable audit events and adversarial persistence tests.
 
-A4.3 has not implemented durable audit store. It has not enabled real GitHub execution or GitHub token loading. It does not claim production-grade exactly-once execution.
+A4.4 has not enabled real GitHub execution or GitHub token loading. It does not claim production-grade audit or universal exactly-once execution.
 
 ## Start Here
 
-- [Project status](status/project-status.md): current A4.3 restart-replay integration status.
-- [Artifact 4 durable side-effect ledger spec](specs/artifact-4-durable-side-effect-ledger.md): durable-state design and future acceptance requirements.
+- [Project status](status/project-status.md): current A4.4 durable audit and adversarial persistence status.
+- [Artifact 4 durable side-effect ledger spec](specs/artifact-4-durable-side-effect-ledger.md): durable-state design and implemented acceptance requirements.
 - [Persistence boundary](architecture/persistence-boundary.md): architecture boundary between process-local state, SQLite, and fake-client execution.
 - [Artifact 3 vs Artifact 4](comparisons/artifact-3-vs-artifact-4.md): source baseline and durable-state design comparison.
 - [Known limitations](status/known-limitations.md): local/demo constraints and non-goals.
@@ -25,7 +25,8 @@ The copied project still contains Artifact 3 demos, specs, adversarial evidence,
 Useful inherited references:
 
 - [GitHub comment tool demo](demos/github-comment-tool-demo.md): inherited Artifact 3 local/demo fake-client walkthrough.
-- [Restart replay demo](demos/restart-replay-demo.md): A4.3 durable fake-client replay proof.
+- [Restart replay demo](demos/restart-replay-demo.md): A4.3/A4.4 durable fake-client replay proof.
+- [Durable audit demo](demos/durable-audit-demo.md): A4.4 durable local/demo audit evidence proof.
 - [Adversarial GitHub side-effect safety](adversarial-github-side-effect-safety.md): inherited evidence for the fake-client side-effect boundary.
 - [Artifact 3 real tool boundary](specs/artifact-3-real-tool-boundary.md): historical Artifact 3 boundary design.
 - [Skill-runner API contract](api/skill-runner-api.md): inherited local/demo API contract.
@@ -74,7 +75,7 @@ Useful inherited references:
 - SQLite side-effect records are implemented.
 - Durable approval binding is implemented.
 - A4.3 durable execution is available through explicit dependency injection for the fake-client GitHub comment path.
-- Durable audit evidence is planned for future A4.4 work.
+- A4.4 durable audit evidence is available through explicit runtime injection for the same fake-client path.
 - Real GitHub execution remains out of scope.
 - GitHub token loading remains out of scope.
 - The project remains local/demo, fake-client-only, and real-network disabled.
