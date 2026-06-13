@@ -14,6 +14,9 @@
 
 **A3.3 status:** One approval-gated local/demo GitHub issue-comment skill path.
 
+**A3.4 status:** Adversarial safety suite for the A3.3 GitHub comment
+side-effect boundary.
+
 **Principle:** The LLM proposes. The harness validates, authorizes,
 approval-gates, executes, and audits.
 
@@ -43,6 +46,15 @@ allowlist, high-risk approval, `validated_arguments_hash`, deterministic
 `FakeGitHubIssueCommentClient` simulated execution.
 
 A3.3 does not implement real GitHub API execution.
+
+A3.4 adds adversarial tests for that one fake-client side-effect path. The
+suite covers argument smuggling, unsupported object/list/nested payloads,
+repository policy bypass attempts, approval bypass attempts, approval-binding
+mutation behavior within the current architecture, replay and duplicate
+execution behavior, fake-client failure safety, network/token safety, and audit
+completeness. No implementation hardening was required by the A3.4 suite.
+
+Artifact 3 still does not implement real GitHub API execution.
 
 Artifact 2.2 remains the completed dry-run scalar argument validation artifact.
 The current Artifact 3 baseline still inherits Artifact 2.2 local/demo dry-run
@@ -90,6 +102,10 @@ Implemented:
 - A3.3 `post_github_issue_comment` skill/tool registration, repository
   allowlist policy, approval-gated fake-client execution, ledger replay
   suppression, and GitHub comment audit evidence
+- A3.4 adversarial GitHub comment side-effect safety suite covering smuggling,
+  unsupported payloads, policy/approval bypass attempts, approval-binding
+  mutation behavior, replay/duplicate execution, fake-client failure safety,
+  network/token checks, and audit completeness
 
 Historical note: Artifact 2.1 included E1.3 documentation, demo walkthrough,
 and portfolio packaging work. Current status: Artifact 2.2 is complete within
@@ -106,7 +122,8 @@ The copied baseline still includes the Artifact 2 foundation sprint specs:
 
 Artifact 2.1 extends that foundation with the skill-runner API lifecycle.
 A3.2 adds isolated supporting boundary modules. A3.3 adds one approval-gated
-local/demo GitHub issue-comment tool and skill.
+local/demo GitHub issue-comment tool and skill. A3.4 adds adversarial evidence
+for that fake-client side-effect boundary.
 
 Copied Artifact 1 sprint specs that could mislead future IDE agents are archived
 under:
@@ -176,6 +193,9 @@ Tests use deterministic fake outputs or mocked LLM-client outputs.
 
 A3.3 tests use deterministic fake GitHub issue-comment clients and an
 in-memory side-effect ledger only.
+
+A3.4 tests add adversarial coverage for the GitHub comment path using fake
+clients, in-memory ledgers, and in-process API calls only.
 
 No test depends on:
 
@@ -270,6 +290,30 @@ the checkpointed graph state. It does not persist `validated_arguments_hash` or
 is deferred.
 
 This is not real GitHub execution and does not load GitHub tokens.
+
+## A3.4 Adversarial Safety Status
+
+A3.4 adds `tests/test_adversarial_github_side_effect_safety.py` and
+`docs/adversarial-github-side-effect-safety.md`.
+
+The suite proves that the one A3.3 fake-client GitHub issue-comment path
+rejects or blocks:
+
+- credential and control-plane argument smuggling
+- object/list/nested payloads
+- arbitrary JSON blobs
+- repository allowlist bypass attempts
+- model-proposed policy and approval overrides
+- approval attempts by identities without approval scope
+- duplicate approval after completion
+- duplicate fake-client execution after a succeeded ledger hit
+- fake-client failures that might otherwise be misreported as success
+
+The suite also checks that the GitHub comment runtime path has no automatic
+GitHub token loading and no real network implementation.
+
+A3.4 did not add real GitHub execution, durable persistence, a second GitHub
+tool, or broader automation behavior.
 
 ## Current Limitation To Keep Visible
 

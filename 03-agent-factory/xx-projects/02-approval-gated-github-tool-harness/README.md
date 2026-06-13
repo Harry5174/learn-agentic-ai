@@ -18,6 +18,12 @@ path, `post_github_issue_comment`. The skill uses validated scalar arguments,
 a trusted repository allowlist, explicit approval, an in-memory side-effect
 ledger, and `FakeGitHubIssueCommentClient` simulated execution.
 
+A3.4 adds an adversarial safety suite and documentation for that one
+fake-client GitHub issue-comment path. It tests argument smuggling,
+unsupported payloads, repository policy bypass attempts, approval bypass
+attempts, approval-binding mutation behavior, replay suppression, fake-client
+failure behavior, network/token safety, and audit completeness.
+
 Artifact 3 still has not implemented real GitHub API execution.
 
 Repository folder numbering was applied after the original A3.0 copy/rename
@@ -63,6 +69,9 @@ Inherited baseline capabilities include:
 - A3.3 `post_github_issue_comment` skill/tool registration with approval,
   repository allowlist policy, fake-client execution, ledger replay
   suppression, and audit evidence
+- A3.4 adversarial safety tests for the GitHub comment side-effect boundary,
+  including smuggling, unsupported payloads, policy/approval bypass attempts,
+  replay behavior, failure safety, network/token checks, and audit evidence
 
 Artifact 3 A3.1 defines the future boundary for an approval-gated GitHub
 issue-comment tool named `post_github_issue_comment` with scalar arguments
@@ -151,6 +160,7 @@ High-value entry points:
 - [Security model](docs/architecture/security-model.md)
 - [Threat model](docs/architecture/threat-model.md)
 - [Adversarial argument validation](docs/adversarial-argument-validation.md)
+- [Adversarial GitHub side-effect safety](docs/adversarial-github-side-effect-safety.md)
 - [Known limitations](docs/status/known-limitations.md)
 - [Roadmap](docs/status/roadmap.md)
 - [Interview notes](docs/status/interview-notes.md)
@@ -164,6 +174,12 @@ Artifact 3 A3.3 adds exactly one GitHub-specific skill/tool path:
 allowlist, pauses for approval, computes `validated_arguments_hash` and
 `side_effect_id`, checks the process-local side-effect ledger, and then uses
 the fake GitHub issue-comment client for simulated local/demo execution.
+
+A3.4 adds adversarial tests around that path. The tests prove that smuggled
+control-plane arguments, credential-like fields, unsupported object/list/nested
+payloads, repository allowlist bypass attempts, approval bypass attempts, and
+fake-client failures remain inside the local/demo safety boundary. A3.4 did
+not require implementation hardening and did not add real GitHub execution.
 
 The default HTTP skill-runner demo uses fake proposer mode. HTTP
 `proposer_mode: "llm"` is disabled and rejected without calling a live model

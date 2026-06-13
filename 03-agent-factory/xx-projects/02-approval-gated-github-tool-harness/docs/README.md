@@ -18,6 +18,11 @@ path, `post_github_issue_comment`. It uses validated scalar arguments, a
 trusted repository allowlist, explicit approval, an in-memory side-effect
 ledger, and fake-client simulated execution.
 
+A3.4 adds adversarial safety tests and documentation for that one fake-client
+GitHub comment path. It proves smuggling, unsupported payload, policy bypass,
+approval bypass, replay, fake-client failure, network/token, and audit
+completeness behavior without adding real GitHub execution.
+
 Artifact 3 still has not implemented real GitHub API execution.
 
 Artifact 2.1 is the Skill Runner API and Demo Surface. It is complete as a
@@ -42,6 +47,9 @@ and keeps raw proposed arguments out of `ToolRegistry.execute()`.
 - [Adversarial argument validation](adversarial-argument-validation.md):
   E2.3 adversarial boundary evidence for unsafe argument rejection and raw
   argument non-execution.
+- [Adversarial GitHub side-effect safety](adversarial-github-side-effect-safety.md):
+  A3.4 adversarial evidence for the local/demo GitHub comment side-effect
+  boundary.
 - [Architecture](architecture/architecture.md): harness flow, trust boundaries,
   graph behavior, state, and persistence limits.
 - [Known limitations](status/known-limitations.md): local/demo constraints and
@@ -105,6 +113,8 @@ and keeps raw proposed arguments out of `ToolRegistry.execute()`.
 - A3.1 was documentation/specification only.
 - A3.2 added isolated fake/in-memory supporting boundaries only.
 - A3.3 adds one approval-gated fake-client GitHub issue-comment skill.
+- A3.4 adds adversarial tests and evidence for the A3.3 fake-client GitHub
+  comment boundary.
 - Artifact 3 has not implemented real GitHub API execution.
 - A3.1 defines the future boundary for an approval-gated GitHub issue-comment
   tool named `post_github_issue_comment`.

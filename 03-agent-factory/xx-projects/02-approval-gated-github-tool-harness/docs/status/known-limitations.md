@@ -12,6 +12,10 @@ The project is still a local/demo harness. A3.3 adds one approval-gated
 fake-client GitHub issue-comment skill path, but it remains process-local and
 real-network disabled.
 
+A3.4 adds adversarial tests for that path. These tests improve evidence around
+the local/demo safety boundary, but they do not turn the project into
+production security infrastructure.
+
 Artifact 2.2 remains the completed dry-run scalar argument validation artifact.
 The current Artifact 3 baseline still inherits Artifact 2.2 local/demo dry-run
 scalar argument validation behavior.
@@ -76,6 +80,11 @@ approval-gated GitHub issue-comment skill named `post_github_issue_comment`
 with scalar arguments `repository`, `issue_number`, and `comment_body`. It uses
 `FakeGitHubIssueCommentClient` for simulated local/demo execution only.
 
+A3.4 tests argument smuggling, unsupported payloads, repository bypass
+attempts, approval bypass attempts, replay behavior, fake-client failure
+safety, network/token safety, and audit evidence for that fake-client path.
+The tests did not require implementation hardening.
+
 Not implemented:
 
 - real GitHub client code
@@ -137,3 +146,17 @@ It should not be described as production security infrastructure.
 A3.3 does not provide production replay protection. It uses a process-local
 idempotency ledger for the one fake-client GitHub comment path. Ledger state
 does not survive process restart and is not a durable production guarantee.
+
+A3.4 does not change that limitation. The adversarial tests prove local/demo
+replay suppression for succeeded in-memory ledger records only.
+
+## Approval Binding
+
+A3.3 binds approval to the validated tool arguments held in current graph
+state, then computes `validated_arguments_hash` and `side_effect_id` before the
+fake-client call.
+
+A3.4 tests mutation behavior around that current checkpointed state, but the
+known limitation remains: `ApprovalDecision` does not persist
+`validated_arguments_hash` or `side_effect_id`. Stronger persisted approval
+binding remains future work.

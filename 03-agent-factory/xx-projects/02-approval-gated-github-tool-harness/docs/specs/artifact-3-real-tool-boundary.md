@@ -20,6 +20,9 @@ trusted repository allowlist, explicit approval, `InMemorySideEffectLedger`,
 and `FakeGitHubIssueCommentClient` simulated execution. A3.3 does not implement
 real GitHub API execution.
 
+A3.4 adds adversarial safety tests and documentation for the A3.3 fake-client
+path. It does not add real GitHub API execution.
+
 The goal is to document the future contract before any real GitHub write path
 exists, so later A3.x implementation work can stay narrow, auditable, and
 fail-closed.
@@ -169,6 +172,11 @@ before fake-client execution. The current `ApprovalDecision` schema does not
 persist `validated_arguments_hash` or `side_effect_id`; stronger persisted
 approval binding remains a future sprint.
 
+A3.4 tests mutation behavior around the current checkpointed graph-state
+binding. It proves that mutating the original proposer-side raw argument
+dictionary after pause does not change the validated action that is executed.
+It does not implement stronger persisted approval binding.
+
 ## 8. Idempotency / Replay Protection
 
 Future concepts:
@@ -233,6 +241,10 @@ A3.3 wires the in-memory ledger into the one fake-client
 duplicate fake-client call. This is local/demo replay suppression only, not
 durable production idempotency.
 
+A3.4 adds adversarial tests for duplicate approval, succeeded ledger hits,
+direct duplicate fake-client attempts, and side-effect id changes when
+validated arguments change. These tests remain local/demo evidence only.
+
 ## 9. GitHub Client Boundary
 
 Future boundary:
@@ -289,6 +301,10 @@ GitHub was not called.
 
 A3.3 audit evidence explicitly records that real GitHub network calls are
 false for the fake-client path.
+
+A3.4 adds static network/token safety tests for the GitHub comment runtime path
+and grep-based validation expectations. The runtime still contains no real
+GitHub network client and no automatic token loading.
 
 ## 11. Failure Behavior
 

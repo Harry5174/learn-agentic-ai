@@ -18,6 +18,12 @@ a trusted repository allowlist, explicit approval, an in-memory side-effect
 ledger, and fake-client simulated execution. It still does not call the real
 GitHub API.
 
+A3.4 adds adversarial safety tests for that one fake-client GitHub comment
+path. It proves that smuggled credentials/control fields, unsupported payload
+shapes, repository bypass attempts, approval bypass attempts, duplicate
+execution attempts, and fake-client failures stay inside the local/demo safety
+boundary.
+
 The core idea is:
 
 ```text
@@ -179,6 +185,31 @@ This is simulated local/demo execution. A3.3 does not add a real GitHub API
 adapter, token loading, arbitrary repository targeting, durable ledger, or
 production replay protection.
 
+## What A3.4 Adds
+
+A3.4 is a safety-proof sprint, not a feature sprint.
+
+It adds an adversarial suite for the A3.3 GitHub comment path:
+
+- argument smuggling tests for credential, identity, policy, approval, risk,
+  tool, and skill fields
+- unsupported object/list/nested payload tests
+- repository allowlist bypass tests
+- approval bypass tests
+- approval-binding mutation tests within the current architecture
+- replay and duplicate execution tests
+- fake-client failure safety tests
+- network/token safety checks
+- audit completeness assertions
+
+No implementation hardening was required by the A3.4 suite. The result is
+stronger evidence that the existing A3.3 fake-client path stays behind
+validation, policy, approval, ledger, and audit boundaries.
+
+A3.4 does not add real GitHub execution, token loading, durable persistence,
+OAuth/OIDC, MCP, frontend, object/list/nested argument support, partial
+argument acceptance, or production deployment.
+
 ## Why Policy Is Still Needed
 
 Validation answers:
@@ -239,6 +270,7 @@ public request field for selecting those fake proposer scenarios.
 
 - local/demo artifact
 - one A3.3 fake-client GitHub comment skill path only
+- A3.4 adversarial tests for that path only
 - no real GitHub client code
 - no runtime GitHub client wiring beyond the fake-client comment path
 - no durable side-effect ledger wiring
@@ -256,6 +288,8 @@ public request field for selecting those fake proposer scenarios.
 - Artifact 2.2 V1 supports only scalar string/integer/boolean arguments
 - no object/list/nested argument validation
 - no partial acceptance of mixed valid and invalid argument plans
+- `ApprovalDecision` does not persist `validated_arguments_hash` or
+  `side_effect_id`
 - HTTP `llm` proposer mode is disabled and rejected
 
 ## Strong Interview Framing
