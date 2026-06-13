@@ -6,7 +6,7 @@ A4.0 is a baseline copy and durable-state specification sprint. This project was
 
 Artifact 4 exists to move from process-local side-effect safety toward restart-safe durable side-effect safety before any real GitHub write is enabled.
 
-A4.0 does not implement SQLite persistence. A4.0 does not add runtime durable ledger behavior. A4.0 does not add durable approval binding runtime behavior. A4.0 does not add a durable audit store. A4.0 does not add real GitHub execution or token loading.
+A4.1 implements the SQLite-backed side_effect_records ledger. A4.1 does not implement durable approval binding. A4.1 does not implement durable audit store. A4.1 does not integrate with graph/service execution. A4.1 does not provide restart-safe execution yet. A4.1 proves repository re-instantiation persistence only. Real GitHub execution remains absent.
 
 ## Mission
 
@@ -22,7 +22,7 @@ A4.0 answers that question as a design and acceptance contract only. Implementat
 
 ## Current State
 
-Current A4.0 state:
+Current A4.1 state:
 
 - copied baseline from completed Artifact 3
 - Artifact 4 project identity and documentation baseline
@@ -33,8 +33,6 @@ Current A4.0 state:
 
 Not implemented yet:
 
-- SQLite repository classes
-- durable side-effect ledger runtime code
 - durable approval binding runtime code
 - durable audit store runtime code
 - graph or service integration with durable persistence
@@ -66,7 +64,7 @@ model-shaped proposal
 -> audit evidence
 ```
 
-Artifact 3 demonstrated that path with an in-memory ledger and `FakeGitHubIssueCommentClient`. Artifact 4 A4.0 keeps that runtime behavior unchanged while defining the future durable-state boundary.
+Artifact 3 demonstrated that path with an in-memory ledger and `FakeGitHubIssueCommentClient`. Artifact 4 keeps that runtime behavior unchanged at the graph/service level while defining the future durable-state boundary and implementing the SQLite backend in A4.1.
 
 ## Durable-State Design
 
@@ -148,7 +146,7 @@ High-value entry points:
 
 ## Current Boundaries
 
-Artifact 4 A4.0 is documentation/specification only. It defines planned SQLite persistence semantics for future sprints but does not implement them.
+Artifact 4 A4.1 implements the `DurableSideEffectLedger` backed by SQLite. It proves that records can be written to a SQLite file and retrieved by a fresh ledger instance. However, A4.1 does not integrate this ledger into the graph/service execution path, nor does it implement durable approval binding.
 
 The copied runtime still inherits Artifact 3 local/demo behavior:
 

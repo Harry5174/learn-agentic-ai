@@ -4,7 +4,7 @@
 
 A4.0 defines durable-state semantics for Artifact 4 - Durable Side-Effect Ledger and Approval Binding.
 
-A4.0 does not implement SQLite persistence. A4.0 does not add runtime durable ledger behavior. A4.0 does not add real GitHub execution. A4.0 does not add token loading. A4.0 does not make the project production-ready.
+A4.1 implements the `DurableSideEffectLedger` backed by SQLite. A4.1 does not add durable approval binding. A4.1 does not add real GitHub execution. A4.1 does not add token loading. A4.1 does not make the project production-ready.
 
 This spec defines the records, approval bindings, state transitions, restart-replay guarantees, and future acceptance requirements that must exist before the harness can safely move toward real side effects.
 
@@ -46,7 +46,7 @@ Implementation guidance for future sprints:
 - use temporary SQLite files in tests
 - do not use Postgres, Redis, Docker Compose, or cloud infrastructure
 
-No SQLite implementation exists in A4.0.
+A basic SQLite ledger implementation exists in A4.1, but is not yet wired into the graph/service.
 
 ## 5. Side-Effect Record Schema
 
@@ -252,7 +252,7 @@ A4.3 must first prove raw SQLite persistence before graph/service integration:
 5. Read the same record back.
 ```
 
-This is a future A4.3 acceptance requirement. It is not current A4.0 functionality.
+This is proven in A4.1 `tests/test_durable_side_effect_ledger.py`.
 
 ## 12. Failure Behavior
 
@@ -271,7 +271,7 @@ Failure metadata must avoid secrets and full sensitive payloads. A redacted fail
 
 ## 13. Non-Goals
 
-A4.0 and Artifact 4 V1 durable-state work explicitly exclude:
+A4.1 and Artifact 4 V1 durable-state work explicitly exclude:
 
 ```text
 real GitHub API calls
@@ -298,7 +298,7 @@ production readiness
 
 ## 14. Future Implementation Acceptance Checklist
 
-This checklist is future-facing. It does not describe current A4.0 functionality.
+This checklist tracks the implementation of Artifact 4.
 
 ### A4.1 Durable-State Contracts
 
@@ -315,7 +315,7 @@ This checklist is future-facing. It does not describe current A4.0 functionality
 - Use temporary SQLite files in tests.
 - Do not add Postgres, Redis, Docker Compose, cloud services, or Alembic unless separately approved.
 
-### A4.3 Standalone Persistence Proof
+### A4.3 Standalone Persistence Proof (Implemented in A4.1)
 
 - Open a SQLite file.
 - Write one `side_effect_record`.

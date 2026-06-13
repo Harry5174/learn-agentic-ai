@@ -6,9 +6,7 @@ Artifact 4 moves from in-memory side-effect safety toward restart-safe durable s
 
 ## A4.0 Baseline Copy And Durable-State Spec
 
-Status: current sprint.
-
-A4.0 creates the Artifact 4 folder from completed Artifact 3 and defines the durable-state design before implementation.
+A4.0 created the Artifact 4 folder from completed Artifact 3 and defined the durable-state design before implementation.
 
 A4.0 includes:
 
@@ -21,30 +19,27 @@ A4.0 includes:
 
 A4.0 does not implement SQLite persistence, durable runtime behavior, real GitHub execution, or token loading.
 
-## A4.1 Durable-State Contracts
+Status: Current sprint.
 
-Future work only.
-
-Potential scope:
+Scope implemented:
 
 - durable side-effect record model
-- durable approval binding model
-- durable audit event model
-- small repository interfaces
-- no graph/service runtime integration unless separately approved
+- SQLite connection manager and side_effect_records table
+- `DurableSideEffectLedger` with state transition validation
+- Re-instantiation persistence test
 
-## A4.2 SQLite Repository Skeleton
+A4.1 does not integrate the ledger into the runtime execution path.
+
+## A4.2 Durable Approval Binding
 
 Future work only.
 
 Potential scope:
 
-- stdlib `sqlite3` repository classes
-- local/demo table initialization
-- deterministic JSON/timestamp persistence
-- temporary SQLite files in tests
-
-Out of scope: Postgres, Redis, Docker Compose, cloud infrastructure, and production hardening.
+- persist approval against `side_effect_id` and `validated_arguments_hash`
+- require matching approved approval binding before execution
+- fail closed on mismatched approval binding
+- preserve blocked vs rejected semantics
 
 ## A4.3 Standalone Persistence Proof
 
@@ -62,16 +57,11 @@ Acceptance requirement:
 
 This must be proven before graph/service integration.
 
-## A4.4 Approval Binding Enforcement
+## A4.4 Graph Integration
 
 Future work only.
 
-Potential scope:
-
-- persist approval against `side_effect_id` and `validated_arguments_hash`
-- require matching approved approval binding before execution
-- fail closed on mismatched approval binding
-- preserve blocked vs rejected semantics
+Integrate the `DurableSideEffectLedger` and `DurableApprovalBindingStore` into the main execution path.
 
 ## A4.5 Restart-Replay Proof
 

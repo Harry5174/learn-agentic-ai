@@ -6,7 +6,7 @@
 
 **Copied baseline:** Artifact 3 - Approval-Gated GitHub Tool Harness
 
-**A4.0 status:** Baseline copy and durable-state specification.
+**A4.1 status:** SQLite Side-Effect Ledger implemented.
 
 **Principle:** The LLM proposes. The harness validates, authorizes, approval-gates, executes, and audits.
 
@@ -14,7 +14,7 @@
 
 ## Current Artifact Status
 
-Artifact 4 starts with A4.0, a copied baseline from completed Artifact 3.
+Artifact 4 is currently at A4.1. It started with A4.0, a copied baseline from completed Artifact 3.
 
 The current Artifact 4 folder is:
 
@@ -28,15 +28,19 @@ The source baseline folder is:
 03-agent-factory/xx-projects/02-approval-gated-github-tool-harness
 ```
 
-A4.0 is documentation/specification only. It establishes the durable-state design for future SQLite persistence, durable approval binding, durable side-effect records, durable audit events, and restart-replay semantics.
+A4.1 implements the `DurableSideEffectLedger` backed by a SQLite boundary. It defines the `side_effect_records` table and validates proper status transitions without making the database available to the graph/service yet.
 
-Artifact 4 has not implemented durable SQLite persistence yet. It has not implemented durable approval binding yet. It has not implemented a durable audit store yet. It still inherits Artifact 3 fake-client local/demo behavior.
+Artifact 4 has not implemented durable approval binding yet. It has not implemented a durable audit store yet. It still inherits Artifact 3 fake-client local/demo behavior for the main graph path.
 
 Real GitHub execution remains out of scope.
 
-## Implemented In A4.0
+## Implemented In A4.1
 
-A4.0 adds or updates documentation only:
+A4.1 implements the first slice of durable state:
+- `DurableSideEffectLedger` using SQLite
+- `side_effect_records` schema
+- Domain-driven transition rules (terminal state protection)
+- Fresh repository re-instantiation persistence test
 
 - Artifact 4 README and docs index
 - durable-state spec
@@ -45,7 +49,7 @@ A4.0 adds or updates documentation only:
 - project status, roadmap, limitations, and interview notes
 - parent/root artifact indexes
 
-A4.0 keeps runtime behavior unchanged.
+A4.1 keeps runtime graph/service behavior unchanged.
 
 ## Inherited Runtime Baseline
 
@@ -75,7 +79,9 @@ Current runtime persistence is still inherited from Artifact 3:
 - approval decisions do not persist `validated_arguments_hash`
 - approval decisions do not persist `side_effect_id`
 
-A4.0 defines future durable persistence semantics but does not implement them.
+- The SQLite side-effect ledger exists but is not yet bound to the executing graph.
+
+A4.1 defines and tests the durable ledger, but does not inject it into the application runtime yet.
 
 ## Future Durable-State Target
 
@@ -94,10 +100,6 @@ SQLite is the planned persistence boundary. Fake client execution remains the ex
 
 ## Explicitly Not Implemented
 
-A4.0 did not add:
-
-- SQLite implementation
-- durable side-effect ledger runtime code
 - durable approval binding runtime code
 - durable audit store runtime code
 - graph/service behavior changes
@@ -115,7 +117,7 @@ A4.0 did not add:
 
 ## Latest Baseline Evidence
 
-A4.0 should be validated with:
+A4.1 should be validated with:
 
 - `uv run pytest`
 - `uv run ruff check .`
@@ -123,4 +125,4 @@ A4.0 should be validated with:
 - stale-path grep
 - overclaim grep
 
-The latest validation results belong in the A4.0 completion report after the commit is created.
+The latest validation results belong in the A4.1 completion report after the commit is created.
