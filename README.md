@@ -1,121 +1,164 @@
 # Learning Agentic AI
 
-A hands-on learning repository for exploring and implementing **Agentic AI** concepts, frameworks, and tooling. Each module is an isolated, runnable project managed with [uv](https://docs.astral.sh/uv/) — a fast Python package manager — and focuses on a specific technology or framework in the agentic AI ecosystem.
+A long-running learning and portfolio repository focused on **applied AI systems**, **agentic AI**, **backend AI engineering**, and **controlled tool-use harnesses**.
+
+Each module is an isolated, runnable project managed with [uv](https://docs.astral.sh/uv/). The repository has evolved from early framework explorations into a structured portfolio track — **Agent Factory** — that demonstrates production-oriented harness design for AI tool execution.
+
+**Project thesis:**
+> Agents are useful only when the application harness controls identity, validation, policy, approval, execution, and audit.
 
 ---
 
 ## Repository Structure
 
 ```
-05_learn_agentic_ai/
-├── 00_uv/                          # uv package manager fundamentals
-│   ├── 00_hello_world/             # Minimal uv project setup and structure
-│   └── 01_blog_flow_uv/            # Blog generation using CrewAI Flows
-│
-├── 01_lite_llm/                    # LiteLLM unified LLM API gateway
-│   └── uv-proj/                    # Calling Gemini 2.0 via LiteLLM
-│
-└── 02_crewai/                      # CrewAI multi-agent framework
-    └── 00_hello_crewai/            # First CrewAI crew with agents and tasks
+learn-agentic-ai/
+├── 00-uv/                          # uv package manager fundamentals
+├── 01-lite-llm/uv-proj/            # LiteLLM unified LLM API gateway
+├── 02-crewai/00-hello-crewai/      # CrewAI multi-agent framework
+├── 03-agent-factory/               # ★ Main portfolio / system-building track
+│   ├── 00-about-and-thesis/
+│   ├── 01-ai-prompting-2026/
+│   ├── 02-how-to-think-ai-era/
+│   ├── 03-agentic-coding-crash-course/
+│   ├── 04-build-ai-agents/
+│   └── xx-projects/                # Numbered artifact sequence
+│       ├── 00-identity-aware-agent-harness
+│       ├── 01-llm-proposed-skill-runner
+│       └── 02-approval-gated-github-tool-harness
+└── 04-deeplearning-ai-labs/        # DeepLearning.AI course notebooks
 ```
 
----
-
-## Modules Overview
-
-### `00_uv` — uv Package Manager
-
-Explores [uv](https://docs.astral.sh/uv/), an extremely fast Python package and project manager written in Rust. Covers project initialization, virtual environment management, dependency handling, and running scripts.
-
-| Project | Description |
-|---|---|
-| `00_hello_world` | Minimal uv project — covers `pyproject.toml`, virtual environments, and script entry points |
-| `01_blog_flow_uv` | Blog content generation pipeline built with [CrewAI Flows](https://docs.crewai.com/concepts/flows) and managed via uv |
+**`03-agent-factory`** is the main portfolio and system-building track. It contains coursework, thesis notes, and the `xx-projects/` artifact sequence — a series of progressively more capable controlled-agent harnesses.
 
 ---
 
-### `01_lite_llm` — LiteLLM
+## Agent Factory — Artifact Sequence
 
-Explores [LiteLLM](https://github.com/BerriAI/litellm), a unified Python SDK that provides a consistent OpenAI-compatible interface across 100+ LLM providers (OpenAI, Anthropic, Gemini, etc.).
+The Agent Factory track builds a series of numbered artifacts, each adding a new layer of controlled AI tool execution.
 
-| Project | Description |
-|---|---|
-| `uv-proj` | Calls **Google Gemini 2.0** using LiteLLM's `completion()` API; demonstrates provider-agnostic LLM integration |
+| # | Artifact | Path | Status | Core Claim |
+|---|---------|------|--------|------------|
+| 1 | Identity-Aware Stateful Agent Harness | [00-identity-aware-agent-harness](03-agent-factory/xx-projects/00-identity-aware-agent-harness) | Complete / preserved | Server-derived identity, role/scope policy, stateful task lifecycle, approval gates, audit trail, LangGraph checkpoint/resume |
+| 2 / 2.2 | LLM-Proposed, Harness-Controlled Skill Runner | [01-llm-proposed-skill-runner](03-agent-factory/xx-projects/01-llm-proposed-skill-runner) | Complete / tagged `artifact-2.2` | Model-shaped skill proposals (SkillSpec / SkillStep / SkillProposal), proposal validation, policy and approval lifecycle, Skill Runner API, validated scalar arguments, safe rejection of unsafe/control-plane/malformed args |
+| 3 | Approval-Gated GitHub Tool Harness | [02-approval-gated-github-tool-harness](03-agent-factory/xx-projects/02-approval-gated-github-tool-harness) | Complete as local/demo fake-client artifact | One approval-gated GitHub issue-comment skill path, validated scalar arguments, trusted repository policy, explicit approval, side-effect idempotency (in-memory ledger), FakeGitHubIssueCommentClient execution, audit evidence, adversarial safety tests |
+
+### Key Design Boundaries
+
+- **Artifact 1:** Request bodies cannot claim identity, role, or scopes. Identity is server-derived.
+- **Artifact 2 / 2.2:** The proposer proposes. The harness validates, authorizes, approval-gates, executes, and audits. Dry-run only; scalar args only; no real GitHub writes; no live LLM HTTP mode.
+- **Artifact 3:** Local/demo fake-client only. No real GitHub API calls. Not production-ready.
 
 ---
 
-### `02_crewai` — CrewAI
+## What Artifact 3 Demonstrates
 
-Explores [CrewAI](https://www.crewai.com/), a framework for orchestrating autonomous AI agents that collaborate to accomplish complex, multi-step tasks.
+Artifact 3 demonstrates a local/demo approval-gated GitHub issue-comment harness path where:
+
+- Model-proposed scalar arguments are validated
+- Repository policy is checked against a trusted-repository allowlist
+- Explicit approval is required before execution
+- Side-effect idempotency is checked with an in-memory ledger
+- Fake-client execution is used (no real GitHub network calls)
+- Audit evidence is recorded for every decision
+- Adversarial safety tests verify rejection of unsafe inputs
+
+### What Artifact 3 Does Not Claim
+
+Artifact 3 does **not** claim or implement:
+
+- Real GitHub comments are posted
+- Production readiness
+- Durable replay protection
+- OAuth-secured identity
+- Arbitrary repository support
+- General GitHub automation platform capabilities
+- Autonomous repository modification
+
+---
+
+## Recommended Review Path
+
+1. Start with this root README.
+2. Open [03-agent-factory/README.md](03-agent-factory/README.md).
+3. Open [03-agent-factory/xx-projects/README.md](03-agent-factory/xx-projects/README.md).
+4. Review [Artifact 3 README](03-agent-factory/xx-projects/02-approval-gated-github-tool-harness/docs/README.md).
+5. Review [Artifact 3 demo](03-agent-factory/xx-projects/02-approval-gated-github-tool-harness/docs/demos/github-comment-tool-demo.md).
+6. Review [Artifact 3 adversarial evidence](03-agent-factory/xx-projects/02-approval-gated-github-tool-harness/docs/adversarial-github-side-effect-safety.md).
+
+---
+
+## Current Limitations
+
+This repository contains learning and portfolio artifacts, not a deployed production service.
+
+**Current Artifact 3 limitations:**
+
+- Local/demo only
+- Fake GitHub client only
+- No real GitHub API / network execution
+- No GitHub token loading
+- No durable side-effect ledger
+- No durable audit store
+- No OAuth/OIDC production identity provider
+- No frontend / operator console
+- No MCP integration
+- Not production-ready
+
+---
+
+## Early Learning Modules
+
+The early modules remain as reference material from the initial learning phase.
+
+### `00-uv` — uv Package Manager
 
 | Project | Description |
-|---|---|
-| `00_hello_crewai` | First multi-agent crew — defines agents with roles and goals, assigns tasks, and runs the crew using `crewai run` |
+|---------|-------------|
+| `00_hello_world` | Minimal uv project — `pyproject.toml`, virtual environments, script entry points |
+| `01_blog_flow_uv` | Blog generation pipeline built with CrewAI Flows, managed via uv |
+
+### `01-lite-llm` — LiteLLM
+
+| Project | Description |
+|---------|-------------|
+| `uv-proj` | Calls Google Gemini 2.0 using LiteLLM's `completion()` API |
+
+### `02-crewai` — CrewAI
+
+| Project | Description |
+|---------|-------------|
+| `00_hello_crewai` | First multi-agent crew — agents with roles, goals, tasks |
+
+### `04-deeplearning-ai-labs` — DeepLearning.AI Labs
+
+Course notebooks and lab exercises from DeepLearning.AI courses.
 
 ---
 
 ## Technologies Used
 
 | Technology | Purpose |
-|---|---|
+|-----------|---------|
 | [uv](https://docs.astral.sh/uv/) | Fast Python package and project manager |
-| [CrewAI](https://www.crewai.com/) | Multi-agent orchestration framework |
-| [LiteLLM](https://github.com/BerriAI/litellm) | Unified, provider-agnostic LLM API |
-| [Google Gemini 2.0](https://deepmind.google/technologies/gemini/) | Large Language Model used for inference |
-| [Hatchling](https://hatch.pypa.io/latest/) | Python build backend |
-| Python >= 3.12 | Language runtime for all projects |
+| [FastAPI](https://fastapi.tiangolo.com/) | API framework for agent harness endpoints |
+| [LangGraph](https://langchain-ai.github.io/langgraph/) | Stateful graph execution with checkpoint/resume |
+| [Pydantic](https://docs.pydantic.dev/) | Strict domain model validation |
+| [pytest](https://docs.pytest.org/) | Test framework for all artifacts |
+| [Ruff](https://docs.astral.sh/ruff/) | Python linter and formatter |
+| [CrewAI](https://www.crewai.com/) | Multi-agent orchestration (early modules) |
+| [LiteLLM](https://github.com/BerriAI/litellm) | Unified, provider-agnostic LLM API (early modules) |
+| Python >= 3.12 | Language runtime |
 
 ---
 
 ## Prerequisites
 
 - **Python >= 3.12**
-- **uv** installed globally:
+- **uv** installed:
   ```bash
-  pip install uv
-  # or (recommended)
   curl -LsSf https://astral.sh/uv/install.sh | sh
   ```
-
----
-
-## Getting Started
-
-Each module is a self-contained uv project. To run any project:
-
-```bash
-# 1. Navigate to the project directory
-cd 00_uv/00_hello_world
-
-# 2. Install dependencies (creates a virtual environment automatically)
-uv sync
-
-# 3. Run the project using its defined script entry point
-uv run 00-hello-world
-```
-
-For CrewAI projects, you can alternatively use:
-```bash
-cd 02_crewai/00_hello_crewai
-crewai install   # installs dependencies
-crewai run       # kicks off the crew
-```
-
----
-
-## Environment Variables
-
-Some projects require API keys. Create a `.env` file inside the relevant project directory:
-
-```env
-# For LiteLLM / Gemini projects
-GEMINI_API_KEY=your_gemini_api_key_here
-
-# For CrewAI projects (if using OpenAI models)
-OPENAI_API_KEY=your_openai_api_key_here
-```
-
-> **Note:** `.env` files are excluded from version control via `.gitignore`.
 
 ---
 

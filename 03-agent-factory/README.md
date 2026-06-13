@@ -1,55 +1,92 @@
-# The AI Agent Factory
+# Agent Factory
 
-The AI Agent Factory defines the spec-driven, human-supervised process for building AI-Native Companies. This curriculum teaches how to design, manufacture, deploy, and monetize Digital Full-Time Equivalents (Digital FTEs)—reliable AI workers that run the next generation of enterprises.
-
-This repository serves as a practical learning framework for software engineers, platform architects, domain experts, and enterprise leaders who are building and orchestrating the workforce of the Agent Era.
+The Agent Factory is the main portfolio and system-building track in the Learning Agentic AI repository. It combines coursework, design thinking, and a progressive artifact sequence that demonstrates controlled AI tool execution harnesses.
 
 ---
 
-## Core Philosophy
+## Thesis
 
-### Co-Learning Partnership
-The program advocates learning alongside AI agents. Instead of treating AI as a static tool, builders engage in a co-learning relationship where humans and agents teach and refine each other through continuous feedback loops.
+> Agents are useful only when the application harness controls identity, validation, policy, approval, execution, and audit.
 
-### Dual-Language Stack
-Development is anchored on a bilingual foundation:
-*   **Python**: Used for agent reasoning, backend logic, and intelligence layers.
-*   **TypeScript**: Used for interactive interfaces, UI rendering, and orchestration.
+The Agent Factory track explores this thesis through:
 
-### Spec-Driven Development
-Specifications are written as living blueprints that both humans and AI agents can execute (e.g., using the `SKILL.md` format). Specifications drive code generation, automated testing, and execution in isolated runtimes.
+- Coursework on AI-native thinking, prompting, and agentic coding
+- A numbered artifact sequence (`xx-projects/`) where each artifact adds a new layer of harness control
+- Strict separation between what the model proposes and what the harness permits
 
 ---
 
-## The AI Development Spectrum
+## Artifact Sequence
 
-The curriculum positions organizations across three development levels:
+The `xx-projects/` directory contains the core artifact sequence:
 
-1.  **AI Assisted (AI as Helper)**: AI increases developer productivity through code completion, automated debugging assistance, and boilerplate generation.
-2.  **AI Driven (AI as Co-Creator)**: AI generates complete workflows and applications from specifications. The human acts as architect, director, and reviewer.
-3.  **AI Native (AI is the Software)**: Systems are built from the ground up around agent capabilities, utilizing intelligent event routing, multi-agent orchestration, and natural language interfaces.
+| Artifact | Name | Status |
+|----------|------|--------|
+| 1 | [Identity-Aware Stateful Agent Harness](xx-projects/00-identity-aware-agent-harness) | Complete / preserved |
+| 2 / 2.2 | [LLM-Proposed, Harness-Controlled Skill Runner](xx-projects/01-llm-proposed-skill-runner) | Complete / tagged `artifact-2.2` |
+| 3 | [Approval-Gated GitHub Tool Harness](xx-projects/02-approval-gated-github-tool-harness) | Complete as local/demo fake-client artifact |
 
----
+Each artifact builds on the previous:
 
-## The Great Shift: Traditional vs. AI-Native Development
+- **Artifact 1** established server-derived identity, role/scope policy, stateful task lifecycle, approval gates, audit trail, and LangGraph checkpoint/resume.
+- **Artifact 2 / 2.2** added model-shaped skill proposals (SkillSpec / SkillStep / SkillProposal), proposal validation, policy and approval lifecycle, a Skill Runner API, and safe rejection of unsafe arguments.
+- **Artifact 3** added one approval-gated GitHub issue-comment skill path with validated scalar arguments, trusted repository policy, explicit approval, side-effect idempotency (in-memory ledger), FakeGitHubIssueCommentClient execution, audit evidence, and adversarial safety tests.
 
-| Dimension | Traditional Development | AI-Native Development |
-|---|---|---|
-| **Interactivity** | Instruction-Based: telling computers precisely how to act | Intent-Based: describing target outcomes and letting AI reason how to build them |
-| **Workflow** | Solo Coding: manual implementation of every line | Co-Learning: iterative feedback loops between human and agent |
-| **Documentation** | Post-Facto: static comments and documents written after the code | Executable Blueprints: specifications drive code, tests, and deployment |
-| **Learning Path** | Linear: slowly scaling from syntax to simple projects | Production-First: building integrated agentic systems from day one |
-| **Approach** | Code-First: focusing on syntax and implementation details | Architecture-First: designing intelligent collaborations and tool spaces |
+See [xx-projects/README.md](xx-projects/README.md) for the detailed artifact index.
 
 ---
 
-## Directory Structure
+## Current Folders
 
-This module is organized into the following areas:
+```
+03-agent-factory/
+├── 00-about-and-thesis/            # Foundations: four-channel ecosystem, role guide, invariants
+├── 01-ai-prompting-2026/           # Prompt engineering, context control, experiments
+├── 02-how-to-think-ai-era/         # Thinking checklists and methodologies
+├── 03-agentic-coding-crash-course/ # Core workflows, persistent sandboxes, routines
+├── 04-build-ai-agents/             # Architecture patterns, MCP, orchestration SDKs
+└── xx-projects/                    # ★ Numbered artifact sequence
+    ├── 00-identity-aware-agent-harness
+    ├── 01-llm-proposed-skill-runner
+    └── 02-approval-gated-github-tool-harness
+```
 
-*   **00-about-and-thesis**: Foundations of the Agent Factory framework. Contains notes on the four-channel ecosystem, the target role guide, the Two-Layer Model, the 10-80-10 operating rhythm, and the Seven Invariants of the Agent Factory.
-*   **01-ai-prompting-2026**: High-level prompt engineering and context control. Includes study notes, 12 hands-on experiments, reusable templates for workspace tasks, and reflections on verification and sycophancy.
-*   **02-how-to-think-ai-era**: Thinking checklists and methodologies for problem-solving in the AI era.
-*   **03-agentic-coding-crash-course**: Core workflows, persistent sandboxes, and coding routines.
-*   **04-build-ai-agents**: Architecture patterns, Model Context Protocol (MCP) integrations, and orchestration SDKs.
-*   **projects**: Implementation folders for practical agent deployments.
+---
+
+## What Artifact 3 Adds
+
+Artifact 3 is the current leading artifact. It demonstrates a local/demo approval-gated GitHub issue-comment harness path where:
+
+- Model-proposed scalar arguments are validated
+- Repository policy is checked against a trusted-repository allowlist
+- Explicit approval is required before execution
+- Side-effect idempotency is checked with an in-memory ledger
+- Fake-client execution is used (no real GitHub network calls)
+- Audit evidence is recorded for every decision
+- Adversarial safety tests verify rejection of unsafe inputs
+
+---
+
+## What Is Not Implemented Yet
+
+Current Artifact 3 is a local/demo fake-client artifact. It does not implement:
+
+- Real GitHub API / network execution
+- GitHub token loading or credential management
+- Durable side-effect ledger (replay protection is in-memory only)
+- Durable audit store
+- OAuth/OIDC production identity provider
+- Frontend / operator console
+- MCP integration
+- Production deployment
+
+---
+
+## Recommended Next Work
+
+**Next likely artifact:**
+Artifact 4 — Approval-Gated Real GitHub Comment Adapter
+
+**Purpose:** Move from fake-client local/demo execution to one carefully guarded real GitHub issue-comment adapter.
+
+This should be separately designed and approved before implementation.
