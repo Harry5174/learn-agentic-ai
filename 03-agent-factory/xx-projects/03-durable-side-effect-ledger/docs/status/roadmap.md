@@ -80,6 +80,21 @@ A4.3 does not add durable audit store. A4.3 does not execute real GitHub calls. 
 
 Status: Completed.
 
+## A4.3.1 Modularization and Runtime Boundary Cleanup
+
+A4.3.1 modularized the restart/replay implementation and graph/tool boundaries without adding runtime behavior.
+
+Scope implemented:
+
+- split restart/replay tests by behavior
+- extracted durable GitHub comment execution and result-shaping helpers
+- extracted selected graph routing, metadata, policy, validation, and execution-context helpers
+- preserved fake-client-only execution and explicit durable dependency injection
+
+A4.3.1 does not add durable audit store, real GitHub execution, token loading, API behavior changes, or production-grade exactly-once claims.
+
+Status: Completed.
+
 ## A4.4 Durable Audit Store
 
 Future work only.

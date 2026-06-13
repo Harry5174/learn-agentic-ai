@@ -4,7 +4,7 @@ This file lists current limits so Artifact 4 stays honest as a portfolio artifac
 
 ## Current Scope
 
-Artifact 4 - Durable Side-Effect Ledger and Approval Binding is at A4.3.
+Artifact 4 - Durable Side-Effect Ledger and Approval Binding is at A4.3.1.
 
 A4.0 is documentation/specification only. It does not change runtime behavior.
 
@@ -13,6 +13,8 @@ A4.1 implements the SQLite-backed `DurableSideEffectLedger`. It does not integra
 A4.2 implements the SQLite-backed `DurableApprovalBindingStore`. It persists approval decisions against exact `side_effect_id` and `validated_arguments_hash`.
 
 A4.3 integrates those durable stores into the fake-client GitHub issue-comment execution path through explicit dependency injection. It proves restart/replay duplicate suppression after durable success has already been recorded.
+
+A4.3.1 modularized the restart/replay implementation and graph/tool boundaries without adding runtime behavior.
 
 ## Not Implemented Yet
 

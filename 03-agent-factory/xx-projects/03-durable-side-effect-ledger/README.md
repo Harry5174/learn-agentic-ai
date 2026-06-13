@@ -12,6 +12,8 @@ A4.2 implements durable approval binding. A4.2 persists approval decisions again
 
 A4.3 integrates the durable ledger and durable approval binding into the fake-client GitHub issue-comment execution path through explicit dependency injection. A4.3 demonstrates restart-replay duplicate suppression for the local/demo fake-client GitHub comment path using SQLite-backed side-effect and approval records. A4.3 does not add durable audit store, real GitHub execution, GitHub token loading, or production-grade exactly-once semantics.
 
+A4.3.1 modularized the restart/replay implementation and graph/tool boundaries without adding runtime behavior.
+
 ## Mission
 
 Make approval-gated side-effect execution durable, replay-safe, and auditable across process restarts before enabling any real GitHub write.
@@ -26,7 +28,7 @@ A4.3 answers that question for the local/demo fake-client GitHub comment path af
 
 ## Current State
 
-Current A4.3 state:
+Current A4.3.1 state:
 
 - copied baseline from completed Artifact 3
 - Artifact 4 project identity and documentation baseline
@@ -46,6 +48,7 @@ Current A4.3 state:
 - replay after durable success returns already_succeeded / duplicate-suppressed evidence without calling the fake client again
 - replay after durable success preserves `side_effect_records.status = succeeded`
 - persisted `executing` and failed terminal records are not automatically retried
+- A4.3.1 splits restart/replay tests and extracts graph/tool helper modules without changing execution semantics
 
 Not implemented yet:
 

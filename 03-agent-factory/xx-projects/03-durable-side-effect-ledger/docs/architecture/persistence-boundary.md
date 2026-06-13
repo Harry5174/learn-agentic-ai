@@ -2,7 +2,7 @@
 
 Artifact 4 adds a durable-state design boundary before any real GitHub write can be considered.
 
-A4.0 documents the future shape and acceptance requirements. A4.1 implements the side-effect ledger. A4.2 implements the approval binding store. A4.3 integrates both stores into the fake-client GitHub comment execution path through explicit runtime injection.
+A4.0 documents the future shape and acceptance requirements. A4.1 implements the side-effect ledger. A4.2 implements the approval binding store. A4.3 integrates both stores into the fake-client GitHub comment execution path through explicit runtime injection. A4.3.1 modularizes that restart/replay implementation and graph/tool boundaries without adding runtime behavior.
 
 ## Why Artifact 3 Is Not Enough
 

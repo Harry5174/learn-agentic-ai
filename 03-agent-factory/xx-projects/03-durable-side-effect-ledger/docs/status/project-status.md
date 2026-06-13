@@ -12,13 +12,15 @@
 
 **A4.3 status:** Restart-Replay Integration implemented.
 
+**A4.3.1 status:** Modularization and Runtime Boundary Cleanup implemented.
+
 **Principle:** The LLM proposes. The harness validates, authorizes, approval-gates, executes, and audits.
 
 **Safety invariant:** Side-effect execution must require a matching persisted approval binding for the same `side_effect_id` and `validated_arguments_hash` before any replay-safe durable execution proof can be accepted.
 
 ## Current Artifact Status
 
-Artifact 4 is currently at A4.3. It started with A4.0, a copied baseline from completed Artifact 3.
+Artifact 4 is currently at A4.3.1. It started with A4.0, a copied baseline from completed Artifact 3.
 
 The current Artifact 4 folder is:
 
@@ -37,6 +39,8 @@ A4.1 implements the `DurableSideEffectLedger` backed by a SQLite boundary. It de
 A4.2 implements the `DurableApprovalBindingStore` backed by SQLite. It defines the `approval_bindings` table, persists approval decisions against exact `side_effect_id` and `validated_arguments_hash`, and enforces one binding per side effect in V1. Approve and reject transitions update both the approval binding and the side-effect record in a single SQLite transaction. Expired approvals do not mutate side-effect status.
 
 A4.3 integrates the durable ledger and durable approval binding into the fake-client GitHub comment execution path through explicit runtime injection. A4.3 proves restart/replay duplicate suppression after durable success exists by recreating fresh store/context/fake-client objects against the same SQLite file.
+
+A4.3.1 modularized the restart/replay implementation and graph/tool boundaries without adding runtime behavior.
 
 Artifact 4 has not implemented durable audit store yet. The default API startup still does not require a SQLite file.
 
@@ -95,6 +99,17 @@ A4.3 implements restart-replay integration:
 - fresh SQLite-backed store/context/fake-client object tests
 
 A4.3 does not implement durable audit store, real GitHub execution, GitHub token loading, a second GitHub tool, or production-grade exactly-once execution.
+
+## Implemented In A4.3.1
+
+A4.3.1 implements behavior-preserving modularization:
+
+- split restart/replay tests by behavior
+- extracted durable GitHub comment execution and result-shaping helpers
+- extracted selected graph routing, metadata, policy, validation, and execution-context helpers
+- preserved fake-client-only restart/replay behavior and explicit durable dependency injection
+
+A4.3.1 does not add durable audit store, real GitHub execution, token loading, API behavior changes, or production-grade exactly-once claims.
 
 ## Inherited Runtime Baseline
 
@@ -167,13 +182,13 @@ A4.3 demonstrates duplicate suppression after durable success has been recorded.
 
 ## Latest Baseline Evidence
 
-A4.3 should be validated with:
+A4.3.1 should be validated with:
 
-- `uv run pytest tests/test_restart_replay_integration.py`
+- split restart/replay tests
 - `uv run pytest`
 - `uv run ruff check .`
 - `git diff --check`
 - overclaim grep
 - network/token grep
 
-The latest validation results belong in the A4.3 IDE evidence report after the commit is created.
+The latest validation results belong in the A4.3.1 IDE evidence report after the commit is created.
