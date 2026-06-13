@@ -4,9 +4,9 @@ This directory is organized so Artifact 4 is easy to review from GitHub and easy
 
 Artifact 4 - Durable Side-Effect Ledger and Approval Binding starts at A4.0 as a baseline copy from the completed Artifact 3 project.
 
-A4.1 implements SQLite-backed side-effect records. A4.2 implements durable approval binding. A4.3 integrates those stores into the fake-client GitHub comment execution path and proves restart/replay duplicate suppression after durable success has been recorded. A4.3.1 modularized the restart/replay runtime boundary without behavior change. A4.4 implements local/demo durable audit events and adversarial persistence tests.
+A4.1 implements SQLite-backed side-effect records. A4.2 implements durable approval binding. A4.3 integrates those stores into the fake-client GitHub comment execution path and proves restart/replay duplicate suppression after durable success has been recorded. A4.3.1 modularized the restart/replay runtime boundary without behavior change. A4.4 implements local/demo durable audit events and adversarial persistence tests. A4.5 packages the artifact for portfolio presentation.
 
-A4.4 has not enabled real GitHub execution or GitHub token loading. It does not claim production-grade audit or universal exactly-once execution.
+Artifact 4 has not enabled real GitHub execution or GitHub token loading. It does not claim production-grade audit or universal exactly-once execution.
 
 ## Start Here
 
@@ -58,8 +58,8 @@ Useful inherited references:
 - [Known limitations](status/known-limitations.md)
 - [Interview notes](status/interview-notes.md)
 - [Artifact 3 vs Artifact 4](comparisons/artifact-3-vs-artifact-4.md)
-- [Artifact 2 vs Artifact 3](comparisons/artifact-2-vs-artifact-3.md)
-- [Artifact 1 vs Artifact 2](comparisons/artifact-1-vs-artifact-2.md)
+- [Artifact 2 vs Artifact 3](../02-approval-gated-github-tool-harness/docs/comparisons/artifact-2-vs-artifact-3.md)
+- [Artifact 1 vs Artifact 2](../02-approval-gated-github-tool-harness/docs/comparisons/artifact-1-vs-artifact-2.md)
 
 ## Process And Specs
 

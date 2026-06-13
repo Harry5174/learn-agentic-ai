@@ -1,51 +1,38 @@
-# A4.4 Durable Audit Demo
+# Durable Audit Demo
 
-This demo describes the A4.4 local/demo durable audit proof. It does not post real GitHub comments, does not load GitHub tokens, and does not use a real GitHub client.
+Artifact 4 implements a `DurableAuditStore` using SQLite to provide restart-surviving evidence of execution outcomes for the local/demo fake-client GitHub comment path.
 
-## What A4.4 Demonstrates
+**Note:** This describes representative/test-backed behavior.
 
-A4.4 demonstrates restart-surviving audit evidence for the durable fake-client GitHub comment path.
+## The Audit Event Lifecycle
 
-The proof sequence is:
+The execution of a side effect produces a series of durable audit events that track its progression through the safety harness. These events are persisted in the `durable_audit_events` SQLite table.
 
-```text
-1. Create a temporary SQLite file.
-2. Create durable side-effect, approval, and audit stores against that file.
-3. Persist a planned side-effect record for a validated GitHub comment action.
-4. Persist and approve an approval binding for the exact side_effect_id and validated_arguments_hash.
-5. Execute the GitHub comment path with DurableAuditStore injected at runtime.
-6. FakeGitHubIssueCommentClient is called once.
-7. side_effect_records.status becomes succeeded.
-8. durable_audit_events records execution_requested, approval_authorized, execution_started, fake_client_called, and execution_succeeded.
-9. Discard the first store/context/fake-client objects.
-10. Create fresh store/context/fake-client objects against the same SQLite file.
-11. Replay the same action.
-12. The fresh fake client is not called.
-13. durable_audit_events records duplicate_suppressed.
-14. A fresh DurableAuditStore can list the prior audit events by run_id or side_effect_id.
-```
+### Successful Execution Path
+When a new approved action executes successfully, the following sequence of events is durably recorded:
+1. `execution_requested`: The harness receives the request to run the action.
+2. `approval_authorized`: The harness verifies a valid, persisted approval binding matches the requested action.
+3. `execution_started`: The side effect record is marked as executing.
+4. `fake_client_called`: The `FakeGitHubIssueCommentClient` is invoked.
+5. `execution_succeeded`: The fake client returns success, and the side effect is durably marked as succeeded.
 
-## Blocked and Failed Outcomes
+### Duplicate Replay Path
+If a process restart occurs and a previously successful action is replayed, the sequence is:
+1. `execution_requested`
+2. `duplicate_suppressed`: The harness recognizes the prior success and suppresses execution. The fake client is not called.
 
-A4.4 also records durable local/demo evidence when execution is not allowed:
+### Blocked Execution Path
+If execution is prevented (e.g., due to missing approval or an expired binding):
+1. `execution_requested`
+2. `execution_blocked`: The harness blocks the execution. The fake client is not called.
 
-```text
-approval missing / pending / rejected / expired -> execution_blocked
-wrong side_effect_id or validated_arguments_hash -> execution_blocked
-blocked / rejected / failed / executing / skipped_duplicate side-effect status -> execution_blocked
-fake-client failure -> execution_failed
-```
+### Fake-Client Failure Path
+If the fake client raises an exception or simulates a network failure:
+1. `execution_requested`
+2. `approval_authorized`
+3. `execution_started`
+4. `fake_client_called`
+5. `execution_failed`: The failure is caught, and the side effect is durably marked as failed. This state is terminal.
 
-Blocked attempts do not call the fake client.
-
-## Metadata Safety
-
-Durable audit metadata is intentionally small. It stores local/demo identifiers, side-effect status, replay outcome, repository, issue number, and fake result summaries.
-
-It does not store raw GitHub tokens, authorization headers, client transport config, or full raw rejected payloads. Tests check the raw `durable_audit_events.metadata_json` value in SQLite.
-
-## Boundary
-
-A4.4 is not production-grade audit and not compliance audit. It is local/demo durable evidence for side-effect lifecycle decisions.
-
-A4.4 still does not execute real GitHub calls, load GitHub tokens, add a real GitHub client, or claim universal exactly-once execution.
+## Re-instantiation Proof
+Because these events are persisted to SQLite, they survive process re-instantiation. If the service and stores are recreated against the same SQLite file, the complete audit trail of `execution_succeeded`, `duplicate_suppressed`, `execution_blocked`, or `execution_failed` remains intact and queryable.

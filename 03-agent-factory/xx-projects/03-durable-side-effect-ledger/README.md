@@ -16,6 +16,29 @@ A4.3.1 modularized the restart/replay implementation and graph/tool boundaries w
 
 A4.4 implements local/demo durable audit events and adversarial persistence tests. A4.4 adds `durable_audit_events` and `DurableAuditStore` for restart-surviving evidence about execution, duplicate suppression, blocked attempts, and fake-client failures. A4.4 still does not execute real GitHub calls, load GitHub tokens, provide production-grade audit, or claim universal exactly-once execution.
 
+A4.5 packages Artifact 4 into a clear demo and portfolio artifact. It ensures documentation accurately reflects the local/demo durable fake-client safety harness architecture and explicit non-implementation boundaries.
+
+## Architecture Flow
+
+The execution flow for the durable proof is:
+
+```text
+validated GitHub comment action
+-> validated_arguments_hash
+-> side_effect_id
+-> SQLite side_effect_records
+-> SQLite approval_bindings
+-> durable approval assertion
+-> fake-client execution
+-> SQLite durable_audit_events
+-> restart/replay duplicate suppression
+```
+
+Fake client only.
+No real GitHub API call.
+No token required.
+No network execution.
+
 ## Mission
 
 Make approval-gated side-effect execution durable, replay-safe, and auditable across process restarts before enabling any real GitHub write.
@@ -189,3 +212,15 @@ The default copied runtime still inherits Artifact 3 local/demo behavior:
 The project remains local/demo and fake-client-only. No real GitHub API call. No token required. No network call.
 
 A4.4 does not prove production-grade exactly-once execution across every crash window. If the fake client succeeds but the process dies before `side_effect_records` is marked `succeeded`, A4.4 does not prove universal duplicate suppression for that interrupted attempt. A4.4 provides local/demo durable audit evidence, not production-grade audit or compliance audit.
+
+## Final Evidence Summary
+
+Artifact 4 is complete as a local/demo durable safety artifact.
+A4.5 packaging commit is recorded in the completion/evidence report.
+
+Validation baseline:
+- `uv run pytest` -> 563 tests collected, 563 tests passed
+- `uv run ruff check .` -> passed
+- `git diff --check` -> clean
+- Overclaim grep -> Only negative limitation wording found; no positive overclaim.
+- Network/token grep -> No new runtime network/token path; test-only and fake-client-only code remains acceptable.

@@ -25,7 +25,7 @@ The `xx-projects/` directory contains the core artifact sequence:
 | 1 | [Identity-Aware Stateful Agent Harness](xx-projects/00-identity-aware-agent-harness) | Complete / preserved |
 | 2 / 2.2 | [LLM-Proposed, Harness-Controlled Skill Runner](xx-projects/01-llm-proposed-skill-runner) | Complete / tagged `artifact-2.2` |
 | 3 | [Approval-Gated GitHub Tool Harness](xx-projects/02-approval-gated-github-tool-harness) | Complete as local/demo fake-client artifact |
-| 4 | [Durable Side-Effect Ledger and Approval Binding](xx-projects/03-durable-side-effect-ledger) | In progress / A4.0 durable-state spec |
+| 4 | [Durable Side-Effect Ledger and Approval Binding](xx-projects/03-durable-side-effect-ledger) | Complete as local/demo durable fake-client safety artifact |
 
 Each artifact builds on the previous:
 
@@ -58,9 +58,9 @@ See [xx-projects/README.md](xx-projects/README.md) for the detailed artifact ind
 
 ## Current Leading Artifact
 
-Artifact 4 is currently in A4.0 baseline/spec state. It was copied from completed Artifact 3 and defines planned SQLite persistence semantics for durable side-effect records, approval bindings, and audit events.
+Artifact 4 is complete as a local/demo durable fake-client safety artifact. It implements SQLite persistence for side-effect records, approval bindings, and audit events, proving restart/replay duplicate suppression without executing a real GitHub client.
 
-A4.0 does not implement SQLite persistence, durable runtime behavior, real GitHub execution, GitHub token loading, OAuth/OIDC, MCP, frontend, deployment, or production hardening.
+Artifact 4 does not implement real GitHub execution, GitHub token loading, OAuth/OIDC, MCP, frontend, deployment, or production hardening.
 
 ---
 

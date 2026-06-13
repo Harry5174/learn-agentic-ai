@@ -16,6 +16,8 @@
 
 **A4.4 status:** Durable Audit Store and Adversarial Persistence Suite implemented.
 
+**A4.5 status:** Demo and Portfolio Packaging implemented.
+
 **Principle:** The LLM proposes. The harness validates, authorizes, approval-gates, executes, and audits.
 
 **Safety invariant:** Side-effect execution must require a matching persisted approval binding for the same `side_effect_id` and `validated_arguments_hash` before any replay-safe durable execution proof can be accepted.

@@ -12,7 +12,7 @@ Artifact 4 asks the next safety question:
 If the same approved side effect is replayed after process restart, can the harness prove it will not execute twice?
 ```
 
-A4.1 implements a SQLite-backed side-effect ledger. A4.2 implements durable approval binding. A4.3 integrates both stores into the fake-client GitHub comment execution path and proves restart/replay duplicate suppression after durable success has been recorded. A4.3.1 modularized that runtime boundary without behavior change. A4.4 adds local/demo durable audit events and adversarial persistence tests.
+A4.1 implements a SQLite-backed side-effect ledger. A4.2 implements durable approval binding. A4.3 integrates both stores into the fake-client GitHub comment execution path and proves restart/replay duplicate suppression after durable success has been recorded. A4.3.1 modularized that runtime boundary without behavior change. A4.4 adds local/demo durable audit events and adversarial persistence tests. A4.5 packages the artifact for portfolio demonstration.
 
 ## What A4.1 Adds
 
@@ -70,6 +70,10 @@ A4.4 adds durable local/demo audit evidence for the fake-client GitHub comment p
 - adversarial persistence tests for approval mismatch, side-effect status, restart/replay, failure, metadata safety, and fake-client-only boundaries
 
 A4.4 still does not execute real GitHub calls, load GitHub tokens, add a second GitHub tool, provide production-grade audit, or claim universal exactly-once execution.
+
+## What A4.5 Adds
+
+A4.5 is a documentation and portfolio-packaging sprint. It explicitly frames Artifact 4 as a local/demo durable safety harness rather than a GitHub automation product. It avoids current-capability overclaims while organizing the evidence for review.
 
 ## What Remains Inherited
 

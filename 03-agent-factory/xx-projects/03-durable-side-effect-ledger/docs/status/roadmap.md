@@ -117,6 +117,16 @@ A4.4 does not execute real GitHub calls, load GitHub tokens, add a second GitHub
 
 Status: Completed.
 
+## A4.5 Demo and Portfolio Packaging
+
+A4.5 packages Artifact 4 into a clear demo and portfolio artifact, updating documentation to accurately reflect its status as a local/demo durable fake-client safety harness.
+
+Status: Completed.
+
+## Future: Artifact 5 (Real GitHub Adapter)
+
+Artifact 5 is the planned successor artifact that will replace the fake-client with an Approval-Gated Real GitHub Comment Adapter.
+
 ## Still Out Of Scope
 
 - real GitHub API calls

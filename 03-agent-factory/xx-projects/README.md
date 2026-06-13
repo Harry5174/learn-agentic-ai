@@ -11,7 +11,7 @@ This directory contains the numbered artifact sequence for the Agent Factory tra
 | 0 | [00-identity-aware-agent-harness](00-identity-aware-agent-harness) | Identity-Aware Stateful Agent Harness | Complete / preserved |
 | 1 | [01-llm-proposed-skill-runner](01-llm-proposed-skill-runner) | LLM-Proposed, Harness-Controlled Skill Runner | Complete / tagged `artifact-2.2` |
 | 2 | [02-approval-gated-github-tool-harness](02-approval-gated-github-tool-harness) | Approval-Gated GitHub Tool Harness | Complete as local/demo fake-client artifact |
-| 3 | [03-durable-side-effect-ledger](03-durable-side-effect-ledger) | Durable Side-Effect Ledger and Approval Binding | In progress / A4.0 durable-state spec |
+| 3 | [03-durable-side-effect-ledger](03-durable-side-effect-ledger) | Durable Side-Effect Ledger and Approval Binding | Complete as local/demo durable fake-client safety artifact |
 
 ---
 
@@ -57,11 +57,11 @@ This directory contains the numbered artifact sequence for the Agent Factory tra
 ## Artifact 4 - Durable Side-Effect Ledger and Approval Binding
 
 **Path:** `03-durable-side-effect-ledger`
-**Status:** In progress / A4.0 durable-state spec
+**Status:** Complete as local/demo durable fake-client safety artifact
 
-**A4.0 claim:** Artifact 4 defines durable-state design for future restart-safe local/demo side-effect execution by specifying side-effect records, approval bindings, validated argument hashes, `side_effect_id` values, execution status, durable audit evidence, and SQLite persistence boundaries before any real GitHub network execution is enabled.
+**A4.5 claim:** Artifact 4 demonstrates restart-safe local/demo side-effect execution for an approval-gated fake-client GitHub comment path using SQLite-backed side-effect records, durable approval bindings, restart/replay duplicate suppression, durable local/demo audit events, and adversarial persistence tests.
 
-**Current limitation:** A4.0 is baseline/spec only. It has not implemented SQLite persistence, durable approval binding, durable audit storage, restart-safe execution behavior, real GitHub execution, or token loading.
+**Current limitation:** Fake-client only. It has not implemented real GitHub execution, token loading, or production-grade exactly-once claims.
 
 **Read first:**
 

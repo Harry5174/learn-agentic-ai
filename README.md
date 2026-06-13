@@ -42,22 +42,22 @@ The Agent Factory track builds a series of numbered artifacts, each adding a new
 | 1 | Identity-Aware Stateful Agent Harness | [00-identity-aware-agent-harness](03-agent-factory/xx-projects/00-identity-aware-agent-harness) | Complete / preserved | Server-derived identity, role/scope policy, stateful task lifecycle, approval gates, audit trail, LangGraph checkpoint/resume |
 | 2 / 2.2 | LLM-Proposed, Harness-Controlled Skill Runner | [01-llm-proposed-skill-runner](03-agent-factory/xx-projects/01-llm-proposed-skill-runner) | Complete / tagged `artifact-2.2` | Model-shaped skill proposals, proposal validation, policy and approval lifecycle, Skill Runner API, validated scalar arguments, safe rejection of unsafe/control-plane/malformed args |
 | 3 | Approval-Gated GitHub Tool Harness | [02-approval-gated-github-tool-harness](03-agent-factory/xx-projects/02-approval-gated-github-tool-harness) | Complete as local/demo fake-client artifact | One approval-gated GitHub issue-comment skill path, validated scalar arguments, trusted repository policy, explicit approval, side-effect idempotency through an in-memory ledger, fake-client execution, audit evidence, adversarial safety tests |
-| 4 | Durable Side-Effect Ledger and Approval Binding | [03-durable-side-effect-ledger](03-agent-factory/xx-projects/03-durable-side-effect-ledger) | In progress / A4.0 durable-state spec | Durable-state design for future restart-safe side-effect records, approval bindings, audit evidence, and SQLite persistence before real GitHub writes |
+| 4 | Durable Side-Effect Ledger and Approval Binding | [03-durable-side-effect-ledger](03-agent-factory/xx-projects/03-durable-side-effect-ledger) | Complete as local/demo durable fake-client safety artifact | SQLite-backed side-effect records, durable approval binding, restart/replay duplicate suppression, durable audit evidence, fake-client execution |
 
 ### Key Design Boundaries
 
 - **Artifact 1:** Request bodies cannot claim identity, role, or scopes. Identity is server-derived.
 - **Artifact 2 / 2.2:** The proposer proposes. The harness validates, authorizes, approval-gates, executes, and audits. Dry-run only; scalar args only; no real GitHub writes; no live LLM HTTP mode.
 - **Artifact 3:** Local/demo fake-client only. No real GitHub API calls. Not production-ready.
-- **Artifact 4 A4.0:** Baseline/spec only. SQLite persistence, durable approval binding, durable audit storage, and restart-safe execution are designed but not implemented.
+- **Artifact 4:** Complete as a local/demo fake-client artifact. SQLite persistence, durable approval binding, restart/replay duplicate suppression, and durable audit events are implemented. No real network execution.
 
 ---
 
 ## Current Leading Artifact
 
-Artifact 4 is currently in A4.0 baseline/spec state. It was copied from completed Artifact 3 and defines planned SQLite persistence semantics for durable side-effect records, approval bindings, and audit events.
+Artifact 4 is complete as a local/demo durable fake-client safety artifact. It implements SQLite persistence semantics for durable side-effect records, approval bindings, and audit events.
 
-A4.0 does not implement SQLite persistence, durable runtime behavior, real GitHub execution, GitHub token loading, OAuth/OIDC, MCP, frontend, deployment, or production hardening.
+Artifact 4 does not implement real GitHub execution, GitHub token loading, OAuth/OIDC, MCP, frontend, deployment, or production hardening.
 
 ---
 
@@ -76,13 +76,10 @@ A4.0 does not implement SQLite persistence, durable runtime behavior, real GitHu
 
 This repository contains learning and portfolio artifacts, not a deployed production service.
 
-**Current Artifact 4 A4.0 limitations:**
+**Current Artifact 4 limitations:**
 
-- Baseline/spec only
-- No SQLite implementation
-- No durable side-effect ledger runtime code
-- No durable approval binding runtime code
-- No durable audit store runtime code
+- Fake-client only
+- Local/demo SQLite database only
 - No real GitHub API / network execution
 - No GitHub token loading
 - No OAuth/OIDC production identity provider

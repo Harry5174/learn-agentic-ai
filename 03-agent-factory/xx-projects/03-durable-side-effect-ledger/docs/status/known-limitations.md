@@ -18,6 +18,8 @@ A4.3.1 modularized the restart/replay implementation and graph/tool boundaries w
 
 A4.4 implements local/demo durable audit events and adversarial persistence tests. It records restart-surviving evidence for execution, duplicate suppression, blocked attempts, and fake-client failures when `DurableAuditStore` is explicitly injected.
 
+A4.5 is a documentation and portfolio-packaging sprint that does not change runtime behavior.
+
 ## Not Implemented Yet
 
 Artifact 4 has not implemented:
