@@ -7,6 +7,8 @@ from app.audit.schemas import AuditEvent
 from app.github.client import GitHubIssueCommentClient
 from app.identity.schemas import IdentityContext
 from app.proposer.base import SkillProposer
+from app.side_effects.approval_binding import DurableApprovalBindingStore
+from app.side_effects.durable_ledger import DurableSideEffectLedger
 from app.side_effects.ledger import SideEffectLedger
 from app.skill_graph.graph import build_skill_execution_graph
 from app.skill_graph.state import SkillGraphState
@@ -29,12 +31,16 @@ class SkillGraphService:
         proposer: SkillProposer | None = None,
         github_issue_comment_client: GitHubIssueCommentClient | None = None,
         side_effect_ledger: SideEffectLedger | None = None,
+        durable_side_effect_ledger: DurableSideEffectLedger | None = None,
+        durable_approval_binding_store: DurableApprovalBindingStore | None = None,
         allowed_github_comment_repositories: tuple[str, ...] | None = None,
     ) -> None:
         self._graph = build_skill_execution_graph(
             proposer=proposer,
             github_issue_comment_client=github_issue_comment_client,
             side_effect_ledger=side_effect_ledger,
+            durable_side_effect_ledger=durable_side_effect_ledger,
+            durable_approval_binding_store=durable_approval_binding_store,
             allowed_github_comment_repositories=(
                 allowed_github_comment_repositories
             ),

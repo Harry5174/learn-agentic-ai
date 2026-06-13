@@ -62,17 +62,23 @@ Status: Completed.
 
 ## A4.3 Graph Integration and Restart-Replay Proof
 
-Future work only.
+A4.3 implements restart-replay integration for the local/demo fake-client GitHub comment path.
 
-Potential scope:
+Scope implemented:
 
-- integrate `DurableApprovalBindingStore` and `DurableSideEffectLedger` into the main execution path
-- execute once with fake client
-- persist succeeded side-effect evidence
-- restart with a fresh repository/service object against the same SQLite file
-- replay the same side-effect ID
-- prove fake client is not called again
-- return skipped duplicate / already succeeded evidence
+- optional durable store injection into `SkillGraphService` and the graph-built GitHub comment execution context
+- integration of `DurableApprovalBindingStore` and `DurableSideEffectLedger` into `post_github_issue_comment`
+- deterministic `validated_arguments_hash` and deterministic `side_effect_id`
+- approved execution path: assert durable approval, require approved side-effect status, mark executing, call `FakeGitHubIssueCommentClient`, mark succeeded or failed
+- restart/replay test with fresh store/context/fake-client objects against the same SQLite file
+- duplicate replay after success returns already_succeeded / duplicate-suppressed evidence
+- duplicate replay after success preserves `side_effect_records.status = succeeded`
+- persisted `executing` status returns unsafe-to-retry evidence and does not call the fake client
+- failed terminal side effects do not auto-retry
+
+A4.3 does not add durable audit store. A4.3 does not execute real GitHub calls. A4.3 does not load GitHub tokens. A4.3 does not prove production-grade exactly-once semantics across crash windows between fake-client success and durable success marking.
+
+Status: Completed.
 
 ## A4.4 Durable Audit Store
 

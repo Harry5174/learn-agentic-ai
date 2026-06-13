@@ -2,7 +2,7 @@
 
 Artifact 4 adds a durable-state design boundary before any real GitHub write can be considered.
 
-A4.0 documents the future shape and acceptance requirements. A4.1 implements the side-effect ledger. A4.2 implements the approval binding store.
+A4.0 documents the future shape and acceptance requirements. A4.1 implements the side-effect ledger. A4.2 implements the approval binding store. A4.3 integrates both stores into the fake-client GitHub comment execution path through explicit runtime injection.
 
 ## Why Artifact 3 Is Not Enough
 
@@ -31,6 +31,7 @@ Durable records implemented:
 - approval bindings keyed to `side_effect_id` and `validated_arguments_hash` (A4.2)
 - status timestamps for planned, approved, executing, succeeded, failed, skipped duplicate, rejected, and blocked states
 - safe hashes and previews for comment bodies, not full comment bodies by default
+- succeeded and failed fake-client execution evidence for the A4.3 durable GitHub comment path
 
 Future durable records:
 
@@ -51,9 +52,29 @@ Key properties:
 - domain-level matching on run_id, skill_id, step_id, tool_name, validated_arguments_hash
 - approve/reject update both approval_bindings and side_effect_records in a single SQLite transaction
 - expired approval does not mutate side-effect status
-- `assert_approved_for_action` is a pure read check — no mutation, no execution
+- `assert_approved_for_action` is a pure read check: no mutation, no execution
 
-Neither store is yet integrated into the graph/service execution path.
+### A4.3 Durable GitHub Comment Execution
+
+A4.3 injects both durable stores into the existing `post_github_issue_comment` path when tests or callers provide them explicitly. Default app startup remains compatible with the inherited in-memory path and does not require a SQLite file.
+
+Execution sequence:
+
+```text
+validated GitHub comment arguments
+-> deterministic validated_arguments_hash
+-> deterministic side_effect_id
+-> DurableSideEffectLedger lookup
+-> already succeeded: return duplicate-suppressed evidence, no fake-client call
+-> executing: return unsafe-to-retry evidence, no fake-client call
+-> DurableApprovalBindingStore.assert_approved_for_action
+-> require side_effect_records.status = approved
+-> mark executing
+-> call FakeGitHubIssueCommentClient
+-> mark succeeded or failed
+```
+
+The replay path preserves `succeeded`; it does not rewrite the durable side-effect record to `skipped_duplicate`.
 
 ## Process-Local Data That Remains
 
@@ -80,20 +101,20 @@ Validated action
 -> side_effect_id
 -> approval binding
 -> durable side-effect record
--> durable audit event
 -> fake-client execution / skipped duplicate
 ```
 
-Target store boundary:
+Current A4.3 durable execution boundary:
 
 ```text
 SkillGraphService
 -> DurableApprovalBindingStore
 -> DurableSideEffectLedger
--> DurableAuditStore
 -> SQLite
 -> FakeGitHubIssueCommentClient
 ```
+
+Future A4.4 may add `DurableAuditStore`.
 
 ## Not Production Persistence
 
@@ -113,4 +134,6 @@ It is not:
 
 A valid restart-replay proof must create a fresh repository/service object against the same SQLite file after the first execution. Calling the same object twice only proves in-process idempotency and is not enough for Artifact 4.
 
-A4.2 proves approval binding persistence across re-instantiation. Full restart-replay proof with fake-client execution is deferred to A4.3.
+A4.3 proves this for the fake-client GitHub comment path with fresh store/context/fake-client objects against the same SQLite file. The second fake client is not called, and the durable side-effect record remains `succeeded`.
+
+A4.3 demonstrates duplicate suppression after durable success exists. It does not prove production-grade exactly-once semantics for the crash window where the fake client succeeds but the process dies before `side_effect_records` is marked `succeeded`.

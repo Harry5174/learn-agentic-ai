@@ -8,7 +8,9 @@ A4.1 implements the `DurableSideEffectLedger` backed by SQLite. A4.1 does not ad
 
 A4.2 implements the `DurableApprovalBindingStore` backed by SQLite. A4.2 persists approval decisions against exact `side_effect_id` and `validated_arguments_hash`. A4.2 does not add durable audit store. A4.2 does not integrate with graph/service execution. A4.2 does not provide full restart-safe side-effect execution. A4.2 does not execute fake client. A4.2 does not execute real GitHub calls.
 
-This spec defines the records, approval bindings, state transitions, restart-replay guarantees, and future acceptance requirements that must exist before the harness can safely move toward real side effects.
+A4.3 integrates the durable ledger and durable approval binding into the fake-client GitHub issue-comment execution path. A4.3 demonstrates restart-replay duplicate suppression for the local/demo fake-client GitHub comment path using SQLite-backed side-effect and approval records. A4.3 does not add durable audit store, real GitHub execution, GitHub token loading, or production-grade exactly-once semantics.
+
+This spec defines the records, approval bindings, state transitions, restart-replay guarantees, and acceptance requirements that must exist before the harness can safely move toward real side effects.
 
 ## 2. Durable-State Mission
 
@@ -22,35 +24,34 @@ If the same approved side effect is replayed after process restart, can the harn
 
 ## 3. Architecture Boundary
 
-Future target architecture:
+A4.3 durable execution proof:
 
 ```text
 SkillGraphService
 -> DurableApprovalBindingStore
 -> DurableSideEffectLedger
--> DurableAuditStore
 -> SQLite
 -> FakeGitHubIssueCommentClient
 ```
 
 SQLite is the persistence boundary for Artifact 4. Fake GitHub client remains the execution boundary. Real GitHub client remains out of scope.
 
-The future durable stores must be owned by harness code, not model output. Model-proposed arguments remain untrusted until validated by existing registry and proposal-validation layers.
+The durable stores must be owned by harness code, not model output. Model-proposed arguments remain untrusted until validated by existing registry and proposal-validation layers.
 
-A4.1 implements `DurableSideEffectLedger`. A4.2 implements `DurableApprovalBindingStore`. Both are backed by SQLite. Graph/service integration is deferred to a future sprint.
+A4.1 implements `DurableSideEffectLedger`. A4.2 implements `DurableApprovalBindingStore`. Both are backed by SQLite. A4.3 wires them into the fake-client GitHub comment execution path through explicit runtime injection. Future A4.4 may add `DurableAuditStore`.
 
 ## 4. Storage Decision
 
 Artifact 4 V1 should use SQLite.
 
-Implementation guidance for future sprints:
+Implementation guidance:
 
 - prefer Python stdlib `sqlite3`
 - use small repository classes
 - use temporary SQLite files in tests
 - do not use Postgres, Redis, Docker Compose, or cloud infrastructure
 
-A basic SQLite ledger implementation exists in A4.1. A durable approval binding store exists in A4.2. Neither is yet wired into the graph/service.
+A basic SQLite ledger implementation exists in A4.1. A durable approval binding store exists in A4.2. A4.3 wires both into the fake-client GitHub comment execution path for the restart-replay proof.
 
 ## 5. Side-Effect Record Schema
 
@@ -288,9 +289,11 @@ blocked must be auditable
 
 `planned` records may persist without approval. `planned` records are queryable. `planned` records cannot execute without a matching approved approval binding.
 
-### Skipped Duplicate Is Replay Evidence
+### Replay After Succeeded Preserves Succeeded
 
-`skipped_duplicate` is a replay outcome/evidence status, not a normal forward execution path.
+`skipped_duplicate` is available in the V1 lifecycle, but A4.3 does not rewrite a succeeded record to `skipped_duplicate` during duplicate replay. The A4.3 integrated path preserves `side_effect_records.status = succeeded` and returns already_succeeded / duplicate-suppressed result evidence.
+
+Future durable audit events can record duplicate replay attempts without weakening the original succeeded side-effect record.
 
 ## 10. Restart-Replay Semantics
 
@@ -306,13 +309,16 @@ Core proof sequence:
 7. service_2 starts with the same SQLite file.
 8. Same side_effect_id is replayed.
 9. Fake client is not called again.
-10. Durable ledger returns skipped_duplicate / already_succeeded evidence.
-11. Durable audit explains what happened.
+10. Durable ledger remains succeeded.
+11. Tool result returns already_succeeded / duplicate-suppressed evidence.
+12. Future durable audit can explain replay attempts when A4.4 exists.
 ```
 
 A restart-replay test must instantiate a fresh repository/service object against the same SQLite file. Calling the same object twice is not sufficient.
 
-Not yet fully proven. A4.2 proves approval binding persistence across re-instantiation. Full restart-replay proof is deferred to A4.3.
+A4.3 proves this for the local/demo fake-client GitHub comment path using fresh store/context/fake-client objects against the same SQLite file.
+
+A4.3 demonstrates duplicate suppression after durable success exists. It does not prove production-grade exactly-once semantics for the crash window where the fake client succeeds but the process dies before `side_effect_records` is marked `succeeded`.
 
 ## 11. Standalone Persistence Proof
 
@@ -330,18 +336,17 @@ Both `tests/test_durable_side_effect_ledger.py` and `tests/test_durable_approval
 
 ## 12. Failure Behavior
 
-Future failure behavior:
+A4.3 failure behavior:
 
 ```text
 fake-client failure is recorded as failed
 failed is terminal in V1
-failure is durably auditable
 failure does not become success
 failure does not trigger automatic retry
 failure does not expose secrets
 ```
 
-Failure metadata must avoid secrets and full sensitive payloads. A redacted failure shape is required before persistence.
+Failure metadata must avoid secrets and full sensitive payloads. A redacted failure shape is persisted in `failure_json`. Durable audit events remain future A4.4 work.
 
 ## 13. Non-Goals
 
@@ -401,7 +406,7 @@ This checklist tracks the implementation of Artifact 4.
 - Add 9 controlled domain error types.
 - Prove approval binding persistence (re-instantiation test).
 
-### A4.3 Graph Integration and Restart-Replay Proof (Future)
+### A4.3 Graph Integration and Restart-Replay Proof (Completed)
 
 - Integrate `DurableApprovalBindingStore` and `DurableSideEffectLedger` into main execution path.
 - Execute once with fake client.
@@ -409,7 +414,12 @@ This checklist tracks the implementation of Artifact 4.
 - Instantiate a fresh repository/service object against the same SQLite file.
 - Replay the same side-effect ID.
 - Prove fake client is not called again.
-- Persist durable audit evidence for skipped duplicate / already succeeded replay.
+- Return already_succeeded / duplicate-suppressed evidence.
+- Preserve `side_effect_records.status = succeeded` on duplicate replay.
+- Treat persisted `executing` as unsafe to retry.
+- Require exact approved binding before first fake-client execution.
+- Mark fake-client failure as failed and do not auto-retry failed side effects.
+- Do not add durable audit store in A4.3.
 
 ### A4.4 Durable Audit Store (Future)
 

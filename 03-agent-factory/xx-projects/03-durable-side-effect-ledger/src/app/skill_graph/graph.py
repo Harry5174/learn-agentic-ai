@@ -22,6 +22,8 @@ from app.identity.schemas import IdentityContext
 from app.policy.guard import evaluate_tool_permission
 from app.policy.schemas import PolicyDecision, PolicyDecisionType
 from app.proposer.base import SkillProposer
+from app.side_effects.approval_binding import DurableApprovalBindingStore
+from app.side_effects.durable_ledger import DurableSideEffectLedger
 from app.side_effects.ledger import InMemorySideEffectLedger, SideEffectLedger
 from app.proposer.fake import FakeProposer
 from app.skills.argument_schemas import ArgumentValidationStatus, ValidatedSkillPlan
@@ -64,6 +66,8 @@ def build_skill_execution_graph(
     tool_registry: ToolRegistry | None = None,
     github_issue_comment_client: GitHubIssueCommentClient | None = None,
     side_effect_ledger: SideEffectLedger | None = None,
+    durable_side_effect_ledger: DurableSideEffectLedger | None = None,
+    durable_approval_binding_store: DurableApprovalBindingStore | None = None,
     allowed_github_comment_repositories: tuple[str, ...] | None = None,
 ):
     """Build the local skill execution graph with checkpointed approval resume."""
@@ -443,6 +447,8 @@ def build_skill_execution_graph(
                     step_id=step.step_id,
                     side_effect_ledger=active_side_effect_ledger,
                     github_issue_comment_client=active_github_issue_comment_client,
+                    durable_side_effect_ledger=durable_side_effect_ledger,
+                    durable_approval_binding_store=durable_approval_binding_store,
                 )
 
             result = active_tool_registry.execute(
