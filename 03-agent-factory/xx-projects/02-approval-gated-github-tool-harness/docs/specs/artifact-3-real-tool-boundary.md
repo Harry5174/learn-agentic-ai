@@ -12,9 +12,13 @@ A3.1 does not add a side-effect ledger implementation. A3.1 does not add the
 `post_github_issue_comment` tool.
 
 A3.2 adds isolated GitHub issue-comment client and side-effect ledger
-boundaries. A3.2 does not wire those boundaries into skill execution, approval
-resume, API routes, runtime config, repository policy, or real GitHub
-execution.
+boundaries.
+
+A3.3 wires those boundaries into exactly one approval-gated local/demo skill
+path, `post_github_issue_comment`. A3.3 uses validated scalar arguments, a
+trusted repository allowlist, explicit approval, `InMemorySideEffectLedger`,
+and `FakeGitHubIssueCommentClient` simulated execution. A3.3 does not implement
+real GitHub API execution.
 
 The goal is to document the future contract before any real GitHub write path
 exists, so later A3.x implementation work can stay narrow, auditable, and
@@ -22,7 +26,7 @@ fail-closed.
 
 ## 2. Future Tool Boundary
 
-The future real side-effect tool is expected to be named:
+The current local/demo and future real side-effect tool name is:
 
 ```text
 post_github_issue_comment
@@ -75,6 +79,9 @@ A future real GitHub issue comment may be posted only if all of these are true:
 If any precondition fails, later implementation must fail closed and must not
 call GitHub.
 
+A3.3 satisfies these gates only for the fake-client local/demo path. Real
+GitHub mode remains absent.
+
 ## 4. Real-Mode Configuration Rule
 
 Real GitHub mode should require explicit future configuration:
@@ -93,7 +100,7 @@ Real mode must never be inferred from the presence of a GitHub token alone. A
 configured token without explicit real-mode enablement must still leave the
 harness in dry-run behavior.
 
-A3.2 does not implement this configuration.
+A3.3 does not implement this configuration.
 
 ## 5. GitHub Token Boundary
 
@@ -130,7 +137,9 @@ ALLOWED_GITHUB_REPOSITORIES=Harry5174/learn-agentic-ai
 The repository allowlist is a server-owned policy input. It must not be
 provided by the model, request body, or proposed tool arguments.
 
-A3.2 does not implement this configuration or policy.
+A3.3 implements a minimal trusted in-code local/demo allowlist for the
+fake-client path, defaulting to `Harry5174/learn-agentic-ai`. A3.3 does not
+implement real-mode repository configuration.
 
 ## 7. Approval Binding Model
 
@@ -153,6 +162,12 @@ validated action hash and side-effect identity.
 If a paused run is resumed with different validated arguments, changed tool
 name, changed step ID, or changed `side_effect_id`, the previous approval must
 not authorize execution.
+
+A3.3 binds approval to the validated tool arguments held in the current graph
+state and computes `validated_arguments_hash` and `side_effect_id` immediately
+before fake-client execution. The current `ApprovalDecision` schema does not
+persist `validated_arguments_hash` or `side_effect_id`; stronger persisted
+approval binding remains a future sprint.
 
 ## 8. Idempotency / Replay Protection
 
@@ -211,7 +226,12 @@ Conceptual `SideEffectRecord` fields:
 
 A3.2 implements isolated `SideEffectLedger`, `SideEffectRecord`,
 `InMemorySideEffectLedger`, validated argument hashing, and side-effect id
-helpers. A3.2 does not wire them into skill execution or real GitHub execution.
+helpers.
+
+A3.3 wires the in-memory ledger into the one fake-client
+`post_github_issue_comment` path. Ledger hits after a prior success skip the
+duplicate fake-client call. This is local/demo replay suppression only, not
+durable production idempotency.
 
 ## 9. GitHub Client Boundary
 
@@ -237,8 +257,8 @@ server-side configuration after validation, policy, approval, and idempotency
 checks pass.
 
 A3.2 implements `GitHubIssueCommentClient` and
-`FakeGitHubIssueCommentClient` only. `RealGitHubIssueCommentClient` remains
-deferred.
+`FakeGitHubIssueCommentClient` only. A3.3 uses the fake client for local/demo
+simulated execution. `RealGitHubIssueCommentClient` remains deferred.
 
 ## 10. Dry-Run vs Real Behavior
 
@@ -246,6 +266,13 @@ Dry-run mode:
 
 ```text
 validates, authorizes, approval-gates, audits, but does not call GitHub
+```
+
+Fake-client local/demo mode:
+
+```text
+validates, authorizes, approval-gates, checks idempotency, calls the fake
+GitHub client, records result, audits, and still makes no network call
 ```
 
 Real mode:
@@ -259,6 +286,9 @@ Default behavior remains dry-run.
 
 A later implementation should keep dry-run evidence clear enough to show that
 GitHub was not called.
+
+A3.3 audit evidence explicitly records that real GitHub network calls are
+false for the fake-client path.
 
 ## 11. Failure Behavior
 
@@ -324,16 +354,14 @@ A3.1 explicitly excludes:
 - autonomous real execution
 - multiple real tools
 
-A3.2 still excludes runtime implementation of:
+A3.3 still excludes implementation of:
 
-- GitHub execution
+- real GitHub API execution
 - real GitHub client code
-- GitHub client runtime wiring
-- side-effect ledger runtime wiring
+- broad GitHub client runtime wiring beyond the fake-client comment path
+- durable side-effect ledger wiring
 - durable side-effect ledger
-- `post_github_issue_comment`
-- tool registry entries
-- repository allowlist logic
+- second GitHub tool
 - real-mode configuration
 
 ## 14. Acceptance Criteria for Future Implementation

@@ -16,10 +16,13 @@ from app.audit.logger import (
     create_tool_executed_event,
 )
 from app.audit.schemas import AuditEvent, AuditEventType
+from app.github.client import GitHubIssueCommentClient
+from app.github.fake_client import FakeGitHubIssueCommentClient
 from app.identity.schemas import IdentityContext
 from app.policy.guard import evaluate_tool_permission
 from app.policy.schemas import PolicyDecision, PolicyDecisionType
 from app.proposer.base import SkillProposer
+from app.side_effects.ledger import InMemorySideEffectLedger, SideEffectLedger
 from app.proposer.fake import FakeProposer
 from app.skills.argument_schemas import ArgumentValidationStatus, ValidatedSkillPlan
 from app.skills.registry import SkillRegistry, build_default_skill_registry
@@ -33,6 +36,12 @@ from app.skills.schemas import (
 from app.skills.validator import ProposalValidator
 from app.skill_graph.state import SkillGraphState
 from app.state.schemas import TaskStatus
+from app.tools.context import ToolExecutionContext
+from app.tools.github_comment import (
+    DEFAULT_ALLOWED_GITHUB_COMMENT_REPOSITORIES,
+    GITHUB_COMMENT_TOOL_NAME,
+    repository_is_allowed,
+)
 from app.tools.registry import ToolRegistry, build_default_tool_registry
 from app.tools.schemas import ToolExecutionResult
 
@@ -53,12 +62,23 @@ def build_skill_execution_graph(
     proposer: SkillProposer | None = None,
     skill_registry: SkillRegistry | None = None,
     tool_registry: ToolRegistry | None = None,
+    github_issue_comment_client: GitHubIssueCommentClient | None = None,
+    side_effect_ledger: SideEffectLedger | None = None,
+    allowed_github_comment_repositories: tuple[str, ...] | None = None,
 ):
     """Build the local skill execution graph with checkpointed approval resume."""
 
     active_proposer = proposer or FakeProposer()
     active_skill_registry = skill_registry or build_default_skill_registry()
     active_tool_registry = tool_registry or build_default_tool_registry()
+    active_github_issue_comment_client = (
+        github_issue_comment_client or FakeGitHubIssueCommentClient()
+    )
+    active_side_effect_ledger = side_effect_ledger or InMemorySideEffectLedger()
+    active_allowed_github_comment_repositories = (
+        allowed_github_comment_repositories
+        or DEFAULT_ALLOWED_GITHUB_COMMENT_REPOSITORIES
+    )
     validator = ProposalValidator(active_skill_registry)
 
     def propose_skill(state: SkillGraphState) -> SkillGraphState:
@@ -175,11 +195,21 @@ def build_skill_execution_graph(
 
         for step in validated_steps:
             tool = active_tool_registry.get_tool(step.tool_name)
+            validated_arguments = dict(validated_arguments_by_step_id[step.step_id])
             decision = evaluate_tool_permission(identity=identity, tool=tool)
+            policy_metadata: dict[str, Any] | None = None
+
+            if step.tool_name == GITHUB_COMMENT_TOOL_NAME:
+                decision, policy_metadata = _apply_github_comment_repository_policy(
+                    decision=decision,
+                    tool_name=tool.name,
+                    required_scopes=tool.required_scopes,
+                    arguments=validated_arguments,
+                    allowed_repositories=active_allowed_github_comment_repositories,
+                )
+
             policy_decisions.append(decision)
-            step_arguments[step.step_id] = dict(
-                validated_arguments_by_step_id[step.step_id]
-            )
+            step_arguments[step.step_id] = validated_arguments
             audit_trail = append_audit_event(
                 audit_trail,
                 create_permission_checked_event(
@@ -190,6 +220,7 @@ def build_skill_execution_graph(
                     reason=decision.reason,
                     required_scopes=decision.required_scopes,
                     missing_scopes=decision.missing_scopes,
+                    metadata=policy_metadata,
                 ),
             )
 
@@ -233,13 +264,17 @@ def build_skill_execution_graph(
 
         audit_trail = append_audit_event(
             _audit_trail(state),
-            create_approval_requested_event(
-                task_id=run_id,
-                actor_id=identity.user_id,
-                tool_name=policy_decision.tool_name,
-                reason=policy_decision.reason,
-            ),
-        )
+                create_approval_requested_event(
+                    task_id=run_id,
+                    actor_id=identity.user_id,
+                    tool_name=policy_decision.tool_name,
+                    reason=policy_decision.reason,
+                    metadata=_github_comment_approval_metadata(
+                        tool_name=policy_decision.tool_name,
+                        concept="github_comment_approval_required",
+                    ),
+                ),
+            )
 
         return {
             **state,
@@ -336,6 +371,14 @@ def build_skill_execution_graph(
                 actor_id=approval_actor.user_id,
                 tool_name=approval_request.tool_name,
                 reason=approval_decision.reason or fallback_reason,
+                metadata=_github_comment_approval_metadata(
+                    tool_name=approval_request.tool_name,
+                    concept=(
+                        "github_comment_approval_granted"
+                        if approval_decision.status == ApprovalStatus.APPROVED
+                        else "github_comment_approval_rejected"
+                    ),
+                ),
             ),
         )
 
@@ -393,9 +436,19 @@ def build_skill_execution_graph(
             }
 
         for step in validated_steps:
+            execution_context = None
+            if step.tool_name == GITHUB_COMMENT_TOOL_NAME:
+                execution_context = ToolExecutionContext(
+                    run_id=state["run_id"],
+                    step_id=step.step_id,
+                    side_effect_ledger=active_side_effect_ledger,
+                    github_issue_comment_client=active_github_issue_comment_client,
+                )
+
             result = active_tool_registry.execute(
                 step.tool_name,
                 dict(validated_arguments_by_step_id[step.step_id]),
+                context=execution_context,
             )
             tool_results.append(result)
             audit_trail = append_audit_event(
@@ -406,14 +459,23 @@ def build_skill_execution_graph(
                     tool_name=step.tool_name,
                     dry_run=result.dry_run,
                     success=result.success,
+                    metadata=_github_comment_execution_metadata(
+                        tool_name=step.tool_name,
+                        result=result,
+                    ),
                 ),
             )
 
+        execution_succeeded = all(result.success for result in tool_results)
+
         return {
             **state,
-            "status": TaskStatus.RUNNING,
+            "status": TaskStatus.RUNNING if execution_succeeded else TaskStatus.FAILED,
             "tool_results": tool_results,
             "audit_trail": audit_trail,
+            "error_message": (
+                None if execution_succeeded else "One or more skill steps failed."
+            ),
         }
 
     def finalize_success(state: SkillGraphState) -> SkillGraphState:
@@ -527,7 +589,14 @@ def build_skill_execution_graph(
             "finalize_failure": "finalize_failure",
         },
     )
-    builder.add_edge("execute_validated_steps", "finalize_success")
+    builder.add_conditional_edges(
+        "execute_validated_steps",
+        _route_after_execution,
+        {
+            "finalize_success": "finalize_success",
+            "finalize_failure": "finalize_failure",
+        },
+    )
     builder.add_edge("finalize_success", END)
     builder.add_edge("finalize_validation_failure", END)
     builder.add_edge("finalize_denial", END)
@@ -585,6 +654,7 @@ def _create_validation_event(
             "risk_level": None if risk_level is None else risk_level.value,
             "approval_required": validation_result.approval_required,
             **_argument_validation_metadata(validation_result),
+            **_github_comment_validation_metadata(validation_result),
         },
     )
 
@@ -609,6 +679,13 @@ def _route_after_policy(state: SkillGraphState) -> GraphRoute:
 
     if status == TaskStatus.DENIED:
         return "finalize_denial"
+
+    return "finalize_failure"
+
+
+def _route_after_execution(state: SkillGraphState) -> GraphRoute:
+    if state.get("status") == TaskStatus.RUNNING:
+        return "finalize_success"
 
     return "finalize_failure"
 
@@ -644,6 +721,121 @@ def _status_from_policy_decisions(
         return TaskStatus.PAUSED_FOR_APPROVAL
 
     return TaskStatus.RUNNING
+
+
+def _apply_github_comment_repository_policy(
+    *,
+    decision: PolicyDecision,
+    tool_name: str,
+    required_scopes: list[str],
+    arguments: dict[str, Any],
+    allowed_repositories: tuple[str, ...],
+) -> tuple[PolicyDecision, dict[str, Any]]:
+    repository = arguments.get("repository")
+    repository_allowed = (
+        isinstance(repository, str)
+        and repository_is_allowed(repository, allowed_repositories)
+    )
+    metadata = {
+        "kind": "github_comment_policy",
+        "github_comment_audit_concept": (
+            "github_comment_policy_allowed"
+            if repository_allowed
+            else "github_comment_policy_denied"
+        ),
+        "repository": repository,
+        "allowed_repositories": list(allowed_repositories),
+        "repository_allowed": repository_allowed,
+        "client_called": False,
+    }
+
+    if decision.decision == PolicyDecisionType.DENY:
+        metadata["github_comment_audit_concept"] = "github_comment_policy_denied"
+        return decision, metadata
+
+    if not repository_allowed:
+        return (
+            PolicyDecision(
+                decision=PolicyDecisionType.DENY,
+                tool_name=tool_name,
+                reason="Repository is not allowed for GitHub issue comments.",
+                required_scopes=list(required_scopes),
+                missing_scopes=[],
+            ),
+            metadata,
+        )
+
+    return decision, metadata
+
+
+def _github_comment_approval_metadata(
+    *,
+    tool_name: str,
+    concept: str,
+) -> dict[str, Any] | None:
+    if tool_name != GITHUB_COMMENT_TOOL_NAME:
+        return None
+
+    return {
+        "kind": "github_comment_approval",
+        "github_comment_audit_concept": concept,
+        "approval_binding": "validated_tool_arguments_in_current_graph_state",
+        "approval_binding_limitation": (
+            "ApprovalDecision does not persist validated_arguments_hash or "
+            "side_effect_id in A3.3."
+        ),
+        "client_called": False,
+    }
+
+
+def _github_comment_execution_metadata(
+    *,
+    tool_name: str,
+    result: ToolExecutionResult,
+) -> dict[str, Any] | None:
+    if tool_name != GITHUB_COMMENT_TOOL_NAME:
+        return None
+
+    result_payload = dict(result.result)
+    ledger_hit = bool(result_payload.get("ledger_hit"))
+    client_called = bool(result_payload.get("client_called"))
+    skipped = bool(result_payload.get("skipped"))
+    concepts = ["github_comment_side_effect_id_computed"]
+
+    concepts.append(
+        "github_comment_ledger_hit"
+        if ledger_hit
+        else "github_comment_ledger_miss"
+    )
+    concepts.append(
+        "github_comment_client_called"
+        if client_called
+        else "github_comment_client_not_called"
+    )
+
+    if result.success and skipped:
+        concepts.append("github_comment_skipped")
+    elif result.success:
+        concepts.append("github_comment_executed")
+    else:
+        concepts.append("github_comment_failed")
+
+    return {
+        "kind": "github_comment_side_effect",
+        "github_comment_audit_concepts": concepts,
+        "mode": result_payload.get("mode"),
+        "repository": result_payload.get("repository"),
+        "issue_number": result_payload.get("issue_number"),
+        "validated_arguments_hash": result_payload.get("validated_arguments_hash"),
+        "side_effect_id": result_payload.get("side_effect_id"),
+        "side_effect_status": result_payload.get("side_effect_status"),
+        "ledger_hit": ledger_hit,
+        "ledger_miss": bool(result_payload.get("ledger_miss")),
+        "client_called": client_called,
+        "skipped": skipped,
+        "error_type": result_payload.get("error_type"),
+        "real_github_network_call": False,
+    }
 
 
 def _validation_accepted(
@@ -721,6 +913,30 @@ def _argument_validation_metadata(
         "argument_validation_issue_codes": [
             issue.reason_code for issue in validated_skill_plan.issues
         ],
+    }
+
+
+def _github_comment_validation_metadata(
+    validation_result: ProposalValidationResult,
+) -> dict[str, Any]:
+    proposal = validation_result.proposal
+    skill = validation_result.skill
+    skill_id = skill.skill_id if skill is not None else None
+
+    if skill_id is None and proposal is not None:
+        skill_id = proposal.proposed_skill_id
+
+    if skill_id != GITHUB_COMMENT_TOOL_NAME:
+        return {}
+
+    validation_passed = validation_result.status == ProposalValidationStatus.ACCEPTED
+
+    return {
+        "github_comment_audit_concept": (
+            "github_comment_validation_passed"
+            if validation_passed
+            else "github_comment_validation_failed"
+        ),
     }
 
 
@@ -849,7 +1065,7 @@ def _finalize_failed_run(
         status=SkillRunStatus.FAILED,
         skill_id=skill_id,
         skill_version=skill_version,
-        step_results=[],
+        step_results=list(state.get("tool_results", [])),
         message=message,
     )
     audit_trail = append_audit_event(
@@ -866,7 +1082,7 @@ def _finalize_failed_run(
     return {
         **state,
         "status": status,
-        "tool_results": [],
+        "tool_results": list(state.get("tool_results", [])),
         "final_result": final_result,
         "final_report": message,
         "audit_trail": audit_trail,

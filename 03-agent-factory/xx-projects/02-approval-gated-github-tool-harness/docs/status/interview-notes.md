@@ -7,11 +7,16 @@ copy and rename from the finalized Artifact 2.2 project.
 
 A3.1 defines the future real side-effect boundary for an approval-gated GitHub
 issue-comment tool. It is still documentation/specification only. Artifact 3
-has not yet implemented real GitHub side effects.
+has not implemented real GitHub API execution.
 
-A3.2 adds isolated fake/in-memory supporting boundaries for a future GitHub
-issue-comment client and side-effect ledger. These are not wired into the skill
-runner runtime.
+A3.2 adds isolated fake/in-memory supporting boundaries for a GitHub
+issue-comment client and side-effect ledger.
+
+A3.3 wires those boundaries into exactly one approval-gated local/demo skill
+path named `post_github_issue_comment`. It uses validated scalar arguments,
+a trusted repository allowlist, explicit approval, an in-memory side-effect
+ledger, and fake-client simulated execution. It still does not call the real
+GitHub API.
 
 The core idea is:
 
@@ -115,9 +120,10 @@ Artifact 2.2 baseline.
 It does not change runtime behavior. The copied baseline still inherits
 Artifact 2.2 local/demo dry-run scalar argument validation behavior.
 
-Future Artifact 3 sprints may introduce an approval-gated GitHub issue-comment
-tool named `post_github_issue_comment` with scalar arguments `repository`,
-`issue_number`, and `comment_body`.
+A3.3 introduces a local/demo approval-gated GitHub issue-comment tool named
+`post_github_issue_comment` with scalar arguments `repository`, `issue_number`,
+and `comment_body`. Future sprints may design real GitHub API execution behind
+the same safety boundary.
 
 ## What A3.1 Adds
 
@@ -148,9 +154,30 @@ A3.2 adds the isolated supporting boundaries that A3.1 specified:
 - `SideEffectLedger`
 - `InMemorySideEffectLedger`
 
-These are direct unit-test targets only. They do not register
+At A3.2, these were direct unit-test targets only. A3.2 did not register
 `post_github_issue_comment`, add a GitHub comment skill, wire runtime approval
 or graph execution, load tokens, or call GitHub.
+
+## What A3.3 Adds
+
+A3.3 registers one approval-gated GitHub issue-comment skill/tool path:
+`post_github_issue_comment`.
+
+It accepts only validated scalar arguments:
+
+- `repository`
+- `issue_number`
+- `comment_body`
+
+The skill is high risk, so valid runs pause for approval before execution. The
+repository is checked against a trusted local/demo allowlist. Approved runs
+compute `validated_arguments_hash` and `side_effect_id`, check
+`InMemorySideEffectLedger`, and call `FakeGitHubIssueCommentClient` only if no
+prior succeeded record exists.
+
+This is simulated local/demo execution. A3.3 does not add a real GitHub API
+adapter, token loading, arbitrary repository targeting, durable ledger, or
+production replay protection.
 
 ## Why Policy Is Still Needed
 
@@ -211,15 +238,13 @@ public request field for selecting those fake proposer scenarios.
 ## Current Limitations
 
 - local/demo artifact
-- A3.2 isolated boundary modules only
+- one A3.3 fake-client GitHub comment skill path only
 - no real GitHub client code
-- no runtime GitHub client wiring
-- no runtime side-effect ledger wiring
+- no runtime GitHub client wiring beyond the fake-client comment path
+- no durable side-effect ledger wiring
 - no durable side-effect ledger
-- no `post_github_issue_comment`
-- no approval-gated GitHub comment skill
 - no real-mode configuration
-- no repository allowlist runtime policy
+- no configurable repository allowlist runtime policy
 - no OAuth/OIDC or JWT validation
 - no MCP
 - no database persistence

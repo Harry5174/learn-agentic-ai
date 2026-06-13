@@ -5,7 +5,7 @@ from app.tools.registry import build_default_tool_registry
 from app.tools.schemas import RiskLevel
 
 
-def test_default_registry_includes_exactly_three_tools() -> None:
+def test_default_registry_includes_a3_3_github_comment_tool() -> None:
     registry = build_default_tool_registry()
 
     tool_names = {tool.name for tool in registry.list_tools()}
@@ -14,15 +14,25 @@ def test_default_registry_includes_exactly_three_tools() -> None:
         "inspect_sandbox_issues",
         "draft_issue_comment",
         "trigger_workflow_dry_run",
+        "post_github_issue_comment",
     }
 
 
-def test_post_github_issue_comment_is_not_registered_yet() -> None:
+def test_post_github_issue_comment_requires_graph_context() -> None:
     registry = build_default_tool_registry()
 
-    tool_names = {tool.name for tool in registry.list_tools()}
+    result = registry.execute(
+        "post_github_issue_comment",
+        arguments={
+            "repository": "Harry5174/learn-agentic-ai",
+            "issue_number": 1,
+            "comment_body": "A local/demo fake comment.",
+        },
+    )
 
-    assert "post_github_issue_comment" not in tool_names
+    assert result.success is False
+    assert result.dry_run is True
+    assert result.result["client_called"] is False
 
 
 def test_list_tools_returns_metadata_for_all_tools() -> None:
@@ -30,7 +40,7 @@ def test_list_tools_returns_metadata_for_all_tools() -> None:
 
     tools = registry.list_tools()
 
-    assert len(tools) == 3
+    assert len(tools) == 4
     assert all(tool.name for tool in tools)
     assert all(tool.description for tool in tools)
     assert all(tool.required_scopes for tool in tools)
@@ -60,10 +70,12 @@ def test_tool_metadata_includes_required_scopes() -> None:
     inspect_tool = registry.get_tool("inspect_sandbox_issues")
     draft_tool = registry.get_tool("draft_issue_comment")
     workflow_tool = registry.get_tool("trigger_workflow_dry_run")
+    github_tool = registry.get_tool("post_github_issue_comment")
 
     assert inspect_tool.required_scopes == ["tools:inspect"]
     assert draft_tool.required_scopes == ["tools:draft"]
     assert workflow_tool.required_scopes == ["tools:trigger_workflow"]
+    assert github_tool.required_scopes == ["tools:post_github_comment"]
 
 
 def test_high_risk_tool_is_marked_high() -> None:

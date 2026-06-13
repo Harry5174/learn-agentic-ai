@@ -4,6 +4,7 @@ from app.identity.schemas import IdentityContext
 from app.proposer.base import SkillProposer
 from app.skills.registry import build_default_skill_registry
 from app.skills.schemas import SkillProposal, SkillProposalStep, SkillStep
+from app.tools.github_comment import GITHUB_COMMENT_SKILL_ID, GITHUB_COMMENT_STEP_ID
 
 
 class FakeProposalScenario(StrEnum):
@@ -11,6 +12,7 @@ class FakeProposalScenario(StrEnum):
 
     VALID_LOW_RISK = "valid_low_risk"
     VALID_HIGH_RISK = "valid_high_risk"
+    VALID_GITHUB_COMMENT = "valid_github_comment"
     INVALID_PROPOSAL = "invalid_proposal"
     UNKNOWN_SKILL = "unknown_skill"
 
@@ -47,6 +49,19 @@ class FakeProposer(SkillProposer):
                     "simulate_workflow": {
                         "workflow_name": "ci.yml",
                         "ref": "main",
+                    }
+                },
+            )
+
+        if self._scenario == FakeProposalScenario.VALID_GITHUB_COMMENT:
+            return self._proposal_from_registered_skill(
+                skill_id=GITHUB_COMMENT_SKILL_ID,
+                rationale=rationale,
+                step_arguments={
+                    GITHUB_COMMENT_STEP_ID: {
+                        "repository": "Harry5174/learn-agentic-ai",
+                        "issue_number": 1,
+                        "comment_body": "A deterministic fake GitHub comment.",
                     }
                 },
             )

@@ -65,6 +65,7 @@ def test_get_skills_returns_safe_registered_skill_summaries() -> None:
         "inspect_sandbox_health",
         "draft_sandbox_issue_comment",
         "simulate_sandbox_workflow",
+        "post_github_issue_comment",
     }
 
     inspect_skill = next(

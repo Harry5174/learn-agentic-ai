@@ -4,8 +4,10 @@ from langgraph.types import Command
 
 from app.approval.schemas import ApprovalDecision, ApprovalStatus
 from app.audit.schemas import AuditEvent
+from app.github.client import GitHubIssueCommentClient
 from app.identity.schemas import IdentityContext
 from app.proposer.base import SkillProposer
+from app.side_effects.ledger import SideEffectLedger
 from app.skill_graph.graph import build_skill_execution_graph
 from app.skill_graph.state import SkillGraphState
 from app.state.schemas import TaskStatus
@@ -22,8 +24,21 @@ class SkillRunNotPausedError(Exception):
 class SkillGraphService:
     """Thin service wrapper around the checkpointed skill execution graph."""
 
-    def __init__(self, proposer: SkillProposer | None = None) -> None:
-        self._graph = build_skill_execution_graph(proposer=proposer)
+    def __init__(
+        self,
+        proposer: SkillProposer | None = None,
+        github_issue_comment_client: GitHubIssueCommentClient | None = None,
+        side_effect_ledger: SideEffectLedger | None = None,
+        allowed_github_comment_repositories: tuple[str, ...] | None = None,
+    ) -> None:
+        self._graph = build_skill_execution_graph(
+            proposer=proposer,
+            github_issue_comment_client=github_issue_comment_client,
+            side_effect_ledger=side_effect_ledger,
+            allowed_github_comment_repositories=(
+                allowed_github_comment_repositories
+            ),
+        )
 
     @staticmethod
     def _config(run_id: str) -> dict:

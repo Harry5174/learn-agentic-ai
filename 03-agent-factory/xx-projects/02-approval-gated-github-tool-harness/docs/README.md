@@ -11,13 +11,14 @@ side-effect boundary for an approval-gated GitHub issue-comment tool, but it
 does not implement GitHub execution.
 
 A3.2 adds isolated GitHub issue-comment client and side-effect ledger
-boundaries. These are fake/in-memory supporting boundaries only and are not
-wired into skill execution, approval, API routes, or real GitHub execution.
+boundaries.
 
-Artifact 2.2 remains the completed dry-run scalar argument validation artifact.
-The current Artifact 3 baseline still inherits Artifact 2.2 local/demo dry-run
-scalar argument validation behavior and has not yet implemented real GitHub
-side effects.
+A3.3 adds exactly one approval-gated local/demo GitHub issue-comment skill
+path, `post_github_issue_comment`. It uses validated scalar arguments, a
+trusted repository allowlist, explicit approval, an in-memory side-effect
+ledger, and fake-client simulated execution.
+
+Artifact 3 still has not implemented real GitHub API execution.
 
 Artifact 2.1 is the Skill Runner API and Demo Surface. It is complete as a
 local/demo HTTP surface.
@@ -28,8 +29,8 @@ and keeps raw proposed arguments out of `ToolRegistry.execute()`.
 
 ## Start Here
 
-- [Project status](status/project-status.md): current Artifact 3 A3.2 isolated
-  boundary status.
+- [Project status](status/project-status.md): current Artifact 3 A3.3
+  approval-gated fake-client GitHub comment skill status.
 - [Artifact 3 real tool boundary](specs/artifact-3-real-tool-boundary.md):
   future real side-effect boundary for approval-gated GitHub issue comments.
 - [Skill-runner API demo](demos/skill-runner-api-demo.md): primary Artifact 2.1
@@ -102,12 +103,13 @@ and keeps raw proposed arguments out of `ToolRegistry.execute()`.
 
 - A3.0 was only a copied baseline and rename sprint.
 - A3.1 was documentation/specification only.
-- A3.2 adds isolated fake/in-memory supporting boundaries only.
-- Artifact 3 has not yet implemented real GitHub side effects.
+- A3.2 added isolated fake/in-memory supporting boundaries only.
+- A3.3 adds one approval-gated fake-client GitHub issue-comment skill.
+- Artifact 3 has not implemented real GitHub API execution.
 - A3.1 defines the future boundary for an approval-gated GitHub issue-comment
-  tool named `post_github_issue_comment`, but the tool is not implemented.
-- A3.2 did not wire the GitHub client or side-effect ledger into runtime skill
-  execution.
+  tool named `post_github_issue_comment`.
+- A3.3 wires `FakeGitHubIssueCommentClient` and `InMemorySideEffectLedger`
+  into that one local/demo runtime skill path.
 - The default HTTP skill-runner API uses fake proposer mode.
 - HTTP `proposer_mode: "llm"` is disabled and rejected.
 - Invalid-proposal and high-risk skill-run examples are test-backed with
@@ -118,4 +120,5 @@ and keeps raw proposed arguments out of `ToolRegistry.execute()`.
 - Only registry-declared scalar string/integer/boolean arguments can reach
   execution; object/list/nested payloads and partial acceptance are not
   supported.
-- The project remains local/demo, process-local, in-memory, and dry-run only.
+- The project remains local/demo, process-local, in-memory, and real-network
+  disabled.

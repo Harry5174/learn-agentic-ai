@@ -11,12 +11,14 @@ side-effect boundary for an approval-gated GitHub issue-comment tool. It does
 not implement GitHub execution.
 
 A3.2 adds isolated GitHub issue-comment client and side-effect ledger
-boundaries. These boundaries are not wired into skill execution, approval,
-API routes, or real GitHub side effects.
+boundaries.
 
-The current runtime still inherits Artifact 2.2 local/demo dry-run scalar
-argument validation behavior. Artifact 3 has not implemented real GitHub side
-effects.
+A3.3 wires those boundaries into exactly one approval-gated local/demo skill
+path, `post_github_issue_comment`. The skill uses validated scalar arguments,
+a trusted repository allowlist, explicit approval, an in-memory side-effect
+ledger, and `FakeGitHubIssueCommentClient` simulated execution.
+
+Artifact 3 still has not implemented real GitHub API execution.
 
 Repository folder numbering was applied after the original A3.0 copy/rename
 prompt. The current source baseline folder is
@@ -39,9 +41,8 @@ directly.
 ## What This Is
 
 This is a portfolio artifact for AI/backend interviews and agentic software
-learning. In A3.0, it is a renamed copy of the Artifact 2.2 harness that will
-be used as the starting point for a future approval-gated GitHub issue-comment
-tool.
+learning. It demonstrates a narrow approval-gated GitHub issue-comment skill
+path while keeping real network execution disabled.
 
 Inherited baseline capabilities include:
 
@@ -59,14 +60,16 @@ Inherited baseline capabilities include:
 - A3.2 isolated GitHub issue-comment request/result/failure schemas, fake
   client boundary, deterministic side-effect id helpers, and in-memory ledger
   boundary tests
+- A3.3 `post_github_issue_comment` skill/tool registration with approval,
+  repository allowlist policy, fake-client execution, ledger replay
+  suppression, and audit evidence
 
 Artifact 3 A3.1 defines the future boundary for an approval-gated GitHub
 issue-comment tool named `post_github_issue_comment` with scalar arguments
-`repository`, `issue_number`, and `comment_body`. This is a spec only; the tool
-is not implemented.
+`repository`, `issue_number`, and `comment_body`.
 
-Artifact 3 A3.2 adds supporting boundaries for that future path, but does not
-register the tool, add a GitHub comment skill, or enable real GitHub execution.
+Artifact 3 A3.3 implements that one local/demo skill path with the fake client.
+It does not enable real GitHub execution.
 
 ## What This Is Not
 
@@ -78,11 +81,10 @@ The repo intentionally does not include OAuth/OIDC, JWT validation, database
 persistence, frontend UI, real GitHub writes, real workflow triggers, MCP,
 multi-agent behavior, or production deployment hardening.
 
-A3.2 does not include a real GitHub client, `post_github_issue_comment`,
-approval-gated GitHub comment skill, real-mode configuration, token handling,
-repository allowlist runtime logic, live LLM HTTP mode, OAuth/OIDC, MCP,
-database persistence, frontend, workflow dispatch, PR creation, repo file-write
-tooling, or durable ledger/audit persistence.
+A3.3 does not include a real GitHub client, real-mode configuration, token
+handling, live LLM HTTP mode, OAuth/OIDC, MCP, database persistence, frontend,
+workflow dispatch, PR creation, branch creation, issue creation, repo
+file-write tooling, or durable ledger/audit persistence.
 
 ## Quickstart
 
@@ -156,10 +158,12 @@ High-value entry points:
 
 ## Current Boundaries
 
-Artifact 3 A3.2 adds isolated GitHub issue-comment client and side-effect
-ledger boundaries for future integration. It has not added GitHub-specific tool
-registration, skill graph behavior, API route behavior, or real GitHub side
-effects.
+Artifact 3 A3.3 adds exactly one GitHub-specific skill/tool path:
+`post_github_issue_comment`. It accepts only validated scalar `repository`,
+`issue_number`, and `comment_body` arguments, checks the trusted repository
+allowlist, pauses for approval, computes `validated_arguments_hash` and
+`side_effect_id`, checks the process-local side-effect ledger, and then uses
+the fake GitHub issue-comment client for simulated local/demo execution.
 
 The default HTTP skill-runner demo uses fake proposer mode. HTTP
 `proposer_mode: "llm"` is disabled and rejected without calling a live model
@@ -176,7 +180,7 @@ argument-validation status, argument names, redaction names, and issue codes
 without echoing rejected raw values.
 
 This remains a local/demo artifact with process-local state, in-memory
-checkpointing, in-memory audit/rate limits, dry-run tools only, fake/in-memory
-A3.2 boundary tests, and no durable persistence. Artifact 2.2 does not add
-object/list/nested argument support, partial acceptance, live HTTP LLM mode,
-MCP, OAuth/OIDC, database persistence, or real GitHub writes.
+checkpointing, in-memory audit/rate limits, fake-client GitHub comment
+simulation, and no durable persistence. A3.3 does not add object/list/nested
+argument support, partial acceptance, live HTTP LLM mode, MCP, OAuth/OIDC,
+database persistence, durable replay protection, or real GitHub writes.

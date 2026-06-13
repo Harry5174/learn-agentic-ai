@@ -1,6 +1,12 @@
 from app.skills.errors import UnknownSkillError
 from app.skills.argument_schemas import ArgumentValueType, ToolArgumentSpec
 from app.skills.schemas import SkillSpec, SkillStep
+from app.tools.github_comment import (
+    GITHUB_COMMENT_REQUIRED_SCOPE,
+    GITHUB_COMMENT_SKILL_ID,
+    GITHUB_COMMENT_STEP_ID,
+    GITHUB_COMMENT_TOOL_NAME,
+)
 from app.tools.schemas import RiskLevel
 
 
@@ -176,6 +182,89 @@ def build_default_skill_registry() -> SkillRegistry:
                 },
             },
             tags=["workflow", "dry-run"],
+        )
+    )
+
+    registry.register(
+        SkillSpec(
+            skill_id=GITHUB_COMMENT_SKILL_ID,
+            version="1.0",
+            name="Post GitHub issue comment",
+            description=(
+                "Simulate an approval-gated GitHub issue comment through the "
+                "local fake client."
+            ),
+            steps=[
+                SkillStep(
+                    step_id=GITHUB_COMMENT_STEP_ID,
+                    description=(
+                        "Post a validated issue comment through the local fake "
+                        "GitHub client."
+                    ),
+                    tool_name=GITHUB_COMMENT_TOOL_NAME,
+                    allowed_args_schema={
+                        "type": "object",
+                        "properties": {
+                            "repository": {"type": "string"},
+                            "issue_number": {"type": "integer"},
+                            "comment_body": {"type": "string"},
+                        },
+                        "required": [
+                            "repository",
+                            "issue_number",
+                            "comment_body",
+                        ],
+                    },
+                    argument_specs=[
+                        ToolArgumentSpec(
+                            name="repository",
+                            value_type=ArgumentValueType.STRING,
+                            required=True,
+                            description=(
+                                "Allowed repository for the local/demo GitHub "
+                                "comment simulation."
+                            ),
+                        ),
+                        ToolArgumentSpec(
+                            name="issue_number",
+                            value_type=ArgumentValueType.INTEGER,
+                            required=True,
+                            description=(
+                                "GitHub issue number for the local/demo comment "
+                                "simulation."
+                            ),
+                        ),
+                        ToolArgumentSpec(
+                            name="comment_body",
+                            value_type=ArgumentValueType.STRING,
+                            required=True,
+                            max_length=2000,
+                            description=(
+                                "Comment body for the local/demo GitHub comment "
+                                "simulation."
+                            ),
+                        ),
+                    ],
+                    required_scopes=[GITHUB_COMMENT_REQUIRED_SCOPE],
+                    risk_level=RiskLevel.HIGH,
+                )
+            ],
+            required_scopes=[GITHUB_COMMENT_REQUIRED_SCOPE],
+            risk_level=RiskLevel.HIGH,
+            input_schema={
+                "type": "object",
+                "properties": {
+                    "repository": {"type": "string"},
+                    "issue_number": {"type": "integer"},
+                    "comment_body": {"type": "string"},
+                },
+                "required": [
+                    "repository",
+                    "issue_number",
+                    "comment_body",
+                ],
+            },
+            tags=["github", "comment", "fake-client", "approval-gated"],
         )
     )
 

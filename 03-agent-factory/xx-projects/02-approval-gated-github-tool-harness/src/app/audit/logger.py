@@ -86,8 +86,18 @@ def create_permission_checked_event(
     reason: str,
     required_scopes: list[str],
     missing_scopes: list[str],
+    metadata: dict[str, Any] | None = None,
 ) -> AuditEvent:
     """Create a permission-checked audit event."""
+
+    safe_metadata = {
+        "decision": decision,
+        "reason": reason,
+        "required_scopes": list(required_scopes),
+        "missing_scopes": list(missing_scopes),
+    }
+    if metadata is not None:
+        safe_metadata.update(metadata)
 
     return create_audit_event(
         task_id=task_id,
@@ -95,12 +105,7 @@ def create_permission_checked_event(
         actor_id=actor_id,
         message="Permission check completed.",
         tool_name=tool_name,
-        metadata={
-            "decision": decision,
-            "reason": reason,
-            "required_scopes": list(required_scopes),
-            "missing_scopes": list(missing_scopes),
-        },
+        metadata=safe_metadata,
     )
 
 
@@ -109,8 +114,13 @@ def create_approval_requested_event(
     actor_id: str,
     tool_name: str,
     reason: str,
+    metadata: dict[str, Any] | None = None,
 ) -> AuditEvent:
     """Create an approval-requested audit event."""
+
+    safe_metadata = {"reason": reason}
+    if metadata is not None:
+        safe_metadata.update(metadata)
 
     return create_audit_event(
         task_id=task_id,
@@ -118,7 +128,7 @@ def create_approval_requested_event(
         actor_id=actor_id,
         message="Approval was requested.",
         tool_name=tool_name,
-        metadata={"reason": reason},
+        metadata=safe_metadata,
     )
 
 
@@ -128,8 +138,16 @@ def create_tool_executed_event(
     tool_name: str,
     dry_run: bool,
     success: bool,
+    metadata: dict[str, Any] | None = None,
 ) -> AuditEvent:
     """Create a tool-executed audit event."""
+
+    safe_metadata = {
+        "dry_run": dry_run,
+        "success": success,
+    }
+    if metadata is not None:
+        safe_metadata.update(metadata)
 
     return create_audit_event(
         task_id=task_id,
@@ -137,10 +155,7 @@ def create_tool_executed_event(
         actor_id=actor_id,
         message="Tool execution completed.",
         tool_name=tool_name,
-        metadata={
-            "dry_run": dry_run,
-            "success": success,
-        },
+        metadata=safe_metadata,
     )
 
 
@@ -149,15 +164,20 @@ def create_approval_granted_event(
     actor_id: str,
     tool_name: str,
     reason: str,
+    metadata: dict[str, Any] | None = None,
 ) -> AuditEvent:
     """Create an approval-granted audit event."""
+    safe_metadata = {"reason": reason}
+    if metadata is not None:
+        safe_metadata.update(metadata)
+
     return create_audit_event(
         task_id=task_id,
         event_type=AuditEventType.APPROVAL_GRANTED,
         actor_id=actor_id,
         message="Approval was granted.",
         tool_name=tool_name,
-        metadata={"reason": reason},
+        metadata=safe_metadata,
     )
 
 
@@ -166,15 +186,20 @@ def create_approval_rejected_event(
     actor_id: str,
     tool_name: str,
     reason: str,
+    metadata: dict[str, Any] | None = None,
 ) -> AuditEvent:
     """Create an approval-rejected audit event."""
+    safe_metadata = {"reason": reason}
+    if metadata is not None:
+        safe_metadata.update(metadata)
+
     return create_audit_event(
         task_id=task_id,
         event_type=AuditEventType.APPROVAL_REJECTED,
         actor_id=actor_id,
         message="Approval was rejected.",
         tool_name=tool_name,
-        metadata={"reason": reason},
+        metadata=safe_metadata,
     )
 
 

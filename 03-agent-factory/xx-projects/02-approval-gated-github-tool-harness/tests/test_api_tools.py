@@ -13,13 +13,14 @@ def test_get_tools_returns_registered_tool_metadata() -> None:
     body = response.json()
     tools = body["tools"]
 
-    assert len(tools) == 3
+    assert len(tools) == 4
 
     tool_names = {tool["name"] for tool in tools}
     assert tool_names == {
         "inspect_sandbox_issues",
         "draft_issue_comment",
         "trigger_workflow_dry_run",
+        "post_github_issue_comment",
     }
 
 

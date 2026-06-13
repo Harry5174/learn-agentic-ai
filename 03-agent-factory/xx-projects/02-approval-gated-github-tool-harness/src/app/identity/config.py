@@ -38,6 +38,7 @@ DEMO_API_KEY_IDENTITIES: dict[str, IdentityContext] = {
             "tools:inspect",
             "tools:draft",
             "tools:trigger_workflow",
+            "tools:post_github_comment",
             "approval:approve",
             "approval:reject",
         ],

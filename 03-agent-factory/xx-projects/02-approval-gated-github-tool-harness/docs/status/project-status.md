@@ -12,6 +12,8 @@
 
 **A3.2 status:** Isolated GitHub client and side-effect ledger boundaries.
 
+**A3.3 status:** One approval-gated local/demo GitHub issue-comment skill path.
+
 **Principle:** The LLM proposes. The harness validates, authorizes,
 approval-gates, executes, and audits.
 
@@ -31,9 +33,16 @@ issue-comment tool. It is documentation/specification only and does not
 implement real GitHub side effects.
 
 A3.2 adds isolated supporting boundaries for a future GitHub issue-comment
-client and side-effect idempotency ledger. These modules are not wired into
-skill execution, approval/resume behavior, API routes, skill registry behavior,
-or real GitHub side effects.
+client and side-effect idempotency ledger.
+
+A3.3 registers exactly one GitHub issue-comment skill/tool path,
+`post_github_issue_comment`. It uses validated scalar `repository`,
+`issue_number`, and `comment_body` arguments, a trusted local/demo repository
+allowlist, high-risk approval, `validated_arguments_hash`, deterministic
+`side_effect_id`, the process-local `InMemorySideEffectLedger`, and
+`FakeGitHubIssueCommentClient` simulated execution.
+
+A3.3 does not implement real GitHub API execution.
 
 Artifact 2.2 remains the completed dry-run scalar argument validation artifact.
 The current Artifact 3 baseline still inherits Artifact 2.2 local/demo dry-run
@@ -78,6 +87,9 @@ Implemented:
   `FakeGitHubIssueCommentClient`, issue-comment request/result/failure schemas,
   deterministic side-effect id helpers, `SideEffectRecord`,
   `SideEffectLedger`, and `InMemorySideEffectLedger`
+- A3.3 `post_github_issue_comment` skill/tool registration, repository
+  allowlist policy, approval-gated fake-client execution, ledger replay
+  suppression, and GitHub comment audit evidence
 
 Historical note: Artifact 2.1 included E1.3 documentation, demo walkthrough,
 and portfolio packaging work. Current status: Artifact 2.2 is complete within
@@ -93,8 +105,8 @@ The copied baseline still includes the Artifact 2 foundation sprint specs:
 - `../specs/sprint-5-spec.md`
 
 Artifact 2.1 extends that foundation with the skill-runner API lifecycle.
-A3.2 adds isolated supporting boundary modules only and does not add a GitHub
-issue-comment tool or skill.
+A3.2 adds isolated supporting boundary modules. A3.3 adds one approval-gated
+local/demo GitHub issue-comment tool and skill.
 
 Copied Artifact 1 sprint specs that could mislead future IDE agents are archived
 under:
@@ -162,7 +174,7 @@ This means:
 
 Tests use deterministic fake outputs or mocked LLM-client outputs.
 
-A3.2 tests use deterministic fake GitHub issue-comment clients and an
+A3.3 tests use deterministic fake GitHub issue-comment clients and an
 in-memory side-effect ledger only.
 
 No test depends on:
@@ -176,14 +188,12 @@ No test depends on:
 ## Explicitly Not Implemented
 
 - real GitHub client code
-- GitHub client runtime wiring
-- side-effect ledger runtime wiring
+- GitHub client runtime wiring beyond the one fake-client comment path
+- durable side-effect ledger runtime wiring
 - durable side-effect ledger
-- `post_github_issue_comment`
-- approval-gated GitHub comment skill
 - real GitHub issue comments
 - real-mode environment configuration
-- repository allowlist logic
+- configurable repository allowlist logic
 - OAuth/OIDC
 - JWT validation
 - MCP
@@ -231,9 +241,35 @@ A3.2 implements only isolated support boundaries:
 - `SideEffectLedger`
 - `InMemorySideEffectLedger`
 
-These boundaries are tested directly, but they are not registered as tools and
-are not used by the skill graph, approval flow, API routes, runtime config, or
-repository policy logic.
+At A3.2, these boundaries were tested directly and were not registered as
+tools or used by the skill graph, approval flow, API routes, runtime config, or
+repository policy logic. A3.3 wires the fake client and in-memory ledger into
+the one local/demo path described below.
+
+## A3.3 GitHub Comment Skill Status
+
+A3.3 implements one local/demo skill path:
+
+- skill/tool name: `post_github_issue_comment`
+- required scalar arguments: `repository`, `issue_number`, `comment_body`
+- default allowed repository: `Harry5174/learn-agentic-ai`
+- required scope: `tools:post_github_comment`
+- risk level: high
+- approval required before fake-client execution
+- fake client: `FakeGitHubIssueCommentClient`
+- replay guard: process-local `InMemorySideEffectLedger`
+
+The path computes `validated_arguments_hash` and `side_effect_id` before the
+fake-client call. If the same approved action already has a succeeded ledger
+record, the fake-client call is skipped and returned as a cached/skipped local
+result.
+
+The current approval schema binds approval to the validated tool arguments in
+the checkpointed graph state. It does not persist `validated_arguments_hash` or
+`side_effect_id` inside `ApprovalDecision`; stronger persisted approval binding
+is deferred.
+
+This is not real GitHub execution and does not load GitHub tokens.
 
 ## Current Limitation To Keep Visible
 

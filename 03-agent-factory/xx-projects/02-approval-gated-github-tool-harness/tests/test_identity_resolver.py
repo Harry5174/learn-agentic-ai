@@ -46,6 +46,7 @@ def test_admin_key_resolves_correctly() -> None:
         "tools:inspect",
         "tools:draft",
         "tools:trigger_workflow",
+        "tools:post_github_comment",
         "approval:approve",
         "approval:reject",
     ]

@@ -6,7 +6,7 @@ from app.tools.registry import build_default_tool_registry
 from app.tools.schemas import RiskLevel
 
 
-def test_default_registry_includes_three_builtin_skills() -> None:
+def test_default_registry_includes_a3_3_github_comment_skill() -> None:
     registry = build_default_skill_registry()
 
     skill_ids = {skill.skill_id for skill in registry.list_skills()}
@@ -15,6 +15,7 @@ def test_default_registry_includes_three_builtin_skills() -> None:
         "inspect_sandbox_health",
         "draft_sandbox_issue_comment",
         "simulate_sandbox_workflow",
+        "post_github_issue_comment",
     }
 
 
@@ -69,6 +70,7 @@ def test_registry_exposes_allowed_tools_required_scopes_and_risk() -> None:
     inspect_skill = registry.get_skill("inspect_sandbox_health")
     draft_skill = registry.get_skill("draft_sandbox_issue_comment")
     workflow_skill = registry.get_skill("simulate_sandbox_workflow")
+    github_skill = registry.get_skill("post_github_issue_comment")
 
     assert inspect_skill.allowed_tool_names == ["inspect_sandbox_issues"]
     assert inspect_skill.required_scopes == ["tools:inspect"]
@@ -81,6 +83,10 @@ def test_registry_exposes_allowed_tools_required_scopes_and_risk() -> None:
     assert workflow_skill.allowed_tool_names == ["trigger_workflow_dry_run"]
     assert workflow_skill.required_scopes == ["tools:trigger_workflow"]
     assert workflow_skill.risk_level == RiskLevel.HIGH
+
+    assert github_skill.allowed_tool_names == ["post_github_issue_comment"]
+    assert github_skill.required_scopes == ["tools:post_github_comment"]
+    assert github_skill.risk_level == RiskLevel.HIGH
 
 
 def test_registry_exposes_step_metadata() -> None:

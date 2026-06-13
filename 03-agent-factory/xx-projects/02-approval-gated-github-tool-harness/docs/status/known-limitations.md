@@ -8,8 +8,9 @@ artifact.
 Artifact 3 — Approval-Gated GitHub Tool Harness started as an A3.0 baseline
 copy from the finalized Artifact 2.2 project.
 
-The project is still a local/demo harness. A3.2 adds isolated fake/in-memory
-supporting boundaries only.
+The project is still a local/demo harness. A3.3 adds one approval-gated
+fake-client GitHub issue-comment skill path, but it remains process-local and
+real-network disabled.
 
 Artifact 2.2 remains the completed dry-run scalar argument validation artifact.
 The current Artifact 3 baseline still inherits Artifact 2.2 local/demo dry-run
@@ -44,7 +45,7 @@ Current limits:
 - checkpoints do not survive process restart
 - task/run state is not stored in a database
 - audit events are not durably persisted
-- the A3.2 side-effect ledger is in-memory only and not wired into runtime
+- the A3.3 side-effect ledger is in-memory only
 - rate limit windows reset on process restart
 
 ## API Surface
@@ -68,24 +69,21 @@ proposer injection.
 
 ## Tool Execution
 
-Tools are dry-run only.
+Tools are local/demo only.
 
-Artifact 3 has not implemented real GitHub side effects. A3.1 defines the
-future boundary for an approval-gated GitHub issue-comment tool named
-`post_github_issue_comment` with scalar arguments `repository`, `issue_number`,
-and `comment_body`. A3.2 adds isolated GitHub issue-comment client and
-side-effect ledger boundaries for later use.
+Artifact 3 has not implemented real GitHub side effects. A3.3 adds one
+approval-gated GitHub issue-comment skill named `post_github_issue_comment`
+with scalar arguments `repository`, `issue_number`, and `comment_body`. It uses
+`FakeGitHubIssueCommentClient` for simulated local/demo execution only.
 
 Not implemented:
 
 - real GitHub client code
-- GitHub client runtime integration
-- side-effect ledger runtime integration
+- GitHub client runtime integration beyond the one fake-client comment path
+- durable side-effect ledger runtime integration
 - durable side-effect ledger
-- `post_github_issue_comment`
-- approval-gated GitHub comment skill
 - real-mode environment configuration
-- repository allowlist runtime policy
+- configurable repository allowlist runtime policy
 - real GitHub writes
 - real issue comments
 - real workflow triggers
@@ -136,6 +134,6 @@ Not implemented:
 This project demonstrates a safer harness shape for model-proposed execution.
 It should not be described as production security infrastructure.
 
-A3.2 does not provide production replay protection. It adds a process-local
-idempotency boundary that future implementation can wire into a runtime path
-after separate approval.
+A3.3 does not provide production replay protection. It uses a process-local
+idempotency ledger for the one fake-client GitHub comment path. Ledger state
+does not survive process restart and is not a durable production guarantee.

@@ -38,6 +38,23 @@ def test_fake_proposer_returns_deterministic_high_risk_proposal() -> None:
     assert proposal.steps[0].arguments == {"workflow_name": "ci.yml", "ref": "main"}
 
 
+def test_fake_proposer_returns_deterministic_github_comment_proposal() -> None:
+    proposer = FakeProposer(FakeProposalScenario.VALID_GITHUB_COMMENT)
+
+    proposal = proposer.propose("Post a fake GitHub comment.", _identity())
+
+    assert proposal.proposed_skill_id == "post_github_issue_comment"
+    assert proposal.proposed_skill_version == "1.0"
+    assert proposal.steps[0].step_id == "post_comment"
+    assert proposal.steps[0].tool_name == "post_github_issue_comment"
+    assert proposal.steps[0].risk_level == RiskLevel.HIGH
+    assert proposal.steps[0].arguments == {
+        "repository": "Harry5174/learn-agentic-ai",
+        "issue_number": 1,
+        "comment_body": "A deterministic fake GitHub comment.",
+    }
+
+
 def test_fake_proposer_can_return_invalid_proposal() -> None:
     proposer = FakeProposer(FakeProposalScenario.INVALID_PROPOSAL)
 

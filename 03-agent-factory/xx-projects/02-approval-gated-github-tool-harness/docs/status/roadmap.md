@@ -3,8 +3,9 @@
 This roadmap is intentionally narrow. Artifact 3 — Approval-Gated GitHub Tool
 Harness starts at A3.0 as a copied baseline from the finalized Artifact 2.2
 project, then uses A3.1 to define the future real side-effect boundary before
-any GitHub write path is implemented. A3.2 adds isolated supporting boundaries
-without wiring them into runtime execution.
+any GitHub write path is implemented. A3.2 adds isolated supporting
+boundaries. A3.3 wires those boundaries into one approval-gated local/demo
+GitHub issue-comment skill path using the fake client only.
 
 For the project-level sequencing rules, see
 [../specs/constitution/roadmap.md](../specs/constitution/roadmap.md).
@@ -18,7 +19,7 @@ Artifact 2.2 remains the completed dry-run scalar argument validation artifact.
 The current Artifact 3 baseline still inherits Artifact 2.2 local/demo dry-run
 scalar argument validation behavior.
 
-Artifact 3 has not yet implemented real GitHub side effects.
+Artifact 3 has not implemented real GitHub API side effects.
 
 ## A3.1 Real Side-Effect Boundary Spec
 
@@ -51,6 +52,23 @@ GitHub comment skill, modify the skill registry, modify graph execution,
 modify approval/resume behavior, modify API routes, wire real-mode
 configuration, wire repository allowlist policy, load GitHub tokens, or make
 GitHub network calls.
+
+## A3.3 Approval-Gated GitHub Comment Skill
+
+A3.3 adds exactly one local/demo GitHub issue-comment skill/tool path:
+
+- `post_github_issue_comment`
+- scalar arguments: `repository`, `issue_number`, `comment_body`
+- default trusted repository allowlist: `Harry5174/learn-agentic-ai`
+- high-risk approval before fake-client execution
+- `validated_arguments_hash` and deterministic `side_effect_id`
+- `InMemorySideEffectLedger` check before fake-client call
+- duplicate succeeded ledger hits skip the fake-client call
+- fake-client success/failure is recorded and audited
+
+A3.3 remains local/demo. It does not add a real GitHub API adapter, automatic
+token loading, real-mode configuration, workflow dispatch, PR creation, repo
+file writes, durable replay protection, or arbitrary repository targeting.
 
 ## Inherited Artifact 2 Foundation
 
@@ -112,19 +130,18 @@ untrusted, and the harness validates before policy, approval, or execution.
 
 ## Near-Term Follow-Ups
 
-Useful next steps after A3.2:
+Useful next steps after A3.3:
 
-- A3.3 runtime integration work only if explicitly approved and scoped against
-  the A3.1/A3.2 boundaries
-- future tool name: `post_github_issue_comment`
-- future scalar arguments: `repository`, `issue_number`, and `comment_body`
+- stronger persisted approval binding for validated action hashes and
+  side-effect ids
+- future real-mode design only after a separate explicit approval gate
 - richer argument schema support only after an explicit future design pass
 
 ## Future Integration Paths
 
 Possible future work:
 
-- approval-gated GitHub issue comments
+- real GitHub issue comments behind the existing approval-gated shape
 - MCP adapter after skill/tool contracts stabilize
 - OAuth/OIDC identity integration
 - durable task/run persistence
@@ -135,15 +152,16 @@ Possible future work:
 
 ## Still Out Of Scope
 
-- real GitHub side effects in A3.2
-- real GitHub client code in A3.2
-- runtime use of the A3.2 fake GitHub client in skill execution
-- runtime use of the A3.2 side-effect ledger in skill execution
-- `post_github_issue_comment` implementation in A3.2
-- approval-gated GitHub comment skill in A3.2
-- real-mode configuration in A3.2
-- repository allowlist runtime policy in A3.2
-- durable side-effect ledger in A3.2
+- real GitHub side effects
+- real GitHub client code
+- second GitHub tool
+- workflow dispatch
+- PR creation
+- repo file writes
+- branch creation
+- issue creation
+- real-mode configuration
+- durable side-effect ledger
 - autonomous production writes without approval
 - broad chatbot or RAG features
 - multi-agent behavior
