@@ -24,6 +24,9 @@ shapes, repository bypass attempts, approval bypass attempts, duplicate
 execution attempts, and fake-client failures stay inside the local/demo safety
 boundary.
 
+A3.5 packages the README, GitHub comment demo, comparison notes, status pages,
+and portfolio framing for review.
+
 The core idea is:
 
 ```text
@@ -210,6 +213,24 @@ A3.4 does not add real GitHub execution, token loading, durable persistence,
 OAuth/OIDC, MCP, frontend, object/list/nested argument support, partial
 argument acceptance, or production deployment.
 
+## What A3.5 Adds
+
+A3.5 is the demo and portfolio packaging sprint.
+
+It adds:
+
+- README as the Artifact 3 portfolio entry point
+- GitHub comment demo walkthrough
+- Artifact 2 vs Artifact 3 comparison
+- final status and roadmap framing
+- limitations and interview-note cleanup
+- final evidence summary
+
+It does not add runtime behavior. The GitHub comment demo clearly separates
+public HTTP commands from representative/test-backed GitHub-comment lifecycle
+evidence because the public HTTP API cannot select that fake proposer scenario
+from curl.
+
 ## Why Policy Is Still Needed
 
 Validation answers:
@@ -299,3 +320,18 @@ This is not merely an LLM tool-use demo.
 It is a harness that accepts model-proposed skill plans and runtime arguments
 while keeping identity, authorization, approval, argument validation,
 execution, and audit in deterministic application layers.
+
+For Artifact 3 specifically:
+
+```text
+Artifact 3 demonstrates a local/demo approval-gated GitHub issue-comment
+harness path where model-proposed scalar arguments are validated, repository
+policy is checked, approval is required, side-effect idempotency is checked
+with an in-memory ledger, fake-client execution is used, and audit evidence is
+recorded.
+```
+
+Production-grade follow-up work would require a separately approved real-mode
+design, durable run/audit/ledger storage, stronger persisted approval binding,
+production identity integration, operational controls, and explicit rollout
+procedures.

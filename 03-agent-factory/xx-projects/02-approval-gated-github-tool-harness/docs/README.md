@@ -23,6 +23,9 @@ GitHub comment path. It proves smuggling, unsupported payload, policy bypass,
 approval bypass, replay, fake-client failure, network/token, and audit
 completeness behavior without adding real GitHub execution.
 
+A3.5 packages the demo and portfolio evidence for Artifact 3. It does not add
+runtime behavior.
+
 Artifact 3 still has not implemented real GitHub API execution.
 
 Artifact 2.1 is the Skill Runner API and Demo Surface. It is complete as a
@@ -34,8 +37,10 @@ and keeps raw proposed arguments out of `ToolRegistry.execute()`.
 
 ## Start Here
 
-- [Project status](status/project-status.md): current Artifact 3 A3.3
-  approval-gated fake-client GitHub comment skill status.
+- [Project status](status/project-status.md): current Artifact 3 A3.5
+  demo and portfolio packaging status.
+- [GitHub comment tool demo](demos/github-comment-tool-demo.md): Artifact 3
+  local/demo GitHub comment walkthrough and test-backed evidence.
 - [Artifact 3 real tool boundary](specs/artifact-3-real-tool-boundary.md):
   future real side-effect boundary for approval-gated GitHub issue comments.
 - [Skill-runner API demo](demos/skill-runner-api-demo.md): primary Artifact 2.1
@@ -63,6 +68,8 @@ and keeps raw proposed arguments out of `ToolRegistry.execute()`.
 
 ## Demo Guides
 
+- [GitHub comment tool demo](demos/github-comment-tool-demo.md): Artifact 3
+  approval-gated fake-client GitHub comment walkthrough.
 - [Skill-runner API demo](demos/skill-runner-api-demo.md): primary Artifact 2.1
   demo guide.
 - [Task API demo](demos/task-api-demo.md): inherited task-harness demo.
@@ -88,6 +95,7 @@ and keeps raw proposed arguments out of `ToolRegistry.execute()`.
 - [Roadmap](status/roadmap.md)
 - [Known limitations](status/known-limitations.md)
 - [Interview notes](status/interview-notes.md)
+- [Artifact 2 vs Artifact 3](comparisons/artifact-2-vs-artifact-3.md)
 - [Artifact 1 vs Artifact 2](comparisons/artifact-1-vs-artifact-2.md)
 
 ## Process And Specs
@@ -115,6 +123,8 @@ and keeps raw proposed arguments out of `ToolRegistry.execute()`.
 - A3.3 adds one approval-gated fake-client GitHub issue-comment skill.
 - A3.4 adds adversarial tests and evidence for the A3.3 fake-client GitHub
   comment boundary.
+- A3.5 adds demo and portfolio packaging for the completed local/demo Artifact
+  3 evidence.
 - Artifact 3 has not implemented real GitHub API execution.
 - A3.1 defines the future boundary for an approval-gated GitHub issue-comment
   tool named `post_github_issue_comment`.

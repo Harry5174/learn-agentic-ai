@@ -23,6 +23,9 @@ real GitHub API execution.
 A3.4 adds adversarial safety tests and documentation for the A3.3 fake-client
 path. It does not add real GitHub API execution.
 
+A3.5 packages the demo and portfolio evidence for the completed local/demo
+Artifact 3 boundary. It does not add runtime behavior.
+
 The goal is to document the future contract before any real GitHub write path
 exists, so later A3.x implementation work can stay narrow, auditable, and
 fail-closed.

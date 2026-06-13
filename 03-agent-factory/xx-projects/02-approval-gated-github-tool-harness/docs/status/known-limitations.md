@@ -16,6 +16,9 @@ A3.4 adds adversarial tests for that path. These tests improve evidence around
 the local/demo safety boundary, but they do not turn the project into
 production security infrastructure.
 
+A3.5 packages the demo and portfolio evidence. It does not change the
+local/demo runtime boundary.
+
 Artifact 2.2 remains the completed dry-run scalar argument validation artifact.
 The current Artifact 3 baseline still inherits Artifact 2.2 local/demo dry-run
 scalar argument validation behavior.
@@ -64,6 +67,7 @@ Current local/demo limitations:
 - skill-run approval and rejection use demo API-key identity
 - default HTTP skill-run creation uses fake proposer mode
 - HTTP `proposer_mode: "llm"` is disabled and rejected with `400`
+- public HTTP cannot select the GitHub-comment fake proposer scenario from curl
 - default curl requests cannot select invalid or high-risk fake proposer
   scenarios
 
@@ -84,6 +88,10 @@ A3.4 tests argument smuggling, unsupported payloads, repository bypass
 attempts, approval bypass attempts, replay behavior, fake-client failure
 safety, network/token safety, and audit evidence for that fake-client path.
 The tests did not require implementation hardening.
+
+A3.5 adds a GitHub comment demo guide, but the GitHub-comment lifecycle examples
+are representative/test-backed where the public API cannot trigger that
+scenario directly.
 
 Not implemented:
 

@@ -6,7 +6,8 @@ project, then uses A3.1 to define the future real side-effect boundary before
 any GitHub write path is implemented. A3.2 adds isolated supporting
 boundaries. A3.3 wires those boundaries into one approval-gated local/demo
 GitHub issue-comment skill path using the fake client only. A3.4 adds
-adversarial safety evidence for that one fake-client side-effect path.
+adversarial safety evidence for that one fake-client side-effect path. A3.5
+packages the demo and portfolio evidence.
 
 For the project-level sequencing rules, see
 [../specs/constitution/roadmap.md](../specs/constitution/roadmap.md).
@@ -69,7 +70,7 @@ A3.3 adds exactly one local/demo GitHub issue-comment skill/tool path:
 
 A3.3 remains local/demo. It does not add a real GitHub API adapter, automatic
 token loading, real-mode configuration, workflow dispatch, PR creation, repo
-file writes, durable replay protection, or arbitrary repository targeting.
+file writes, persistent replay guarantees, or arbitrary repository targeting.
 
 ## A3.4 Real Tool Safety / Adversarial Suite
 
@@ -94,6 +95,24 @@ creation, branch creation, issue creation, repo file writes, durable
 persistence, MCP, OAuth/OIDC, frontend, live LLM HTTP mode, object/list/nested
 support, partial argument acceptance, production deployment, or autonomous real
 execution.
+
+## A3.5 Demo And Portfolio Packaging
+
+A3.5 packages the completed local/demo Artifact 3 evidence.
+
+It adds or updates:
+
+- README portfolio entry-point framing
+- GitHub comment demo walkthrough
+- Artifact 2 vs Artifact 3 comparison
+- status, roadmap, limitations, and interview notes
+- architecture/spec consistency wording
+- final evidence summary
+
+A3.5 is documentation/demo packaging only. It does not add runtime behavior,
+real GitHub network execution, token loading, a real GitHub client, another
+GitHub tool, durable persistence, frontend, OAuth/OIDC, MCP, live HTTP LLM
+mode, production deployment, or autonomous real execution.
 
 ## Inherited Artifact 2 Foundation
 
@@ -155,17 +174,17 @@ untrusted, and the harness validates before policy, approval, or execution.
 
 ## Near-Term Follow-Ups
 
-Useful next steps after A3.4:
+Useful next steps after A3.5:
 
 - stronger persisted approval binding for validated action hashes and
   side-effect ids
 - future real-mode design only after a separate explicit approval gate
 - richer argument schema support only after an explicit future design pass
 
-After A3.4, those follow-ups remain future design work. The adversarial suite
-adds evidence around the current local/demo boundary but does not remove the
-need for stronger persisted approval binding or durable replay protection
-before any future real GitHub write path.
+After A3.5, those follow-ups remain future design work. The packaged demo and
+adversarial evidence clarify the current local/demo boundary but do not remove
+the need for stronger persisted approval binding or persistent replay
+guarantees before any future real GitHub write path.
 
 ## Future Integration Paths
 

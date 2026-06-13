@@ -15,17 +15,18 @@ Identity is server-derived, policy is deterministic, and high-risk execution can
 
 Artifact 2 applies that invariant to model-shaped skill proposals.
 
-## Artifact 2 Flow
+## Artifact 2 / Artifact 3 Flow
 
 ```text
 Client/task
 -> proposer
 -> SkillProposal
 -> ProposalValidator
+-> validated scalar arguments
 -> SkillRegistry
 -> policy guard
 -> approval gate
--> dry-run ToolRegistry
+-> dry-run ToolRegistry / fake GitHub client
 -> audit
 -> SkillRunResult
 ```
@@ -47,6 +48,8 @@ Client/task
 
 - `src/app/identity/`: demo API-key identity resolver and identity schemas.
 - `src/app/tools/`: dry-run tool registry and controlled tool functions.
+- `src/app/github/`: GitHub issue-comment protocol, schemas, and fake client.
+- `src/app/side_effects/`: side-effect id helpers and in-memory ledger.
 - `src/app/policy/`: deterministic policy guard.
 - `src/app/approval/`: approval request and decision schemas.
 - `src/app/audit/`: structured audit event schemas and helpers.
@@ -221,12 +224,42 @@ This means:
 
 ## Tool Argument Limitation
 
-Skill specs include argument-schema metadata, but the current skill execution
-graph uses harness-owned default arguments for registered dry-run tools.
+Skill specs include argument-schema metadata. Artifact 2.2 validates
+model-proposed runtime arguments into `ValidatedSkillPlan`, and the skill
+execution graph passes accepted scalar arguments to registered tools.
 
-Validation currently covers the skill, version, steps, tool names, scopes, and
-risk. Full validation and execution of model-proposed runtime tool arguments is
-future work.
+Artifact 3 uses that scalar argument boundary for the one local/demo
+`post_github_issue_comment` path. Only validated `repository`, `issue_number`,
+and `comment_body` values can reach the fake-client execution boundary.
+
+Current argument limits remain:
+
+- scalar string/integer/boolean values only
+- no object/list/nested argument support
+- no arbitrary JSON payload validation
+- no partial acceptance of mixed valid and invalid argument plans
+
+## GitHub Comment Side-Effect Boundary
+
+Artifact 3 adds one approval-gated fake-client GitHub issue-comment path:
+
+```text
+post_github_issue_comment
+```
+
+The path adds:
+
+- repository allowlist policy
+- high-risk approval gate
+- `validated_arguments_hash`
+- deterministic `side_effect_id`
+- `InMemorySideEffectLedger`
+- `FakeGitHubIssueCommentClient`
+- GitHub-comment audit evidence
+
+This is local/demo simulated execution. The architecture does not include a
+real GitHub client, token loading, real network calls, durable audit storage,
+or durable ledger storage.
 
 ## Non-Goals
 

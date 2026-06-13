@@ -17,6 +17,9 @@
 **A3.4 status:** Adversarial safety suite for the A3.3 GitHub comment
 side-effect boundary.
 
+**A3.5 status:** Demo and portfolio packaging for the completed local/demo
+Artifact 3 evidence.
+
 **Principle:** The LLM proposes. The harness validates, authorizes,
 approval-gates, executes, and audits.
 
@@ -53,6 +56,10 @@ repository policy bypass attempts, approval bypass attempts, approval-binding
 mutation behavior within the current architecture, replay and duplicate
 execution behavior, fake-client failure safety, network/token safety, and audit
 completeness. No implementation hardening was required by the A3.4 suite.
+
+A3.5 packages the README, GitHub comment demo, comparison docs, status pages,
+and portfolio notes so Artifact 3 can be reviewed without implying real GitHub
+execution or production security infrastructure.
 
 Artifact 3 still does not implement real GitHub API execution.
 
@@ -106,6 +113,8 @@ Implemented:
   unsupported payloads, policy/approval bypass attempts, approval-binding
   mutation behavior, replay/duplicate execution, fake-client failure safety,
   network/token checks, and audit completeness
+- A3.5 portfolio packaging, including a GitHub comment demo guide, Artifact 2
+  vs Artifact 3 comparison, updated README, and final evidence summary
 
 Historical note: Artifact 2.1 included E1.3 documentation, demo walkthrough,
 and portfolio packaging work. Current status: Artifact 2.2 is complete within
@@ -123,7 +132,8 @@ The copied baseline still includes the Artifact 2 foundation sprint specs:
 Artifact 2.1 extends that foundation with the skill-runner API lifecycle.
 A3.2 adds isolated supporting boundary modules. A3.3 adds one approval-gated
 local/demo GitHub issue-comment tool and skill. A3.4 adds adversarial evidence
-for that fake-client side-effect boundary.
+for that fake-client side-effect boundary. A3.5 packages the completed
+local/demo demo and portfolio evidence.
 
 Copied Artifact 1 sprint specs that could mislead future IDE agents are archived
 under:
@@ -314,6 +324,44 @@ GitHub token loading and no real network implementation.
 
 A3.4 did not add real GitHub execution, durable persistence, a second GitHub
 tool, or broader automation behavior.
+
+## A3.5 Demo And Portfolio Packaging Status
+
+A3.5 adds or updates documentation only:
+
+- README as the Artifact 3 portfolio entry point
+- `docs/demos/github-comment-tool-demo.md`
+- `docs/comparisons/artifact-2-vs-artifact-3.md`
+- status, roadmap, limitations, interview, architecture, spec, and adversarial
+  documentation consistency updates
+
+The GitHub comment demo separates runnable public HTTP commands from
+representative/test-backed GitHub-comment lifecycle evidence. This is necessary
+because the default public HTTP API can list the registered
+`post_github_issue_comment` skill, but it does not expose a request field that
+selects the GitHub-comment fake proposer scenario from curl.
+
+A3.5 does not add runtime behavior, real GitHub execution, token loading,
+durable persistence, frontend, OAuth/OIDC, MCP, or a second GitHub tool.
+
+## Final Artifact 3 Evidence Summary
+
+- A3.0: baseline copy and rename from the completed Artifact 2.2 project.
+- A3.1: real side-effect boundary specification only.
+- A3.2: isolated GitHub issue-comment client and side-effect ledger
+  boundaries.
+- A3.3: one approval-gated local/demo GitHub issue-comment skill path using
+  validated scalar arguments, repository policy, approval, in-memory ledger
+  checks, fake-client execution, and audit evidence.
+- A3.4: adversarial safety suite for smuggling, unsupported payloads, policy
+  bypass attempts, approval bypass attempts, replay behavior, fake-client
+  failure behavior, network/token safety, and audit completeness.
+- A3.5: demo and portfolio packaging for the completed local/demo evidence.
+
+Latest A3.5 validation evidence:
+
+- `uv run pytest`: 449 tests passed
+- `uv run ruff check .`: all checks passed
 
 ## Current Limitation To Keep Visible
 

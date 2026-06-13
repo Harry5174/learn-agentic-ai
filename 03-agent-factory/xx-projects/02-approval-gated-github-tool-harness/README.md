@@ -24,6 +24,9 @@ unsupported payloads, repository policy bypass attempts, approval bypass
 attempts, approval-binding mutation behavior, replay suppression, fake-client
 failure behavior, network/token safety, and audit completeness.
 
+A3.5 packages the completed Artifact 3 demo, documentation, and portfolio
+evidence. It does not add runtime capability.
+
 Artifact 3 still has not implemented real GitHub API execution.
 
 Repository folder numbering was applied after the original A3.0 copy/rename
@@ -50,6 +53,24 @@ This is a portfolio artifact for AI/backend interviews and agentic software
 learning. It demonstrates a narrow approval-gated GitHub issue-comment skill
 path while keeping real network execution disabled.
 
+The problem it demonstrates is the core agent safety split:
+
+```text
+model-shaped proposal
+-> proposal validation
+-> scalar argument validation
+-> repository policy
+-> approval gate
+-> side_effect_id computation
+-> in-memory ledger check
+-> fake GitHub client
+-> audit evidence
+```
+
+The model-shaped proposal can suggest work, but it cannot grant identity,
+choose trusted tools, bypass policy, approve itself, provide credentials, or
+trigger real GitHub execution.
+
 Inherited baseline capabilities include:
 
 - structured skill contracts and trusted skill registry metadata
@@ -72,6 +93,8 @@ Inherited baseline capabilities include:
 - A3.4 adversarial safety tests for the GitHub comment side-effect boundary,
   including smuggling, unsupported payloads, policy/approval bypass attempts,
   replay behavior, failure safety, network/token checks, and audit evidence
+- A3.5 demo and portfolio packaging for the completed local/demo Artifact 3
+  evidence
 
 Artifact 3 A3.1 defines the future boundary for an approval-gated GitHub
 issue-comment tool named `post_github_issue_comment` with scalar arguments
@@ -110,7 +133,13 @@ uv run pytest
 uv run ruff check .
 ```
 
-Run the local API:
+Run the local API with the repo-supported console script:
+
+```bash
+uv run app
+```
+
+Equivalent direct uvicorn form:
 
 ```bash
 uv run uvicorn app.api.main:app --reload
@@ -130,9 +159,21 @@ Demo API keys:
 
 These are static local/demo credentials, not production identity.
 
-## Primary Demo
+## Primary Demos
 
-The inherited primary demo is still the Artifact 2.1 skill-runner API:
+Start with the Artifact 3 GitHub comment demo:
+
+- [GitHub comment tool demo](docs/demos/github-comment-tool-demo.md)
+
+That guide separates public HTTP commands from representative, test-backed
+GitHub-comment evidence. The public HTTP API can list the registered GitHub
+comment skill, but the default running API does not expose a request field that
+selects the GitHub-comment fake proposer scenario from curl. The approval,
+rejection, policy-denial, replay, and audit examples for that path are
+therefore labeled as test-backed or representative where appropriate.
+
+The inherited Artifact 2.1 skill-runner API demo remains useful for runnable
+public HTTP lifecycle commands:
 
 - `GET /skills`
 - `POST /skill-runs`
@@ -141,7 +182,7 @@ The inherited primary demo is still the Artifact 2.1 skill-runner API:
 - `POST /skill-runs/{run_id}/reject`
 - `GET /skill-runs/{run_id}/audit`
 
-Start with [docs/demos/skill-runner-api-demo.md](docs/demos/skill-runner-api-demo.md).
+See [docs/demos/skill-runner-api-demo.md](docs/demos/skill-runner-api-demo.md).
 
 The inherited Artifact 1-style task API is still available and documented at
 [docs/demos/task-api-demo.md](docs/demos/task-api-demo.md).
@@ -153,6 +194,7 @@ Use [docs/README.md](docs/README.md) as the documentation index.
 High-value entry points:
 
 - [Project constitution](docs/specs/constitution/mission.md)
+- [GitHub comment tool demo](docs/demos/github-comment-tool-demo.md)
 - [Artifact 3 real tool boundary](docs/specs/artifact-3-real-tool-boundary.md)
 - [Skill-runner API contract](docs/api/skill-runner-api.md)
 - [Inherited task API reference](docs/api/task-api.md)
@@ -199,4 +241,17 @@ This remains a local/demo artifact with process-local state, in-memory
 checkpointing, in-memory audit/rate limits, fake-client GitHub comment
 simulation, and no durable persistence. A3.3 does not add object/list/nested
 argument support, partial acceptance, live HTTP LLM mode, MCP, OAuth/OIDC,
-database persistence, durable replay protection, or real GitHub writes.
+database persistence, persistent replay guarantees, or real GitHub writes.
+
+The final Artifact 3 claim is intentionally narrow:
+
+```text
+Artifact 3 demonstrates a local/demo approval-gated GitHub issue-comment
+harness path where model-proposed scalar arguments are validated, repository
+policy is checked, approval is required, side-effect idempotency is checked
+with an in-memory ledger, fake-client execution is used, and audit evidence is
+recorded.
+```
+
+Fake client execution only. No real GitHub API call. No token required. No
+network call.

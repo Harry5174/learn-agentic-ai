@@ -201,6 +201,9 @@ The A3.4 adversarial suite did not require implementation hardening. The tests
 confirmed the A3.3 fake-client path rejects unsafe inputs before execution and
 keeps fake-client calls behind validation, policy, approval, and ledger checks.
 
+A3.5 packages this evidence into the Artifact 3 demo and portfolio
+documentation. It does not add new runtime behavior.
+
 ## What Remains Local/Demo
 
 A3.4 does not change the current product boundary. The project still uses:
@@ -210,7 +213,7 @@ A3.4 does not change the current product boundary. The project still uses:
 - in-memory side-effect ledger
 - static demo API-key identities
 - fake-client GitHub comment simulation
-- no durable replay protection
+- no persistent replay guarantees
 - no real GitHub network execution
 - no automatic GitHub token loading
 
