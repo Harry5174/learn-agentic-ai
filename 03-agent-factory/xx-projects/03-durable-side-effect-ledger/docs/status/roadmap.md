@@ -19,7 +19,11 @@ A4.0 includes:
 
 A4.0 does not implement SQLite persistence, durable runtime behavior, real GitHub execution, or token loading.
 
-Status: Current sprint.
+Status: Completed.
+
+## A4.1 SQLite Side-Effect Ledger
+
+A4.1 implements the first slice of durable state.
 
 Scope implemented:
 
@@ -30,52 +34,55 @@ Scope implemented:
 
 A4.1 does not integrate the ledger into the runtime execution path.
 
+Status: Completed.
+
 ## A4.2 Durable Approval Binding
 
-Future work only.
+A4.2 implements durable approval binding backed by SQLite.
 
-Potential scope:
+Scope implemented:
 
-- persist approval against `side_effect_id` and `validated_arguments_hash`
-- require matching approved approval binding before execution
-- fail closed on mismatched approval binding
-- preserve blocked vs rejected semantics
+- `ApprovalBindingStatus` enum (pending, approved, rejected, expired) separate from `DurableSideEffectStatus`
+- `ApprovalBindingRecord` model
+- `DurableApprovalBindingStore` with full create/read/transition/assertion methods
+- `approval_bindings` table with UNIQUE constraint on side_effect_id
+- domain-level approval-to-side-effect matching (run_id, skill_id, step_id, tool_name, validated_arguments_hash)
+- one approval binding per side_effect_id in V1
+- approve/reject update both approval_bindings and side_effect_records in a single SQLite transaction
+- expired approval does not mutate side_effect_records status
+- `assert_approved_for_action` pure read check for exact side_effect_id + validated_arguments_hash
+- 9 controlled domain error types
+- re-instantiation persistence test for approval bindings
 
-## A4.3 Standalone Persistence Proof
+A4.2 does not implement durable audit store. A4.2 does not integrate with graph/service execution. A4.2 does not provide full restart-safe side-effect execution. A4.2 does not execute fake client. A4.2 does not execute real GitHub calls.
 
-Future work only.
+A4.2 proves approval bindings can persist in SQLite and authorize only the exact side_effect_id and validated_arguments_hash after store re-instantiation.
 
-Acceptance requirement:
+Status: Completed.
 
-```text
-1. Open SQLite file.
-2. Write one side_effect_record.
-3. Close/discard repository object.
-4. Open a new repository object against the same SQLite file.
-5. Read the same record back.
-```
-
-This must be proven before graph/service integration.
-
-## A4.4 Graph Integration
-
-Future work only.
-
-Integrate the `DurableSideEffectLedger` and `DurableApprovalBindingStore` into the main execution path.
-
-## A4.5 Restart-Replay Proof
+## A4.3 Graph Integration and Restart-Replay Proof
 
 Future work only.
 
 Potential scope:
 
-- execute once through fake client
+- integrate `DurableApprovalBindingStore` and `DurableSideEffectLedger` into the main execution path
+- execute once with fake client
 - persist succeeded side-effect evidence
 - restart with a fresh repository/service object against the same SQLite file
 - replay the same side-effect ID
 - prove fake client is not called again
 - return skipped duplicate / already succeeded evidence
-- persist durable audit explanation
+
+## A4.4 Durable Audit Store
+
+Future work only.
+
+Potential scope:
+
+- `durable_audit_events` table
+- `DurableAuditStore`
+- persist durable audit explanation for lifecycle events
 
 ## Still Out Of Scope
 

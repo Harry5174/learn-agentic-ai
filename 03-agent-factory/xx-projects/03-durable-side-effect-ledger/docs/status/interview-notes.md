@@ -12,22 +12,33 @@ Artifact 4 asks the next safety question:
 If the same approved side effect is replayed after process restart, can the harness prove it will not execute twice?
 ```
 
-A4.0 does not implement that behavior yet. It creates the Artifact 4 baseline and defines the durable-state specification before implementation.
+A4.1 implements a SQLite-backed side-effect ledger. A4.2 implements durable approval binding. Together they prove that side-effect records and approval bindings can persist in SQLite and survive store re-instantiation.
 
-## What A4.0 Adds
+## What A4.1 Adds
 
-A4.0 adds docs/specification only:
+A4.1 adds the SQLite-backed `DurableSideEffectLedger`:
 
-- Artifact 4 project identity
-- durable-state mission
-- SQLite storage decision for future work
-- side-effect record schema
-- approval binding schema
-- durable audit event schema
-- status lifecycle and transitions
-- restart-replay semantics
-- standalone SQLite persistence proof requirement
-- persistence-boundary architecture
+- `side_effect_records` table with full lifecycle
+- domain-driven status transitions (planned, approved, executing, succeeded, failed, skipped_duplicate, rejected, blocked)
+- terminal state protection
+- re-instantiation persistence test
+
+## What A4.2 Adds
+
+A4.2 adds the SQLite-backed `DurableApprovalBindingStore`:
+
+- `approval_bindings` table with UNIQUE constraint on `side_effect_id`
+- `ApprovalBindingStatus` enum (pending, approved, rejected, expired) separate from `DurableSideEffectStatus`
+- `ApprovalBindingRecord` model
+- domain-level approval-to-side-effect matching on run_id, skill_id, step_id, tool_name, and validated_arguments_hash
+- one approval binding per side_effect_id enforced for V1
+- approve/reject update both approval_bindings and side_effect_records in a single SQLite transaction
+- expired approval does not mutate side-effect status (documented design decision)
+- `assert_approved_for_action` pure read check for exact side_effect_id + validated_arguments_hash
+- 9 controlled domain error types
+- re-instantiation persistence test for approval bindings
+
+A4.2 does not implement durable audit store. A4.2 does not integrate with graph/service execution. A4.2 does not provide full restart-safe side-effect execution. A4.2 does not execute fake client. A4.2 does not execute real GitHub calls.
 
 ## What Remains Inherited
 
@@ -47,7 +58,7 @@ Real GitHub execution remains out of scope.
 
 Approval must bind to the exact validated action.
 
-Future execution must require:
+Execution must require:
 
 ```text
 approval_status = approved
@@ -57,11 +68,13 @@ same validated_arguments_hash
 
 That prevents an approval for one action from authorizing a mutated repository, issue number, comment body, tool, step, or side-effect ID.
 
+A4.2 proves this invariant at the store level. Graph/service integration will enforce it at the execution level in a future sprint.
+
 ## Why SQLite First
 
 SQLite is the planned Artifact 4 persistence boundary because it is local, file-backed, deterministic in tests, and available through Python stdlib `sqlite3`.
 
-A4.0 does not add SQLite code. Future work should first prove standalone persistence before graph/service integration.
+A4.1 added SQLite code for the side-effect ledger. A4.2 adds SQLite code for approval bindings. Both stores have been proven to survive re-instantiation with the same SQLite file.
 
 ## Strong Interview Framing
 
@@ -69,8 +82,8 @@ This is not a real GitHub automation tool and not production infrastructure.
 
 It is a staged harness design showing how model-proposed side effects should be validated, approval-bound, recorded, replay-checked, and audited before any real external write is enabled.
 
-A4.0 is the design checkpoint. Runtime durable persistence comes later only after review.
+A4.2 proves the approval binding invariant at the persistence level. Full restart-safe execution comes later in A4.3.
 
 ## Current Non-Implementation Line
 
-A4.0 did not add SQLite implementation, durable ledger runtime code, durable approval binding runtime code, durable audit store runtime code, graph/service behavior changes, API behavior changes, a real GitHub client, token loading, OAuth/OIDC, MCP, frontend, deployment, or production-readiness claims.
+A4.2 did not add durable audit store runtime code, graph/service behavior changes, API behavior changes, a real GitHub client, token loading, OAuth/OIDC, MCP, frontend, deployment, or production-readiness claims.

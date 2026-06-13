@@ -6,6 +6,8 @@ A4.0 defines durable-state semantics for Artifact 4 - Durable Side-Effect Ledger
 
 A4.1 implements the `DurableSideEffectLedger` backed by SQLite. A4.1 does not add durable approval binding. A4.1 does not add real GitHub execution. A4.1 does not add token loading. A4.1 does not make the project production-ready.
 
+A4.2 implements the `DurableApprovalBindingStore` backed by SQLite. A4.2 persists approval decisions against exact `side_effect_id` and `validated_arguments_hash`. A4.2 does not add durable audit store. A4.2 does not integrate with graph/service execution. A4.2 does not provide full restart-safe side-effect execution. A4.2 does not execute fake client. A4.2 does not execute real GitHub calls.
+
 This spec defines the records, approval bindings, state transitions, restart-replay guarantees, and future acceptance requirements that must exist before the harness can safely move toward real side effects.
 
 ## 2. Durable-State Mission
@@ -35,6 +37,8 @@ SQLite is the persistence boundary for Artifact 4. Fake GitHub client remains th
 
 The future durable stores must be owned by harness code, not model output. Model-proposed arguments remain untrusted until validated by existing registry and proposal-validation layers.
 
+A4.1 implements `DurableSideEffectLedger`. A4.2 implements `DurableApprovalBindingStore`. Both are backed by SQLite. Graph/service integration is deferred to a future sprint.
+
 ## 4. Storage Decision
 
 Artifact 4 V1 should use SQLite.
@@ -46,11 +50,11 @@ Implementation guidance for future sprints:
 - use temporary SQLite files in tests
 - do not use Postgres, Redis, Docker Compose, or cloud infrastructure
 
-A basic SQLite ledger implementation exists in A4.1, but is not yet wired into the graph/service.
+A basic SQLite ledger implementation exists in A4.1. A durable approval binding store exists in A4.2. Neither is yet wired into the graph/service.
 
 ## 5. Side-Effect Record Schema
 
-Future conceptual table/record:
+Table:
 
 ```text
 side_effect_records
@@ -85,29 +89,33 @@ Decision: do not store full `comment_body` by default in V1. Store `comment_body
 
 If full comment body storage is needed later, it requires separate approval.
 
+Implemented in A4.1.
+
 ## 6. Approval Binding Schema
 
-Future conceptual table/record:
+Table:
 
 ```text
 approval_bindings
 ```
 
-Minimum fields:
+Fields:
 
 ```text
-approval_id
-run_id
-skill_id
-step_id
-tool_name
-side_effect_id
-validated_arguments_hash
-approval_status
-approved_by
-reason
-created_at
-decided_at
+approval_id TEXT PRIMARY KEY
+run_id TEXT NOT NULL
+skill_id TEXT NOT NULL
+step_id TEXT NOT NULL
+tool_name TEXT NOT NULL
+side_effect_id TEXT NOT NULL UNIQUE
+validated_arguments_hash TEXT NOT NULL
+approval_status TEXT NOT NULL
+requested_by TEXT
+decided_by TEXT
+reason TEXT
+created_at TEXT NOT NULL
+decided_at TEXT
+expires_at TEXT
 ```
 
 Critical invariant:
@@ -117,6 +125,68 @@ Execution requires approval_status = approved for the same side_effect_id and va
 ```
 
 Approval of one validated action must not authorize a later mutation of repository, issue number, comment body, tool name, skill ID, step ID, or side-effect ID.
+
+Constraints:
+- `approval_id` is PRIMARY KEY (unique)
+- `side_effect_id` has UNIQUE constraint (one binding per side effect in V1)
+- No SQL-level foreign key — domain-level checks enforce the relationship
+
+Implemented in A4.2.
+
+## 6.1 Approval Binding Status Lifecycle
+
+`ApprovalBindingStatus` is a separate enum from `DurableSideEffectStatus` and from the existing graph-level `ApprovalStatus`.
+
+Values:
+
+```text
+pending
+approved
+rejected
+expired
+```
+
+Terminal statuses:
+
+```text
+approved
+rejected
+expired
+```
+
+Allowed transitions:
+
+```text
+pending -> approved
+pending -> rejected
+pending -> expired
+```
+
+Forbidden transitions:
+
+```text
+approved -> rejected
+approved -> expired
+rejected -> approved
+expired -> approved
+expired -> rejected
+```
+
+## 6.2 Approval-to-Side-Effect Interaction
+
+When approval is decided, the following side-effect status updates apply:
+
+```text
+approved -> side_effect_records planned -> approved
+rejected -> side_effect_records planned -> rejected
+expired -> side_effect_records remains planned (no mutation)
+```
+
+V1 design decision: expired approval does not mutate side_effect_records status. Expired is an approval-binding state, not a side-effect execution state.
+
+Approve and reject transitions update both `approval_bindings` and `side_effect_records` in a single SQLite transaction to avoid partial state.
+
+Implemented in A4.2.
 
 ## 7. Durable Audit Event Schema
 
@@ -140,6 +210,8 @@ created_at
 ```
 
 This is not a production compliance-grade audit system. It is a local/demo durable evidence store for side-effect lifecycle events.
+
+Not yet implemented.
 
 ## 8. Status Lifecycle
 
@@ -240,19 +312,21 @@ Core proof sequence:
 
 A restart-replay test must instantiate a fresh repository/service object against the same SQLite file. Calling the same object twice is not sufficient.
 
+Not yet fully proven. A4.2 proves approval binding persistence across re-instantiation. Full restart-replay proof is deferred to A4.3.
+
 ## 11. Standalone Persistence Proof
 
-A4.3 must first prove raw SQLite persistence before graph/service integration:
+Proven in A4.1 for side-effect records and in A4.2 for approval bindings:
 
 ```text
 1. Open SQLite file.
-2. Write one side_effect_record.
-3. Close/discard repository object.
-4. Open a new repository object against the same SQLite file.
+2. Write one side_effect_record / approval_binding.
+3. Close/discard repository/store object.
+4. Open a new repository/store object against the same SQLite file.
 5. Read the same record back.
 ```
 
-This is proven in A4.1 `tests/test_durable_side_effect_ledger.py`.
+Both `tests/test_durable_side_effect_ledger.py` and `tests/test_durable_approval_binding.py` contain re-instantiation persistence tests.
 
 ## 12. Failure Behavior
 
@@ -271,7 +345,7 @@ Failure metadata must avoid secrets and full sensitive payloads. A redacted fail
 
 ## 13. Non-Goals
 
-A4.1 and Artifact 4 V1 durable-state work explicitly exclude:
+Artifact 4 V1 durable-state work explicitly excludes:
 
 ```text
 real GitHub API calls
@@ -296,46 +370,49 @@ production audit claims
 production readiness
 ```
 
-## 14. Future Implementation Acceptance Checklist
+## 14. Implementation Acceptance Checklist
 
 This checklist tracks the implementation of Artifact 4.
 
-### A4.1 Durable-State Contracts
+### A4.1 SQLite Side-Effect Ledger (Completed)
 
 - Define small durable repository interfaces.
-- Define record models for side-effect records, approval bindings, and durable audit events.
+- Define record models for side-effect records.
 - Keep models local/demo and SQLite-oriented.
-- Do not wire runtime graph/service behavior yet unless separately approved.
-
-### A4.2 SQLite Repository Skeleton
-
-- Add SQLite-backed repository classes using stdlib `sqlite3`.
-- Create tables on initialization for local/demo use.
+- Add SQLite-backed repository class using stdlib `sqlite3`.
+- Create `side_effect_records` table on initialization.
 - Store timestamps and JSON fields deterministically.
 - Use temporary SQLite files in tests.
-- Do not add Postgres, Redis, Docker Compose, cloud services, or Alembic unless separately approved.
+- Prove standalone persistence (re-instantiation test).
 
-### A4.3 Standalone Persistence Proof (Implemented in A4.1)
+### A4.2 Durable Approval Binding (Completed)
 
-- Open a SQLite file.
-- Write one `side_effect_record`.
-- Close/discard the repository object.
-- Open a new repository object against the same SQLite file.
-- Read the same record back.
-- Prove this before graph/service integration.
-
-### A4.4 Approval Binding Enforcement
-
+- Define `ApprovalBindingStatus` enum separate from `DurableSideEffectStatus`.
+- Define `ApprovalBindingRecord` model.
+- Add `DurableApprovalBindingStore` class using stdlib `sqlite3`.
+- Create `approval_bindings` table with UNIQUE constraint on `side_effect_id`.
 - Persist approvals against `side_effect_id` and `validated_arguments_hash`.
-- Require matching approved approval binding before execution.
+- Require matching fields (run_id, skill_id, step_id, tool_name, validated_arguments_hash).
 - Reject mismatched hashes or side-effect IDs fail-closed.
-- Preserve blocked vs rejected semantics.
+- Enforce one approval binding per side_effect_id in V1.
+- Approve/reject update both stores in a single SQLite transaction.
+- Expired approval does not mutate side-effect status.
+- Add `assert_approved_for_action` pure read check.
+- Add 9 controlled domain error types.
+- Prove approval binding persistence (re-instantiation test).
 
-### A4.5 Restart-Replay Proof
+### A4.3 Graph Integration and Restart-Replay Proof (Future)
 
+- Integrate `DurableApprovalBindingStore` and `DurableSideEffectLedger` into main execution path.
 - Execute once with fake client.
 - Persist succeeded side-effect evidence.
 - Instantiate a fresh repository/service object against the same SQLite file.
 - Replay the same side-effect ID.
 - Prove fake client is not called again.
 - Persist durable audit evidence for skipped duplicate / already succeeded replay.
+
+### A4.4 Durable Audit Store (Future)
+
+- Add `durable_audit_events` table.
+- Add `DurableAuditStore` class.
+- Persist durable audit explanation for lifecycle events.
