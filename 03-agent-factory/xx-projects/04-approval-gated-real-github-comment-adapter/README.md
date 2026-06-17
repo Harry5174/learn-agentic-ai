@@ -10,6 +10,9 @@ boundaries. A5.2 adds remote idempotency marker construction, fake/mocked remote
 comment listing, marker lookup, and durable reconciliation for the GitHub/SQLite
 crash window. A5.3 adds one approval-gated real GitHub issue-comment execution
 path behind explicit server-side real-mode configuration.
+A5.4 adds adversarial real-mode safety tests and minimal hardening for token
+redaction, approval/hash binding, marker ambiguity, HTTP failure classification,
+and crash-window replay.
 
 The fake client remains the default. Real mode is disabled by default.
 Automated tests use mocks and do not call GitHub or require credentials.
@@ -50,7 +53,7 @@ post one GitHub issue comment
 ```
 
 A5.3 implements that real side effect only when explicitly configured on the
-server side.
+server side. A5.4 does not add any new GitHub operation.
 
 ## What Artifact 5 Is
 
@@ -64,7 +67,7 @@ available only through trusted server-side constructor/config injection.
 
 ## What Artifact 5 Is Not
 
-Artifact 5 A5.3 is not:
+Artifact 5 A5.4 is not:
 
 - a general GitHub automation platform
 - an OAuth/OIDC project
@@ -105,10 +108,10 @@ not model-controlled, not user-controlled, included in the actual future posted
 GitHub comment body, bound to `side_effect_id`, and bound to
 `validated_arguments_hash`.
 
-## A5.3 Remote Reconciliation Rule
+## A5.4 Remote Reconciliation Rule
 
-A5.3 applies the remote marker lookup and reconciliation rule before any real
-post:
+A5.4 keeps the A5.3 remote marker lookup and reconciliation rule before any
+real post:
 
 ```text
 1. List existing issue comments.
@@ -126,6 +129,9 @@ Fail-closed behavior is required for:
 - multiple matching remote markers unless separately approved
 - same `side_effect_id` with different `validated_arguments_hash`
 - remote API ambiguity
+- quoted, duplicated, malformed-relevant, or extra-field marker ambiguity
+- bounded pagination or incomplete remote listing
+- GitHub HTTP, timeout, transport, or malformed-response failures
 
 No real GitHub comment may be posted when remote marker state is ambiguous or
 lookup completeness is uncertain.
@@ -135,6 +141,8 @@ approval. A5.3 remote marker reconciliation does not authorize unapproved
 planned side effects; it only reconciles existing local durable records in
 approved or executing recovery states when the local record matches the
 side-effect id, validated argument hash, repository, issue number, and tool.
+A5.4 extends this with adversarial tests for crash-window replay through
+executing records and for approval/hash mutation attempts.
 
 ## Token And Repository Boundary
 
@@ -172,13 +180,14 @@ The default runtime remains local/demo and fake-client-only:
 - no token required for default local/demo execution
 - no network execution in automated tests
 - remote marker/reconciliation tests use fake/mocked clients
+- adversarial A5.4 real-mode safety tests use fake transports and fake clients
 - optional manual smoke test is documented but not run by default
 
 ## Documentation
 
 Use [docs/README.md](docs/README.md) as the documentation index.
 
-High-value A5.3 entry points:
+High-value A5.4 entry points:
 
 - [Artifact 5 real GitHub comment adapter spec](docs/specs/artifact-5-real-github-comment-adapter.md)
 - [Remote idempotency and reconciliation](docs/architecture/remote-idempotency-reconciliation.md)

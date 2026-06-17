@@ -392,6 +392,31 @@ class DurableApprovalBindingStore:
                 f"got {binding.validated_arguments_hash}"
             )
 
+        try:
+            se_record = self.ledger.get(side_effect_id)
+        except SideEffectRecordNotFoundError:
+            raise ApprovalNotAuthorizedError(
+                f"No side-effect record found for side_effect_id {side_effect_id}"
+            )
+
+        mismatches = []
+        if binding.run_id != se_record.run_id:
+            mismatches.append("run_id")
+        if binding.skill_id != se_record.skill_id:
+            mismatches.append("skill_id")
+        if binding.step_id != se_record.step_id:
+            mismatches.append("step_id")
+        if binding.tool_name != se_record.tool_name:
+            mismatches.append("tool_name")
+        if binding.validated_arguments_hash != se_record.validated_arguments_hash:
+            mismatches.append("validated_arguments_hash")
+
+        if mismatches:
+            raise ApprovalNotAuthorizedError(
+                "Approval binding does not match side-effect record: "
+                f"{', '.join(mismatches)}"
+            )
+
     def close(self) -> None:
         """Close the store resources if necessary."""
         # SQLite connection manager opens connections on demand.

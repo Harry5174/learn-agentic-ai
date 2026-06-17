@@ -5,6 +5,7 @@ from typing import Any
 from app.audit.durable_schemas import DurableAuditEventType
 from app.audit.durable_store import DurableAuditStore
 from app.github.remote_comments import (
+    IncompleteRemoteIssueCommentListingError,
     RemoteIssueComment,
     RemoteIssueCommentLister,
     RemoteIssueCommentListingError,
@@ -59,10 +60,15 @@ class RemoteMarkerLookupService:
     ) -> RemoteMarkerLookupResult:
         try:
             comments = self.lister.list_issue_comments(request)
-        except RemoteIssueCommentListingError as exc:
+        except IncompleteRemoteIssueCommentListingError:
             return RemoteMarkerLookupResult(
                 status=RemoteMarkerLookupStatus.MARKER_LOOKUP_FAILED,
-                message=str(exc),
+                message="Remote issue-comment listing was incomplete.",
+            )
+        except RemoteIssueCommentListingError:
+            return RemoteMarkerLookupResult(
+                status=RemoteMarkerLookupStatus.MARKER_LOOKUP_FAILED,
+                message="Remote issue-comment listing failed.",
             )
         except Exception:
             return RemoteMarkerLookupResult(

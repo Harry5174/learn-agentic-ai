@@ -9,6 +9,8 @@ A5.2 implements marker construction, marker parsing, fake/mocked remote comment
 listing, marker lookup, and durable reconciliation tests. A5.3 adds one
 approval-gated real issue-comment path that performs live remote lookup and
 posting only when explicit server-side real-mode configuration is injected.
+A5.4 adds adversarial tests and minimal safety hardening for ambiguous markers,
+incomplete lookup, timeout recovery, and crash-window replay.
 
 ## Local And Remote State
 
@@ -91,15 +93,17 @@ Required fail-closed cases:
 - marker lookup failure
 - multiple matching remote markers unless separately approved
 - same `side_effect_id` with different `validated_arguments_hash`
+- quoted, duplicated, malformed-relevant, or extra-field marker ambiguity
 - remote API ambiguity
 - repository not allowlisted
 - token unavailable or rejected by the server-side token provider
 - incomplete remote comment listing
 - GitHub HTTP, timeout, transport, or malformed-response failures
+- comment body or approval-binding mutation after approval
 
 ## Durable Audit Evidence
 
-A5.3 records durable audit evidence for the remote marker decision. These
+A5.4 records durable audit evidence for the remote marker decision. These
 decisions are auditable:
 
 - `remote_marker_check_started`
@@ -136,9 +140,14 @@ comment id/url if GitHub exposes them.
 When marker lookup fails or is ambiguous, A5.3 real mode records a blocked
 outcome and avoids the POST.
 
-## A5.3 Boundary
+Bounded pagination, remote deletion, and human-edited marker text remain known
+limitations. If lookup cannot prove a complete-enough marker search, or marker
+text cannot be classified as exactly one clean marker for the approved action,
+the adapter fails closed rather than posting or reconciling.
 
-A5.3 adds real issue-comment list/create behavior only for the explicitly
+## A5.4 Boundary
+
+A5.4 keeps real issue-comment list/create behavior only for the explicitly
 configured approval-gated path. It does not add:
 
 - automated live GitHub tests

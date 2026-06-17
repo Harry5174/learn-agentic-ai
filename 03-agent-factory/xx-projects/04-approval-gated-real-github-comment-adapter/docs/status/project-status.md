@@ -4,11 +4,12 @@
 
 **Title:** Artifact 5 - Approval-Gated Real GitHub Comment Adapter
 
-**Current sprint:** A5.3 - Approval-Gated Real Comment Execution Path
+**Current sprint:** A5.4 - Real-Mode Adversarial and Crash-Window Safety Suite
 
-**Status:** One approval-gated real GitHub issue-comment path implemented
-behind explicit server-side real-mode configuration. Fake client remains the
-default and real mode remains disabled by default.
+**Status:** A5.4 adversarial real-mode safety tests and minimal hardening are
+implemented for the existing approval-gated GitHub issue-comment list/create
+path. Fake client remains the default and real mode remains disabled by
+default.
 
 ## Current State
 
@@ -28,7 +29,8 @@ A5.0 defines the safety design for an approval-gated real GitHub issue-comment
 adapter. A5.1 adds client/interface, token-provider, and real-mode
 configuration boundaries without enabling the real adapter. A5.2 adds remote
 marker/reconciliation logic with fake/mocked clients. A5.3 adds the explicit
-server-configured real execution path.
+server-configured real execution path. A5.4 attacks that boundary with mocked
+adversarial tests and narrow safety fixes.
 
 ## A5.0 Adds
 
@@ -52,7 +54,7 @@ A5.0 adds documentation for:
 - real-mode testing strategy
 - explicit non-goals
 - known limitations
-- A5.1/A5.3 onward roadmap
+- A5.1/A5.4 onward roadmap
 
 ## A5.1 Adds
 
@@ -103,6 +105,26 @@ A5.3 adds:
 - tests proving token and Authorization header values stay out of results/audit
 - disabled-by-default optional manual smoke test documentation
 
+## A5.4 Adds
+
+A5.4 adds:
+
+- adversarial token/header leakage tests
+- hostile transport exception redaction tests
+- repository allowlist bypass tests
+- request/model control-plane smuggling tests
+- approval/hash mutation tests
+- remote marker spoofing tests
+- ambiguous, quoted, duplicated, malformed, and extra-field marker tests
+- GitHub HTTP, timeout, malformed response, and incomplete lookup tests
+- crash-window replay tests through existing executing durable records
+- minimal hardening for body/hash binding and approval-binding consistency
+- minimal hardening for status-specific HTTP 409/429 failures
+- minimal hardening for remote listing failure redaction
+- minimal hardening for ambiguous marker classification
+- minimal hardening for timeout/replay handling without blind same-call retry
+- documentation updates for A5.4 scope and limitations
+
 ## Runtime Status
 
 The default runtime remains:
@@ -119,9 +141,9 @@ Real GitHub execution is available only through explicit trusted server-side
 real-mode config, token provider, durable stores, approval binding store, and
 real client dependencies.
 
-## Not Implemented In A5.3
+## Not Implemented In A5.4
 
-A5.3 does not add:
+A5.4 does not add:
 
 - OAuth/OIDC
 - MCP
@@ -137,32 +159,34 @@ A5.3 does not add:
 - manual live smoke execution by default
 - arbitrary repository support
 - production-ready guarantees
+- production-grade audit guarantees
 - universal exactly-once guarantees
 
 ## Remote Idempotency Status
 
-A5.3 uses the remote idempotency marker for real-mode lookup and reconciliation:
+A5.4 uses the remote idempotency marker for real-mode lookup and reconciliation:
 
 ```html
 <!-- agent_factory:v1 side_effect_id=<side_effect_id> args_hash=<validated_arguments_hash> -->
 ```
 
-A5.3 real mode lists existing issue comments and searches for this exact marker
+A5.4 real mode lists existing issue comments and searches for this exact marker
 before any real post. Fake/mocked automated tests prove marker-found,
-marker-absent, mismatch, ambiguous, and lookup-failed behavior. If lookup fails,
-is ambiguous, or cannot prove complete-enough listing, the harness fails closed.
+marker-absent, mismatch, ambiguous, quoted, duplicated, extra-field, and
+lookup-failed behavior. If lookup fails, is ambiguous, or cannot prove
+complete-enough listing, the harness fails closed.
 
-The remote marker is not authorization. A5.3 reconciliation does not authorize
+The remote marker is not authorization. A5.4 reconciliation does not authorize
 unapproved planned side effects and does not create local durable records from
 remote marker text.
 
 ## Token Status
 
-A5.1 adds a server-side environment token-provider boundary. A5.3 uses that
+A5.1 adds a server-side environment token-provider boundary. A5.4 uses that
 boundary only after local gates pass. The default local/demo fake-client path
 does not load or use a GitHub token.
 
-A5.3 real mode should use:
+A5.4 real mode should use:
 
 - server-side token loading only
 - fine-grained GitHub token preferred
@@ -178,7 +202,7 @@ audit rows, exception messages, or test snapshots.
 
 ## Validation Expectation
 
-A5.3 should validate with:
+A5.4 should validate with:
 
 ```bash
 uv run pytest

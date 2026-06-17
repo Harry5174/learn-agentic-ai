@@ -1,3 +1,4 @@
+import hashlib
 import json
 from typing import Any
 
@@ -180,6 +181,7 @@ def post_real_github_issue_comment(
         record_tool_name=record.tool_name,
         tool_name=tool_name,
         record_hash=record.validated_arguments_hash,
+        record_comment_body_hash=record.comment_body_hash,
         argument_hash=argument_hash,
     )
     if record_mismatch is not None:
@@ -199,7 +201,6 @@ def post_real_github_issue_comment(
         DurableSideEffectStatus.REJECTED,
         DurableSideEffectStatus.FAILED,
         DurableSideEffectStatus.SKIPPED_DUPLICATE,
-        DurableSideEffectStatus.EXECUTING,
     }:
         return _blocked_result(
             tool_name=tool_name,
@@ -390,21 +391,22 @@ def post_real_github_issue_comment(
         argument_hash=argument_hash,
     )
 
-    try:
-        durable_ledger.mark_executing(side_effect_id)
-    except (InvalidSideEffectTransitionError, TerminalSideEffectStateError):
-        refreshed = durable_ledger.get(side_effect_id)
-        return _blocked_result(
-            tool_name=tool_name,
-            request=request,
-            side_effect_id=side_effect_id,
-            argument_hash=argument_hash,
-            status=refreshed.status,
-            error_type="side_effect_transition_failed",
-            skip_reason="mark_executing_failed",
-            message="Durable side effect could not transition to executing.",
-            approval_checked=True,
-        )
+    if record.status != DurableSideEffectStatus.EXECUTING:
+        try:
+            durable_ledger.mark_executing(side_effect_id)
+        except (InvalidSideEffectTransitionError, TerminalSideEffectStateError):
+            refreshed = durable_ledger.get(side_effect_id)
+            return _blocked_result(
+                tool_name=tool_name,
+                request=request,
+                side_effect_id=side_effect_id,
+                argument_hash=argument_hash,
+                status=refreshed.status,
+                error_type="side_effect_transition_failed",
+                skip_reason="mark_executing_failed",
+                message="Durable side effect could not transition to executing.",
+                approval_checked=True,
+            )
 
     _append_audit_event(
         context=context,
@@ -467,6 +469,49 @@ def post_real_github_issue_comment(
 
     failure = _safe_failure(response, request)
     failure_payload = failure.model_dump(mode="json")
+    if failure.error_type == "github_timeout":
+        _append_audit_event(
+            context=context,
+            side_effect_id=side_effect_id,
+            event_type=DurableAuditEventType.EXECUTION_FAILED,
+            message="Real GitHub issue-comment execution outcome was ambiguous.",
+            metadata={
+                "repository": failure.repository,
+                "issue_number": failure.issue_number,
+                "validated_arguments_hash": argument_hash,
+                "error_type": _audit_safe_error_type(failure.error_type),
+                "retryable": failure.retryable,
+                "side_effect_status": DurableSideEffectStatus.EXECUTING.value,
+                "replay_required": True,
+            },
+        )
+        return ToolExecutionResult(
+            tool_name=tool_name,
+            success=False,
+            dry_run=False,
+            result={
+                "mode": "real_client",
+                "persistence": "durable_sqlite",
+                "repository": failure.repository,
+                "issue_number": failure.issue_number,
+                "error_type": failure.error_type,
+                "retryable": failure.retryable,
+                "side_effect_id": side_effect_id,
+                "validated_arguments_hash": argument_hash,
+                "side_effect_status": DurableSideEffectStatus.EXECUTING.value,
+                "ledger_hit": True,
+                "ledger_miss": False,
+                "approval_checked": True,
+                "client_called": True,
+                "skipped": False,
+                "duplicate_suppressed": False,
+                "remote_reconciled": False,
+                "replay_outcome": "ambiguous_create_outcome",
+                "failure": failure_payload,
+            },
+            message=failure.message,
+        )
+
     durable_ledger.mark_failed(side_effect_id, failure=failure_payload)
     _append_audit_event(
         context=context,
@@ -477,7 +522,7 @@ def post_real_github_issue_comment(
             "repository": failure.repository,
             "issue_number": failure.issue_number,
             "validated_arguments_hash": argument_hash,
-            "error_type": failure.error_type,
+            "error_type": _audit_safe_error_type(failure.error_type),
             "retryable": failure.retryable,
         },
     )
@@ -640,10 +685,13 @@ def _record_mismatch(
     record_tool_name: str,
     tool_name: str,
     record_hash: str,
+    record_comment_body_hash: str | None,
     argument_hash: str,
 ) -> str | None:
     if record_hash != argument_hash:
         return "validated_arguments_hash"
+    if record_comment_body_hash != _comment_body_hash(request.comment_body):
+        return "comment_body_hash"
     if record_repository != request.repository:
         return "repository"
     if record_issue_number != request.issue_number:
@@ -658,7 +706,13 @@ def _safe_failure(
     request: GitHubIssueCommentRequest,
 ) -> GitHubIssueCommentFailure:
     if isinstance(response, GitHubIssueCommentFailure):
-        return response
+        return GitHubIssueCommentFailure(
+            repository=response.repository,
+            issue_number=response.issue_number,
+            error_type=response.error_type,
+            message=_safe_failure_message(response.message),
+            retryable=response.retryable,
+        )
 
     return GitHubIssueCommentFailure(
         repository=request.repository,
@@ -667,6 +721,29 @@ def _safe_failure(
         message="GitHub issue-comment client returned an invalid response.",
         retryable=False,
     )
+
+
+def _comment_body_hash(comment_body: str) -> str:
+    return hashlib.sha256(comment_body.encode("utf-8")).hexdigest()
+
+
+def _safe_failure_message(message: str) -> str:
+    unsafe_markers = (
+        "authorization",
+        "bearer ",
+        "ghp_",
+        "github_pat_",
+        "secret-token",
+    )
+    if any(marker in message.lower() for marker in unsafe_markers):
+        return "GitHub issue-comment request failed."
+    return message
+
+
+def _audit_safe_error_type(error_type: str) -> str:
+    if "transport" in error_type.lower():
+        return "github_request_failed"
+    return error_type
 
 
 def _json_object_or_none(raw_json: str | None) -> dict[str, Any] | None:

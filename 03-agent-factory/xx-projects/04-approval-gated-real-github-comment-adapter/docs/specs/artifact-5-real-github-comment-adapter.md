@@ -2,7 +2,7 @@
 
 ## Status
 
-A5.3 is the Approval-Gated Real Comment Execution Path sprint.
+A5.4 is the Real-Mode Adversarial and Crash-Window Safety Suite sprint.
 
 Artifact 5 is an approval-gated real GitHub issue-comment adapter. A5.1 adds
 the client/interface boundary, server-side token-provider boundary, disabled
@@ -10,7 +10,8 @@ real-mode configuration boundary, redaction-safe failure behavior, and tests.
 A5.2 adds the remote marker builder/parser, fake/mocked remote issue-comment
 listing boundary, marker lookup, and durable reconciliation tests. A5.3 adds
 one approval-gated real GitHub issue-comment execution path behind explicit
-server-side real-mode configuration.
+server-side real-mode configuration. A5.4 adds adversarial tests and minimal
+safety hardening for the existing real-mode boundary.
 
 The copied fake-client runtime remains the default behavior.
 
@@ -59,7 +60,7 @@ That side effect must stay behind server-owned controls:
 
 ## What Artifact 5 Is Not
 
-Artifact 5 A5.3 is not:
+Artifact 5 A5.4 is not:
 
 - a general GitHub automation platform
 - support for arbitrary repositories
@@ -163,16 +164,20 @@ authorize unapproved planned side effects.
 
 ## Required Fail-Closed Behavior
 
-A5.3 real mode fails closed for:
+A5.4 real mode fails closed for:
 
 - marker lookup failure
 - multiple matching remote markers unless separately approved
 - same `side_effect_id` with different `validated_arguments_hash`
+- quoted, duplicated, malformed-relevant, or extra-field marker ambiguity
 - remote API ambiguity
 - repository not in the server-owned allowlist
 - missing or unusable server-side token
 - incomplete remote issue-comment listing
 - GitHub HTTP, timeout, transport, or malformed-response failures
+- approval binding metadata mismatch
+- comment body mutation after approval
+- crash-window replay where local state is still executing
 
 The harness must not post a real GitHub comment when marker state is ambiguous.
 
@@ -252,7 +257,7 @@ Durable audit rows must not store tokens or realistic secrets.
 
 ## Real-Mode Testing Strategy
 
-A5.3 automated tests use fake transports and fake real clients. They cover:
+A5.4 automated tests use fake transports and fake real clients. They cover:
 
 - real client pagination, page bound, create response, HTTP failures, and
   malformed responses
@@ -262,13 +267,19 @@ A5.3 automated tests use fake transports and fake real clients. They cover:
 - repository allowlist rejection
 - missing token and disabled real-mode failures
 - no-token-required default test suite
+- hostile transport exception redaction
+- model/request control-plane smuggling
+- approval/hash mutation attempts
+- marker spoofing, quoted markers, duplicated markers, and extra-field markers
+- create-timeout ambiguous outcome replay
+- crash-window replay through existing executing durable records
 
-A5.3 adds a disabled-by-default optional manual live smoke guide, but the manual
-smoke test was not run as part of the automated sprint validation.
+A5.4 does not run a manual live smoke test. The disabled-by-default optional
+manual live smoke guide remains separately approved work.
 
-## Explicit Non-Goals For A5.3
+## Explicit Non-Goals For A5.4
 
-A5.3 does not add:
+A5.4 does not add:
 
 - OAuth/OIDC
 - MCP
@@ -281,17 +292,19 @@ A5.3 does not add:
 - workflow dispatch
 - multiple real tools
 - production-ready claims
+- production-grade audit claims
 - universal exactly-once claims
 - automated live GitHub tests
 - manual live smoke execution by default
 
-## A5.3 Onward Roadmap
+## A5.4 Onward Roadmap
 
-A5.3 intentionally stops at one approval-gated real GitHub issue-comment path.
-Recommended next slices are:
+A5.4 intentionally stops at adversarial testing and minimal safety hardening
+for one approval-gated real GitHub issue-comment path. Recommended next slices
+are:
 
-- separately approved manual live smoke test, if the Product Owner wants one
 - evidence review for the real-mode safety boundary
+- separately approved manual live smoke test, if the Product Owner wants one
 - hardening only after the single-comment path is accepted
 
 Do not expand Artifact 5 into general GitHub automation.

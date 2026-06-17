@@ -1,9 +1,9 @@
 # Manual Real-Mode Smoke Test
 
-This page documents an optional A5.3 manual smoke test for the one
+This page documents an optional manual smoke test for the one
 approval-gated real GitHub issue-comment path.
 
-Manual smoke execution is disabled by default and was not run as part of A5.3
+Manual smoke execution is disabled by default and was not run as part of A5.4
 automated validation. Do not run it unless the Product Owner explicitly
 approves live execution in the implementation session.
 
@@ -117,10 +117,10 @@ The report must not include:
 - raw unredacted transport exceptions
 - `.env` contents
 
-## A5.3 Status
+## A5.4 Status
 
-Manual smoke test status for A5.3:
+Manual smoke test status for A5.4:
 
 ```text
-added but not run
+documented but not run
 ```

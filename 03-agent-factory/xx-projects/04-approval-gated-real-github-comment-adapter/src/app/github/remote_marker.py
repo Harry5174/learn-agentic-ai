@@ -97,6 +97,19 @@ def find_remote_idempotency_markers(
             )
             continue
 
+        if _has_unexpected_attributes(attributes) or _marker_is_quoted(
+            body,
+            raw_match.start(),
+        ):
+            matches.append(
+                RemoteMarkerMatch(
+                    status=RemoteMarkerMatchStatus.MALFORMED_RELEVANT,
+                    side_effect_id=parsed_side_effect_id,
+                    validated_arguments_hash=parsed_arguments_hash,
+                )
+            )
+            continue
+
         if parsed_arguments_hash is None:
             matches.append(
                 RemoteMarkerMatch(
@@ -157,3 +170,13 @@ def _marker_attributes(marker_body: str) -> dict[str, str]:
         match.group("name"): match.group("value")
         for match in _ATTRIBUTE_RE.finditer(marker_body)
     }
+
+
+def _has_unexpected_attributes(attributes: dict[str, str]) -> bool:
+    return not set(attributes).issubset({"side_effect_id", "args_hash"})
+
+
+def _marker_is_quoted(body: str, marker_start: int) -> bool:
+    line_start = body.rfind("\n", 0, marker_start) + 1
+    line_prefix = body[line_start:marker_start]
+    return line_prefix.lstrip().startswith(">")

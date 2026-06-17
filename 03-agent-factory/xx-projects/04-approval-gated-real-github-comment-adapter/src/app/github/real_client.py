@@ -323,8 +323,8 @@ def _header_value(headers: Mapping[str, str], name: str) -> str | None:
 
 
 def _safe_http_failure(status_code: int) -> GitHubRealClientSafeError:
-    retryable = status_code >= 500
-    known_statuses = {401, 403, 404, 422}
+    retryable = status_code >= 500 or status_code == 429
+    known_statuses = {401, 403, 404, 409, 422, 429}
     error_type = (
         f"github_http_{status_code}"
         if status_code in known_statuses or status_code >= 500

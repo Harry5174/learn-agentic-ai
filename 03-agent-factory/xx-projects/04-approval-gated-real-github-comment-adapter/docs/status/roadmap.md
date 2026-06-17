@@ -82,7 +82,26 @@ A5.3 adds:
 A5.3 does not add automated live GitHub tests or manual live smoke execution by
 default.
 
-## A5.4 - Separately Approved Manual Live Smoke Test
+## A5.4 - Real-Mode Adversarial And Crash-Window Safety Suite
+
+Status: implemented with mocked automated tests and narrow safety hardening.
+
+A5.4 adds:
+
+- adversarial token/header leakage tests
+- hostile transport exception redaction tests
+- repository allowlist bypass tests
+- request/model control-plane smuggling tests
+- approval/hash mutation tests
+- remote marker spoofing and ambiguity tests
+- HTTP, timeout, malformed response, and incomplete lookup tests
+- crash-window replay through executing durable records
+- docs/status updates for A5.4 limitations and non-goals
+
+A5.4 does not add new GitHub operations, automated live GitHub tests, or manual
+live smoke execution.
+
+## A5.5 - Separately Approved Manual Live Smoke Test
 
 Possible future scope only if the Product Owner explicitly approves it:
 
@@ -95,9 +114,9 @@ Possible future scope only if the Product Owner explicitly approves it:
 
 No CI-style validation should require a GitHub token.
 
-## A5.5 - Evidence Review And Narrow Hardening
+## A5.6 - Evidence Review And Narrow Hardening
 
-Possible future scope after A5.3 is accepted:
+Possible future scope after A5.4 is accepted:
 
 - review real-mode evidence and audit rows
 - clarify any remaining operator docs
