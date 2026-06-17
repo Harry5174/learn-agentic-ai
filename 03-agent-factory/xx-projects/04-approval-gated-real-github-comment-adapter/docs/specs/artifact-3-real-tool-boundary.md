@@ -1,8 +1,8 @@
-# Artifact 3 Real Tool Boundary
+# Artifact 2 Real Tool Boundary
 
 ## 1. Purpose
 
-A3.1 defines the future real side-effect boundary for Artifact 3, the
+A3.1 defines the future real side-effect boundary for Artifact 2, the
 Approval-Gated GitHub Tool Harness.
 
 A3.1 is documentation/specification only.
@@ -24,7 +24,7 @@ A3.4 adds adversarial safety tests and documentation for the A3.3 fake-client
 path. It does not add real GitHub API execution.
 
 A3.5 packages the demo and portfolio evidence for the completed local/demo
-Artifact 3 boundary. It does not add runtime behavior.
+Artifact 2 boundary. It does not add runtime behavior.
 
 The goal is to document the future contract before any real GitHub write path
 exists, so later A3.x implementation work can stay narrow, auditable, and
@@ -402,4 +402,4 @@ A future implementation of this boundary should not be accepted unless:
 - audit evidence records both called and not-called client outcomes
 - tests use fake or mocked GitHub clients only
 - dry-run behavior remains available and is the default
-- existing local/demo Artifact 2.2 scalar argument boundaries remain intact
+- existing local/demo Artifact 1.2 scalar argument boundaries remain intact

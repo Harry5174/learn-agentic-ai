@@ -24,12 +24,12 @@ policy, or authorize side effects.
 
 ## Artifact Progression
 
-**Artifact 4 (baseline):** Proved local/demo durable fake-client safety with
+**Artifact 3 (baseline):** Proved local/demo durable fake-client safety with
 SQLite-backed side-effect records, durable approval bindings, durable audit
 events, and restart/replay duplicate suppression. Intentionally did not
 implement real GitHub execution, token loading, or remote marker lookup.
 
-**Artifact 5 (this artifact):** Built on Artifact 4 to safely cross into one
+**Artifact 4 (this artifact):** Built on Artifact 3 to safely cross into one
 real external side effect: posting a single GitHub issue comment.
 
 ## Sprint Progression

@@ -1,1 +1,1 @@
-"""Skill contracts and static registry for Artifact 2."""
+"""Skill contracts and static registry for Artifact 1."""

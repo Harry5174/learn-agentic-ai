@@ -1,12 +1,12 @@
 # Persistence Boundary
 
-Artifact 4 adds a durable-state design boundary before any real GitHub write can be considered.
+Artifact 3 adds a durable-state design boundary before any real GitHub write can be considered.
 
 A4.0 documents the future shape and acceptance requirements. A4.1 implements the side-effect ledger. A4.2 implements the approval binding store. A4.3 integrates both stores into the fake-client GitHub comment execution path through explicit runtime injection. A4.3.1 modularizes that restart/replay implementation and graph/tool boundaries without adding runtime behavior. A4.4 implements the durable audit store and adversarial persistence suite.
 
-## Why Artifact 3 Is Not Enough
+## Why Artifact 2 Is Not Enough
 
-Artifact 3 uses `InMemorySideEffectLedger` for local/demo replay suppression. That proves the harness can check a side-effect ID before fake-client execution while the process is alive.
+Artifact 2 uses `InMemorySideEffectLedger` for local/demo replay suppression. That proves the harness can check a side-effect ID before fake-client execution while the process is alive.
 
 It is insufficient across restart because:
 
@@ -15,13 +15,13 @@ It is insufficient across restart because:
 - audit evidence is process-local
 - duplicate replay after restart cannot be proven safe from memory alone
 
-## Why Artifact 4 Adds SQLite
+## Why Artifact 3 Adds SQLite
 
-Artifact 4 uses SQLite as the local/demo persistence boundary. SQLite is enough for the portfolio proof because it is file-backed, simple, deterministic in tests, and available through Python stdlib `sqlite3`.
+Artifact 3 uses SQLite as the local/demo persistence boundary. SQLite is enough for the portfolio proof because it is file-backed, simple, deterministic in tests, and available through Python stdlib `sqlite3`.
 
 The target is restart-safe local/demo evidence, not production infrastructure.
 
-Do not use Postgres, Redis, Docker Compose, or cloud infrastructure for Artifact 4 V1.
+Do not use Postgres, Redis, Docker Compose, or cloud infrastructure for Artifact 3 V1.
 
 ## Durable Data
 
@@ -93,7 +93,7 @@ Duplicate replay records `duplicate_suppressed` durable audit evidence when `Dur
 
 ## Process-Local Data That Remains
 
-Artifact 4 V1 may still keep some local/demo state process-local unless a later sprint explicitly widens scope:
+Artifact 3 V1 may still keep some local/demo state process-local unless a later sprint explicitly widens scope:
 
 - demo API key identity configuration
 - in-memory rate limiting
@@ -133,7 +133,7 @@ SkillGraphService
 
 ## Not Production Persistence
 
-Artifact 4 V1 is still local/demo. SQLite persistence is intended to prove restart-replay semantics for one approval-gated fake-client side-effect path.
+Artifact 3 V1 is still local/demo. SQLite persistence is intended to prove restart-replay semantics for one approval-gated fake-client side-effect path.
 
 It is not:
 
@@ -147,7 +147,7 @@ It is not:
 
 ## Restart-Replay Proof Requirement
 
-A valid restart-replay proof must create a fresh repository/service object against the same SQLite file after the first execution. Calling the same object twice only proves in-process idempotency and is not enough for Artifact 4.
+A valid restart-replay proof must create a fresh repository/service object against the same SQLite file after the first execution. Calling the same object twice only proves in-process idempotency and is not enough for Artifact 3.
 
 A4.4 proves this for the fake-client GitHub comment path with fresh store/context/fake-client objects against the same SQLite file. The second fake client is not called, the durable side-effect record remains `succeeded`, and durable audit events remain queryable after restart.
 

@@ -1,6 +1,6 @@
 # GitHub Comment Tool Demo
 
-This guide packages the Artifact 3 GitHub issue-comment path for local demos
+This guide packages the Artifact 2 GitHub issue-comment path for local demos
 and portfolio review.
 
 The path is local/demo only:
@@ -387,7 +387,7 @@ No arbitrary repository targeting is implemented.
 
 ## 11. Fake-Client-Only Behavior
 
-Artifact 3 currently uses:
+Artifact 2 currently uses:
 
 - `GitHubIssueCommentClient` protocol
 - `FakeGitHubIssueCommentClient`

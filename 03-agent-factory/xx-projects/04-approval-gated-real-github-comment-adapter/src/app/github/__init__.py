@@ -1,4 +1,4 @@
-"""GitHub issue-comment boundary contracts for Artifact 3."""
+"""GitHub issue-comment boundary contracts for Artifact 2."""
 
 from app.github.client import GitHubIssueCommentClient
 from app.github.fake_client import FakeGitHubIssueCommentClient

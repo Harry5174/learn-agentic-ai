@@ -2,13 +2,13 @@
 
 ## Status
 
-Sprint 5 is the documentation and portfolio packaging sprint for Artifact 2.
+Sprint 5 is the documentation and portfolio packaging sprint for Artifact 1.
 
 It does not add runtime behavior.
 
 ## Goal
 
-Turn Artifact 2 into a clear, honest, evaluator-ready portfolio artifact for
+Turn Artifact 1 into a clear, honest, evaluator-ready portfolio artifact for
 AI/backend interviews, mentor review, agentic software learning, and future
 Agent Factory direction.
 
@@ -19,9 +19,9 @@ The LLM proposes.
 The harness validates, authorizes, approval-gates, executes, and audits.
 ```
 
-## Current Implemented Artifact 2 Behavior
+## Current Implemented Artifact 1 Behavior
 
-Artifact 2 now includes:
+Artifact 1 now includes:
 
 - structured `SkillSpec`, `SkillStep`, and `SkillProposal` contracts
 - a default `SkillRegistry` with allowed skill and tool metadata
@@ -44,7 +44,7 @@ Sprint 5 updates documentation only:
 - API boundary documentation
 - threat model
 - demo scenarios
-- Artifact 1 vs Artifact 2 comparison
+- Artifact 0 vs Artifact 1 comparison
 - known limitations
 - roadmap
 - interview notes
@@ -84,9 +84,9 @@ Sprint 5 does not change:
 
 Sprint 5 documentation must explain:
 
-- what Artifact 2 is
+- what Artifact 1 is
 - why it exists
-- how it differs from Artifact 1
+- how it differs from Artifact 0
 - the implemented proposal-to-execution architecture
 - the LLM/harness trust boundary
 - the role of `ProposalValidator`
@@ -145,25 +145,25 @@ Sprint 5 must keep the following limits explicit:
 
 ## Sprint Spec Hygiene
 
-The active Artifact 2 sprint specs are:
+The active Artifact 1 sprint specs are:
 
 - `docs/specs/sprint-2-spec.md`
 - `docs/specs/sprint-3-spec.md`
 - `docs/specs/sprint-4-spec.md`
 - `docs/specs/sprint-5-spec.md`
 
-Copied Artifact 1 sprint specs that could mislead future IDE agents should live
+Copied Artifact 0 sprint specs that could mislead future IDE agents should live
 under:
 
 ```text
-docs/specs/archive/artifact-1-sprint-specs/
+docs/specs/archive/artifact-0-sprint-specs/
 ```
 
 ## Acceptance Criteria
 
 Sprint 5 is complete when:
 
-- README accurately describes implemented Artifact 2 behavior
+- README accurately describes implemented Artifact 1 behavior
 - README avoids production-readiness claims
 - architecture flow is documented
 - LLM/harness boundary is documented
@@ -171,11 +171,11 @@ Sprint 5 is complete when:
 - approval gate behavior is documented
 - audit behavior is documented
 - required demo scenarios are documented
-- Artifact 1 vs Artifact 2 distinction is documented
+- Artifact 0 vs Artifact 1 distinction is documented
 - known limitations are documented
 - future roadmap is narrow and honest
 - tool-argument limitation is documented
-- stale Artifact 1 sprint specs are archived or clearly removed from the active docs path
+- stale Artifact 0 sprint specs are archived or clearly removed from the active docs path
 - no runtime behavior is changed
 - no real model calls are required
 - no new dependencies are added

@@ -2,8 +2,8 @@
 
 ## Scope
 
-This threat model covers the local/demo Artifact 2 skill runner inherited by
-Artifact 3 and the A3.1 future real side-effect boundary specification.
+This threat model covers the local/demo Artifact 1 skill runner inherited by
+Artifact 2 and the A3.1 future real side-effect boundary specification.
 
 It focuses on model-proposed skill execution where an untrusted proposer returns
 a structured `SkillProposal` and the harness remains responsible for validation,
@@ -185,7 +185,7 @@ Future mitigation:
   only
 - reject model-proposed tokens, authorization headers, API base URLs, client
   config, and transport config
-- preserve the Artifact 2.2-style scalar argument validation boundary before
+- preserve the Artifact 1.2-style scalar argument validation boundary before
   policy, approval, or side-effect execution
 
 Risk:

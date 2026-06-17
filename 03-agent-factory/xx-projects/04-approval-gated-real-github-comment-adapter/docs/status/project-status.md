@@ -2,17 +2,17 @@
 
 **Artifact:** 5
 
-**Title:** Artifact 5 — Approval-Gated Real GitHub Comment Adapter
+**Title:** Artifact 4 — Approval-Gated Real GitHub Comment Adapter
 
 **Current sprint:** A5.5 — Demo, Safety Notes, and Portfolio Packaging
 
-**Status:** Artifact 5 is complete as a local/demo approval-gated real GitHub
+**Status:** Artifact 4 is complete as a local/demo approval-gated real GitHub
 issue-comment adapter. Documentation, demo guides, safety notes, and portfolio
 packaging are finalized.
 
 ## Final Claim
 
-Artifact 5 demonstrates a local/demo approval-gated real GitHub issue-comment
+Artifact 4 demonstrates a local/demo approval-gated real GitHub issue-comment
 adapter. The fake client remains the default. An explicitly configured real mode
 can perform one repository-allowlisted GitHub issue-comment side effect after
 validated scalar arguments, durable approval binding, local durable ledger
@@ -22,13 +22,13 @@ and include adversarial crash-window safety coverage.
 
 ## Current State
 
-Artifact 5 was initialized from completed Artifact 4:
+Artifact 4 was initialized from completed Artifact 3:
 
 ```text
 03-agent-factory/xx-projects/03-durable-side-effect-ledger
 ```
 
-The Artifact 5 workspace is:
+The Artifact 4 workspace is:
 
 ```text
 03-agent-factory/xx-projects/04-approval-gated-real-github-comment-adapter
@@ -91,7 +91,7 @@ handling without blind same-call retry.
 
 ### A5.5 — Demo, Safety Notes, And Portfolio Packaging
 
-A5.5 packaged the completed Artifact 5 as a clear, interview-ready portfolio
+A5.5 packaged the completed Artifact 4 as a clear, interview-ready portfolio
 artifact. README was rewritten as the portfolio entry point. Documentation
 index, spec, architecture docs, project status, known limitations, roadmap,
 interview notes, manual smoke-test guide, artifact comparison, and parent
@@ -115,7 +115,7 @@ real client dependencies.
 
 ## Not Implemented
 
-Artifact 5 does not implement:
+Artifact 4 does not implement:
 
 - OAuth/OIDC
 - MCP
@@ -162,7 +162,7 @@ audit rows, exception messages, or test snapshots.
 
 ## Validation
 
-Artifact 5 validates with:
+Artifact 4 validates with:
 
 ```bash
 uv run pytest

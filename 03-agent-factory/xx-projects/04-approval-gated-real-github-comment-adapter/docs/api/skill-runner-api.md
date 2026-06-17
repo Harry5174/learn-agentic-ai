@@ -2,7 +2,7 @@
 
 ## Status
 
-Sprint E1.1 implemented the first public FastAPI surface for Artifact 2.1:
+Sprint E1.1 implemented the first public FastAPI surface for Artifact 1.1:
 
 - `GET /skills`
 - `POST /skill-runs`
@@ -14,7 +14,7 @@ Sprint E1.2 implemented the remaining public skill-run lifecycle routes:
 - `POST /skill-runs/{run_id}/reject`
 - `GET /skill-runs/{run_id}/audit`
 
-The skill-runner API must preserve the Artifact 2 invariant:
+The skill-runner API must preserve the Artifact 1 invariant:
 
 ```text
 The LLM proposes.
@@ -25,7 +25,7 @@ Clients may submit task text and optional proposer preferences, but identity,
 policy, approval authority, tool trust, and execution remain server-side harness
 concerns.
 
-Sprint E1.3 documents the completed Artifact 2.1 API/demo surface. It does not
+Sprint E1.3 documents the completed Artifact 1.1 API/demo surface. It does not
 change runtime behavior.
 
 ## Implemented In E1.1

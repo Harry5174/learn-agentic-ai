@@ -4,7 +4,7 @@
 
 The audit trail records key harness decisions and actions.
 
-In Artifact 2, audit is used to preserve evidence for:
+In Artifact 1, audit is used to preserve evidence for:
 
 - task/run creation
 - skill proposal produced

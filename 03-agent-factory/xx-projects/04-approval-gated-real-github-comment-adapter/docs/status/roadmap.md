@@ -1,6 +1,6 @@
 # Roadmap
 
-This roadmap is intentionally narrow. Artifact 5 demonstrates one safely
+This roadmap is intentionally narrow. Artifact 4 demonstrates one safely
 controlled real external side effect without weakening the core thesis:
 
 ```text
@@ -12,7 +12,7 @@ The harness decides.
 
 Status: complete.
 
-A5.0 created the Artifact 5 workspace from completed Artifact 4 and defined the
+A5.0 created the Artifact 4 workspace from completed Artifact 3 and defined the
 real-mode boundary, fake-client default, server-side token handling requirements,
 minimum-privilege token guidance, repository allowlist requirements,
 GitHub/SQLite crash window, remote idempotency marker format, remote
@@ -60,7 +60,7 @@ through executing durable records, and narrow safety hardening.
 
 Status: complete.
 
-A5.5 packaged the completed Artifact 5 as a clear, interview-ready portfolio
+A5.5 packaged the completed Artifact 4 as a clear, interview-ready portfolio
 artifact. Documentation, demo guides, safety notes, known limitations, and
 portfolio framing were updated. No runtime behavior was changed.
 

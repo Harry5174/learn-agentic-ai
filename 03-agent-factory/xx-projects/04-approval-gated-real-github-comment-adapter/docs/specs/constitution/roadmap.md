@@ -4,9 +4,9 @@ This roadmap records sequencing discipline for future coding agents.
 
 ## Completed Baseline
 
-Artifact 5 starts from completed Artifact 4.
+Artifact 4 starts from completed Artifact 3.
 
-Artifact 4 proved local/demo durable fake-client safety for the GitHub
+Artifact 3 proved local/demo durable fake-client safety for the GitHub
 issue-comment path:
 
 - SQLite-backed side-effect records
@@ -15,12 +15,12 @@ issue-comment path:
 - restart/replay duplicate suppression after durable success
 - fake-client-only execution
 
-Artifact 4 did not implement real GitHub execution, GitHub token loading, or
+Artifact 3 did not implement real GitHub execution, GitHub token loading, or
 production-grade exactly-once semantics.
 
 ## Current Step: A5.0
 
-A5.0 initializes Artifact 5 as a baseline/specification artifact for a future
+A5.0 initializes Artifact 4 as a baseline/specification artifact for a future
 approval-gated real GitHub issue-comment adapter.
 
 A5.0 defines:

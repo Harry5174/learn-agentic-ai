@@ -3,7 +3,7 @@
 ## Purpose
 
 This document distinguishes the inherited deterministic task graph from the
-Artifact 2 skill execution graph.
+Artifact 1 skill execution graph.
 
 ## Inherited Task Graph
 
@@ -32,9 +32,9 @@ Current simple mapping:
 - `draft` / `comment` -> `draft_issue_comment`
 - `trigger` / `workflow` -> `trigger_workflow_dry_run`
 
-## Artifact 2 Skill Execution Graph
+## Artifact 1 Skill Execution Graph
 
-The Artifact 2 skill graph lives in:
+The Artifact 1 skill graph lives in:
 
 ```text
 src/app/skill_graph/
@@ -67,7 +67,7 @@ For high-risk paths:
 ## Boundary
 
 - FastAPI routes currently use the inherited task graph.
-- Artifact 2 skill-runner behavior is exercised through `SkillGraphService` and tests.
+- Artifact 1 skill-runner behavior is exercised through `SkillGraphService` and tests.
 - Checkpointing uses `InMemorySaver`.
 - Durable persistence is not implemented.
 - No OAuth/JWT.

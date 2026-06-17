@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This page defines the Artifact 5 boundary for remote idempotency in the real
+This page defines the Artifact 4 boundary for remote idempotency in the real
 GitHub issue-comment adapter.
 
 A5.2 implements marker construction, marker parsing, fake/mocked remote comment
@@ -15,7 +15,7 @@ the completed artifact with documentation, demo guides, and portfolio framing.
 
 ## Local And Remote State
 
-Artifact 4 proves local/demo durable state with SQLite for the fake-client path.
+Artifact 3 proves local/demo durable state with SQLite for the fake-client path.
 That is necessary, but not sufficient, for real GitHub execution.
 
 For a real GitHub comment, the harness has two persistence systems:
@@ -148,7 +148,7 @@ the adapter fails closed rather than posting or reconciling.
 
 ## Scope Boundary
 
-Artifact 5 keeps real issue-comment list/create behavior only for the explicitly
+Artifact 4 keeps real issue-comment list/create behavior only for the explicitly
 configured approval-gated path. It does not add:
 
 - automated live GitHub tests

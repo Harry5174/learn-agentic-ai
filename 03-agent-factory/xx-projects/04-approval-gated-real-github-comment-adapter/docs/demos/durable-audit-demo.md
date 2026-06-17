@@ -1,6 +1,6 @@
 # Durable Audit Demo
 
-Artifact 4 implements a `DurableAuditStore` using SQLite to provide restart-surviving evidence of execution outcomes for the local/demo fake-client GitHub comment path.
+Artifact 3 implements a `DurableAuditStore` using SQLite to provide restart-surviving evidence of execution outcomes for the local/demo fake-client GitHub comment path.
 
 **Note:** This describes representative/test-backed behavior.
 

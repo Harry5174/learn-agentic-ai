@@ -1,6 +1,6 @@
 # Safety Model
 
-Artifact 2 demonstrates safety-oriented harness design for model-proposed skill
+Artifact 1 demonstrates safety-oriented harness design for model-proposed skill
 execution. It is not a production security system.
 
 The core invariant is:
@@ -146,7 +146,7 @@ not yet validate and execute arbitrary model-proposed runtime tool arguments.
 
 ## Safety Claim
 
-Artifact 2 demonstrates a safer agent harness shape:
+Artifact 1 demonstrates a safer agent harness shape:
 
 ```text
 untrusted proposer suggests a skill plan

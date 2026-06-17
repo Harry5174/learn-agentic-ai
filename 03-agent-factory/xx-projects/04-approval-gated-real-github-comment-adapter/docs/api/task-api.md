@@ -1,9 +1,9 @@
 # Task API Reference
 
-This page documents the inherited Artifact 1-style task API that remains
-available in Artifact 2.
+This page documents the inherited Artifact 0-style task API that remains
+available in Artifact 1.
 
-The primary Artifact 2.1 API is the skill-runner lifecycle documented in
+The primary Artifact 1.1 API is the skill-runner lifecycle documented in
 [skill-runner-api.md](skill-runner-api.md).
 
 Base URL for local development:
@@ -129,5 +129,5 @@ curl -s http://127.0.0.1:8000/tasks/TASK_ID/audit
 For a curl-oriented walkthrough of this inherited task API, see
 [../demos/task-api-demo.md](../demos/task-api-demo.md).
 
-For the primary Artifact 2.1 skill-runner demo, see
+For the primary Artifact 1.1 skill-runner demo, see
 [../demos/skill-runner-api-demo.md](../demos/skill-runner-api-demo.md).

@@ -5,7 +5,7 @@
 The tool registry provides the controlled execution boundary for dry-run tools.
 It prevents arbitrary tool execution by allowing only registered tool names.
 
-Artifact 2 adds a separate `SkillRegistry` above this layer. The skill registry
+Artifact 1 adds a separate `SkillRegistry` above this layer. The skill registry
 defines which skills and steps may reference which tools. The tool registry
 executes only registered dry-run tools after validation, policy, and approval
 requirements are satisfied.
@@ -42,7 +42,7 @@ build_default_tool_registry()
 
 ## Skill Runner Boundary
 
-Artifact 2 validates model-shaped proposals before reaching the tool registry.
+Artifact 1 validates model-shaped proposals before reaching the tool registry.
 
 The sequence is:
 

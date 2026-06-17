@@ -40,7 +40,7 @@ def build_remote_idempotency_marker(
     side_effect_id: str,
     validated_arguments_hash: str,
 ) -> str:
-    """Build the deterministic Artifact 5 remote idempotency marker."""
+    """Build the deterministic Artifact 4 remote idempotency marker."""
 
     normalized_side_effect_id = _required_text(
         side_effect_id,
@@ -63,7 +63,7 @@ def find_remote_idempotency_markers(
     side_effect_id: str,
     validated_arguments_hash: str,
 ) -> list[RemoteMarkerMatch]:
-    """Return all Artifact 5 marker relationships found in a comment body."""
+    """Return all Artifact 4 marker relationships found in a comment body."""
 
     target_side_effect_id = _required_text(
         side_effect_id,

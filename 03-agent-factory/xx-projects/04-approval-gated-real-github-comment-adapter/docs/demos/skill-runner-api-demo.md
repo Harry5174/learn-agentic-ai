@@ -1,6 +1,6 @@
 # Skill Runner API Demo Walkthrough
 
-This walkthrough is for Artifact 2.1, the local/demo skill-runner API surface.
+This walkthrough is for Artifact 1.1, the local/demo skill-runner API surface.
 
 The demo principle is:
 
@@ -12,7 +12,7 @@ The harness validates, authorizes, approval-gates, executes, and audits.
 The default HTTP API uses fake proposer mode. If `proposer_mode` is omitted,
 `POST /skill-runs` defaults to `fake`.
 
-Artifact 2.2 adds validated runtime tool arguments to the demo boundary. The
+Artifact 1.2 adds validated runtime tool arguments to the demo boundary. The
 default fake proposer provides registered scalar arguments for demo dry-run
 tools. The validator checks arguments before execution. Graph execution uses
 only validated arguments. Audit/API summaries expose safe argument-validation
@@ -322,7 +322,7 @@ Evidence:
 - dry-run tools only
 - default HTTP API uses fake proposer mode
 - HTTP `llm` mode is disabled and rejected
-- model-proposed runtime tool arguments are scalar-only in Artifact 2.2 V1
+- model-proposed runtime tool arguments are scalar-only in Artifact 1.2 V1
 - object/list/nested arguments are unsupported
 - partial acceptance is unsupported
 - no MCP

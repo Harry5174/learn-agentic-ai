@@ -1,8 +1,8 @@
-# Artifact 4 Durable Side-Effect Ledger Spec
+# Artifact 3 Durable Side-Effect Ledger Spec
 
 ## 1. Purpose
 
-A4.0 defines durable-state semantics for Artifact 4 - Durable Side-Effect Ledger and Approval Binding.
+A4.0 defines durable-state semantics for Artifact 3 - Durable Side-Effect Ledger and Approval Binding.
 
 A4.1 implements the `DurableSideEffectLedger` backed by SQLite. A4.1 does not add durable approval binding. A4.1 does not add real GitHub execution. A4.1 does not add token loading. A4.1 does not make the project production-ready.
 
@@ -39,7 +39,7 @@ SkillGraphService
 -> FakeGitHubIssueCommentClient
 ```
 
-SQLite is the persistence boundary for Artifact 4. Fake GitHub client remains the execution boundary. Real GitHub client remains out of scope.
+SQLite is the persistence boundary for Artifact 3. Fake GitHub client remains the execution boundary. Real GitHub client remains out of scope.
 
 The durable stores must be owned by harness code, not model output. Model-proposed arguments remain untrusted until validated by existing registry and proposal-validation layers.
 
@@ -47,7 +47,7 @@ A4.1 implements `DurableSideEffectLedger`. A4.2 implements `DurableApprovalBindi
 
 ## 4. Storage Decision
 
-Artifact 4 V1 should use SQLite.
+Artifact 3 V1 should use SQLite.
 
 Implementation guidance:
 
@@ -241,7 +241,7 @@ A4.4 orders durable audit lists deterministically with `ORDER BY created_at, eve
 
 ## 8. Status Lifecycle
 
-Final Artifact 4 V1 statuses:
+Final Artifact 3 V1 statuses:
 
 ```text
 planned
@@ -283,7 +283,7 @@ blocked
 
 ### Failed Is Terminal
 
-`failed` is terminal in Artifact 4 V1. No automatic or manual retry path exists. Retry requires a new side-effect plan, new `side_effect_id`, and new approval.
+`failed` is terminal in Artifact 3 V1. No automatic or manual retry path exists. Retry requires a new side-effect plan, new `side_effect_id`, and new approval.
 
 ### Blocked Has A Concrete Meaning
 
@@ -375,7 +375,7 @@ Failure metadata must avoid secrets and full sensitive payloads. A redacted fail
 
 ## 13. Non-Goals
 
-Artifact 4 V1 durable-state work explicitly excludes:
+Artifact 3 V1 durable-state work explicitly excludes:
 
 ```text
 real GitHub API calls
@@ -402,7 +402,7 @@ production readiness
 
 ## 14. Implementation Acceptance Checklist
 
-This checklist tracks the implementation of Artifact 4.
+This checklist tracks the implementation of Artifact 3.
 
 ### A4.1 SQLite Side-Effect Ledger (Completed)
 

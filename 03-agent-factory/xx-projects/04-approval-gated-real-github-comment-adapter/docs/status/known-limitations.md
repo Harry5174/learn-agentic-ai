@@ -1,10 +1,10 @@
 # Known Limitations
 
-This file keeps Artifact 5 honest.
+This file keeps Artifact 4 honest.
 
 ## Status
 
-Artifact 5 is a local/demo artifact. It is not production-ready.
+Artifact 4 is a local/demo artifact. It is not production-ready.
 
 The fake client remains the default. Real mode is disabled by default.
 Automated tests use fake/mocked clients and do not call GitHub or require
@@ -12,7 +12,7 @@ credentials. The manual smoke test was not run in A5.5.
 
 ## Not Implemented
 
-Artifact 5 does not implement:
+Artifact 4 does not implement:
 
 - OAuth/OIDC
 - MCP
@@ -72,7 +72,7 @@ operates only on existing approved/executing local durable records.
 
 ## No Universal Exactly-Once Guarantee
 
-Artifact 5 does not claim universal exactly-once execution. Remote marker lookup
+Artifact 4 does not claim universal exactly-once execution. Remote marker lookup
 reduces duplicate-post risk for the scoped GitHub issue-comment path, but the
 following limitations remain:
 
@@ -87,7 +87,7 @@ following limitations remain:
 
 ## No Production Claims
 
-Artifact 5 is not production-ready and does not claim production-grade audit
+Artifact 4 is not production-ready and does not claim production-grade audit
 behavior. It is a local/demo safety artifact demonstrating staged progression
 from fake-client to one real external side effect.
 
@@ -104,7 +104,7 @@ arguments, logs, audit rows, exception messages, or test snapshots.
 
 The automated suite remains fake/mocked only.
 
-Artifact 5 does not add:
+Artifact 4 does not add:
 
 - a live GitHub smoke execution by default
 - a real token requirement

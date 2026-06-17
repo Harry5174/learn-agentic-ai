@@ -1,11 +1,11 @@
-# Artifact 5 Real GitHub Comment Adapter Spec
+# Artifact 4 Real GitHub Comment Adapter Spec
 
 ## Status
 
-Artifact 5 is complete through A5.5 (Demo, Safety Notes, and Portfolio
+Artifact 4 is complete through A5.5 (Demo, Safety Notes, and Portfolio
 Packaging).
 
-Artifact 5 demonstrates a local/demo approval-gated real GitHub issue-comment
+Artifact 4 demonstrates a local/demo approval-gated real GitHub issue-comment
 adapter. The fake client remains the default. An explicitly configured real mode
 can perform one repository-allowlisted GitHub issue-comment side effect after
 validated scalar arguments, durable approval binding, local durable ledger
@@ -35,9 +35,9 @@ The harness controls:
 - execution
 - audit
 
-## What Artifact 5 Is
+## What Artifact 4 Is
 
-Artifact 5 is a staged design and implementation for one real external side
+Artifact 4 is a staged design and implementation for one real external side
 effect:
 
 ```text
@@ -58,9 +58,9 @@ That side effect must stay behind server-owned controls:
 - server-side token loading
 - durable audit evidence
 
-## What Artifact 5 Is Not
+## What Artifact 4 Is Not
 
-Artifact 5 is not:
+Artifact 4 is not:
 
 - a general GitHub automation platform
 - support for arbitrary repositories
@@ -76,9 +76,9 @@ Artifact 5 is not:
 - support for GitHub operations beyond issue-comment list/create for the one
   approved path
 
-## Why Artifact 4 Is The Baseline
+## Why Artifact 3 Is The Baseline
 
-Artifact 4 is complete as a local/demo durable fake-client safety artifact. It
+Artifact 3 is complete as a local/demo durable fake-client safety artifact. It
 implements:
 
 - SQLite-backed side-effect records
@@ -86,7 +86,7 @@ implements:
 - durable audit events
 - restart/replay duplicate suppression for the fake-client GitHub comment path
 
-Artifact 4 intentionally does not implement:
+Artifact 3 intentionally does not implement:
 
 - real GitHub execution
 - GitHub token loading
@@ -280,7 +280,7 @@ manual live smoke guide remains separately approved work.
 
 ## Explicit Non-Goals
 
-Artifact 5 does not add:
+Artifact 4 does not add:
 
 - OAuth/OIDC
 - MCP
@@ -311,4 +311,4 @@ Possible future work:
 - evidence review for the real-mode safety boundary
 - narrow hardening only if the single-comment path needs it
 
-Do not expand Artifact 5 into general GitHub automation.
+Do not expand Artifact 4 into general GitHub automation.

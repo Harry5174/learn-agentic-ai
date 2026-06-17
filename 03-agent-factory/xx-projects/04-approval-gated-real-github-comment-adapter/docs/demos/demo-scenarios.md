@@ -1,6 +1,6 @@
 # Demo Scenarios
 
-These scenarios document the implemented Artifact 2 behavior. They are backed by
+These scenarios document the implemented Artifact 1 behavior. They are backed by
 existing tests and do not require real model calls, network access, credentials,
 real GitHub writes, or workflow triggers.
 
@@ -10,7 +10,7 @@ The demo boundary is:
 proposer -> SkillProposal -> ProposalValidator -> policy -> approval -> dry-run tools -> audit
 ```
 
-For Artifact 2.1 HTTP walkthroughs, see
+For Artifact 1.1 HTTP walkthroughs, see
 [skill-runner-api-demo.md](skill-runner-api-demo.md).
 
 The default running HTTP API uses fake proposer mode and can demonstrate

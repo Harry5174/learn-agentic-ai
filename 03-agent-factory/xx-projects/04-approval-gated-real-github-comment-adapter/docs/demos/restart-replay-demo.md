@@ -1,6 +1,6 @@
 # Restart / Replay Demo
 
-Artifact 4 integrates SQLite-backed durable side-effect records, approval bindings, and audit events into the fake-client GitHub issue-comment execution path. A core capability proven by this integration is restart/replay duplicate suppression.
+Artifact 3 integrates SQLite-backed durable side-effect records, approval bindings, and audit events into the fake-client GitHub issue-comment execution path. A core capability proven by this integration is restart/replay duplicate suppression.
 
 **Note:** This describes representative/test-backed behavior. The default public HTTP API startup currently does not wire up the SQLite database to demonstrate this via `curl`.
 

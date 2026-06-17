@@ -13,9 +13,9 @@ The harness validates, authorizes, approval-gates, executes, and audits.
 Identity is server-derived, policy is deterministic, and high-risk execution cannot happen before approval.
 ```
 
-Artifact 2 applies that invariant to model-shaped skill proposals.
+Artifact 1 applies that invariant to model-shaped skill proposals.
 
-## Artifact 2 / Artifact 3 Flow
+## Artifact 1 / Artifact 2 Flow
 
 ```text
 Client/task
@@ -55,7 +55,7 @@ Client/task
 - `src/app/audit/`: structured audit event schemas and helpers.
 - `src/app/skills/`: skill contracts, default registry, and proposal validator.
 - `src/app/proposer/`: proposer protocol, fake proposer, and optional LLM proposer boundary.
-- `src/app/skill_graph/`: Artifact 2 skill execution graph and service.
+- `src/app/skill_graph/`: Artifact 1 skill execution graph and service.
 - `src/app/graph/`: inherited deterministic task graph still used by current FastAPI task routes.
 - `src/app/api/`: inherited local/demo FastAPI task API, dependencies, and rate limiter.
 - `tests/`: focused tests for each layer and cross-layer behavior.
@@ -185,8 +185,8 @@ Audit state is in memory and process-local.
 
 ## API Boundary
 
-The FastAPI routes expose the inherited deterministic task API from Artifact 1
-and the Artifact 2.1 skill-runner API surface.
+The FastAPI routes expose the inherited deterministic task API from Artifact 0
+and the Artifact 1.1 skill-runner API surface.
 
 Task routes wrap `HarnessGraphService` from `src/app/graph/`. Skill-run
 creation, read, approval, rejection, and audit routes wrap `SkillGraphService`
@@ -224,11 +224,11 @@ This means:
 
 ## Tool Argument Limitation
 
-Skill specs include argument-schema metadata. Artifact 2.2 validates
+Skill specs include argument-schema metadata. Artifact 1.2 validates
 model-proposed runtime arguments into `ValidatedSkillPlan`, and the skill
 execution graph passes accepted scalar arguments to registered tools.
 
-Artifact 3 uses that scalar argument boundary for the one local/demo
+Artifact 2 uses that scalar argument boundary for the one local/demo
 `post_github_issue_comment` path. Only validated `repository`, `issue_number`,
 and `comment_body` values can reach the fake-client execution boundary.
 
@@ -241,7 +241,7 @@ Current argument limits remain:
 
 ## GitHub Comment Side-Effect Boundary
 
-Artifact 3 adds one approval-gated fake-client GitHub issue-comment path:
+Artifact 2 adds one approval-gated fake-client GitHub issue-comment path:
 
 ```text
 post_github_issue_comment

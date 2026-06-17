@@ -57,7 +57,7 @@ an API gateway, or platform-level traffic controls.
 
 The model is not trusted to choose executable work.
 
-Artifact 2 uses deterministic validation before policy or execution. Unknown
+Artifact 1 uses deterministic validation before policy or execution. Unknown
 skills, hallucinated tools, malformed output, missing scopes, and risk
 understatement are rejected before tool execution.
 

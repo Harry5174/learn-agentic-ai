@@ -1,9 +1,9 @@
-# Artifact 5 Documentation
+# Artifact 4 Documentation
 
-This directory is organized so Artifact 5 is easy to review from GitHub and
+This directory is organized so Artifact 4 is easy to review from GitHub and
 easy for future IDE agents to navigate.
 
-Artifact 5 demonstrates a local/demo approval-gated real GitHub issue-comment
+Artifact 4 demonstrates a local/demo approval-gated real GitHub issue-comment
 adapter. The fake client remains the default. An explicitly configured real mode
 can perform one repository-allowlisted GitHub issue-comment side effect after
 validated scalar arguments, durable approval binding, local durable ledger
@@ -13,22 +13,22 @@ and include adversarial crash-window safety coverage.
 
 ## Read First
 
-- [Artifact 5 real GitHub comment adapter spec](specs/artifact-5-real-github-comment-adapter.md): safety contract and non-goals.
+- [Artifact 4 real GitHub comment adapter spec](specs/artifact-4-real-github-comment-adapter.md): safety contract and non-goals.
 - [Remote idempotency and reconciliation](architecture/remote-idempotency-reconciliation.md): GitHub/SQLite crash window, marker format, reconciliation, and fail-closed behavior.
 - [Manual real-mode smoke test](demos/manual-real-mode-smoke-test.md): optional disabled-by-default live smoke checklist.
 - [Project status](status/project-status.md): current A5.5 status.
-- [Known limitations](status/known-limitations.md): what Artifact 5 does not implement.
+- [Known limitations](status/known-limitations.md): what Artifact 4 does not implement.
 - [Roadmap](status/roadmap.md): completed and future sprint sequencing.
-- [Artifact 4 vs Artifact 5](comparisons/artifact-4-vs-artifact-5.md): baseline comparison.
+- [Artifact 3 vs Artifact 4](comparisons/artifact-3-vs-artifact-5.md): baseline comparison.
 - [Interview notes](status/interview-notes.md): short explanation of the artifact.
 
 ## A5 Safety Topics
 
 A5 docs cover:
 
-- what Artifact 5 is
-- what Artifact 5 is not
-- why Artifact 4 is the baseline
+- what Artifact 4 is
+- what Artifact 4 is not
+- why Artifact 3 is the baseline
 - why local SQLite idempotency is insufficient for real GitHub execution
 - GitHub/SQLite crash window
 - remote idempotency marker format
@@ -52,13 +52,13 @@ A5 docs cover:
 
 ## Inherited Baseline Docs
 
-The copied project still contains Artifact 4, Artifact 3, Artifact 2, and
-Artifact 1 docs. Those pages are historical/source-baseline context unless an
+The copied project still contains Artifact 3, Artifact 2, Artifact 1, and
+Artifact 0 docs. Those pages are historical/source-baseline context unless an
 A5 page says otherwise.
 
 Useful inherited context:
 
-- [Artifact 4 durable side-effect ledger spec](specs/artifact-4-durable-side-effect-ledger.md)
+- [Artifact 3 durable side-effect ledger spec](specs/artifact-3-durable-side-effect-ledger.md)
 - [Persistence boundary](architecture/persistence-boundary.md)
 - [Restart replay demo](demos/restart-replay-demo.md)
 - [Durable audit demo](demos/durable-audit-demo.md)

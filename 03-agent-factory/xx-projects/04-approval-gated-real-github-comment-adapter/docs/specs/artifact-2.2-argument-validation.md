@@ -1,8 +1,8 @@
-# Artifact 2.2 Argument Validation
+# Artifact 1.2 Argument Validation
 
 ## Artifact Version Goal
 
-Artifact 2.2 adds the argument contract and validation boundary needed for
+Artifact 1.2 adds the argument contract and validation boundary needed for
 model-proposed runtime tool arguments.
 
 Sprint E2.0 defined schema stubs and safety rules. Sprint E2.1 implemented
@@ -11,24 +11,24 @@ deterministic validator argument checks and produced a trusted
 into graph/tool execution. Sprint E2.3 adds adversarial boundary tests and final
 documentation packaging.
 
-Artifact 2.2 is complete as a local/demo safety artifact when the E2.3 evidence
+Artifact 1.2 is complete as a local/demo safety artifact when the E2.3 evidence
 suite passes.
 
 ## Problem Statement
 
-Artifact 2 already treats model-shaped skill proposals as untrusted input.
-Artifact 2.2 extends that boundary to runtime tool arguments.
+Artifact 1 already treats model-shaped skill proposals as untrusted input.
+Artifact 1.2 extends that boundary to runtime tool arguments.
 
-The rule for Artifact 2.2 is:
+The rule for Artifact 1.2 is:
 
 ```text
 The LLM may propose arguments.
 Only validator-approved arguments may execute.
 ```
 
-## Current Artifact 2.1 Limitation
+## Current Artifact 1.1 Limitation
 
-Artifact 2.1 exposes the skill-runner lifecycle through the local/demo API and
+Artifact 1.1 exposes the skill-runner lifecycle through the local/demo API and
 executes registered dry-run tools through the harness.
 
 Skill specs now include trusted `ToolArgumentSpec` metadata, and
@@ -39,7 +39,7 @@ arguments do not execute directly.
 
 ## Trusted, Untrusted, And Validated Boundary
 
-Artifact 2.2 separates argument data into three categories:
+Artifact 1.2 separates argument data into three categories:
 
 - Untrusted: raw proposer output, including `SkillProposalStep.arguments`.
 - Trusted: static registry metadata such as skill ids, step ids, tool names,
@@ -100,7 +100,7 @@ contain safe reason codes and messages. V1 has no partial acceptance state.
 
 ## V1 Supported Types
 
-Artifact 2.2 V1 supports only scalar argument values:
+Artifact 1.2 V1 supports only scalar argument values:
 
 - string
 - integer
@@ -258,7 +258,7 @@ documentation summary lives in `docs/adversarial-argument-validation.md`.
 
 ## Strict Non-Goals
 
-Artifact 2.2 does not add:
+Artifact 1.2 does not add:
 
 - live LLM HTTP mode
 - MCP
@@ -274,16 +274,16 @@ Artifact 2.2 does not add:
 - new dependencies
 - new scripts
 
-Artifact 2.2 does not change:
+Artifact 1.2 does not change:
 
 - `ToolRegistry` behavior
 - proposer behavior
 - policy behavior
 - approval behavior
 
-## Acceptance Definition For Artifact 2.2
+## Acceptance Definition For Artifact 1.2
 
-Artifact 2.2 is accepted when:
+Artifact 1.2 is accepted when:
 
 - raw proposed arguments cannot execute
 - argument validation fails closed

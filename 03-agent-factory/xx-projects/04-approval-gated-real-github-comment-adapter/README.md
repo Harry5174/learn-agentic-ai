@@ -1,6 +1,6 @@
-# Artifact 5 — Approval-Gated Real GitHub Comment Adapter
+# Artifact 4 — Approval-Gated Real GitHub Comment Adapter
 
-Artifact 5 demonstrates a local/demo approval-gated real GitHub issue-comment
+Artifact 4 demonstrates a local/demo approval-gated real GitHub issue-comment
 adapter. The fake client remains the default. An explicitly configured real mode
 can perform one repository-allowlisted GitHub issue-comment side effect after
 validated scalar arguments, durable approval binding, local durable ledger
@@ -21,13 +21,13 @@ execution, and audit.
 
 ---
 
-## What Problem Artifact 5 Solves
+## What Problem Artifact 4 Solves
 
-Artifact 4 proved local/demo durable fake-client safety: SQLite-backed
+Artifact 3 proved local/demo durable fake-client safety: SQLite-backed
 side-effect records, durable approval bindings, durable audit events, and
 restart/replay duplicate suppression for the fake-client GitHub comment path.
 
-Artifact 4 intentionally did not implement:
+Artifact 3 intentionally did not implement:
 
 - real GitHub execution
 - GitHub token loading
@@ -46,7 +46,7 @@ atomically. The critical crash window is:
 6. Without remote marker lookup, duplicate real comment may be posted.
 ```
 
-Artifact 5 addresses that design gap. A5.1 adds safe client, server-side
+Artifact 4 addresses that design gap. A5.1 adds safe client, server-side
 token-provider, and real-mode configuration boundaries. A5.2 adds remote
 idempotency marker construction, fake/mocked remote comment listing, marker
 lookup, and durable reconciliation for the GitHub/SQLite crash window. A5.3 adds
@@ -167,7 +167,7 @@ the full checklist and preconditions.
 
 ## What Limitations Remain
 
-Artifact 5 is a local/demo artifact. It is not production-ready.
+Artifact 4 is a local/demo artifact. It is not production-ready.
 
 Key limitations:
 
@@ -206,13 +206,13 @@ See [known limitations](docs/status/known-limitations.md) for the full list.
 
 ## Source Baseline
 
-Artifact 5 was copied from completed Artifact 4:
+Artifact 4 was copied from completed Artifact 3:
 
 ```text
 03-agent-factory/xx-projects/03-durable-side-effect-ledger
 ```
 
-Artifact 4 is the correct baseline because it already proves the local/demo
+Artifact 3 is the correct baseline because it already proves the local/demo
 durable fake-client safety layer.
 
 ---
@@ -223,13 +223,13 @@ Use [docs/README.md](docs/README.md) as the documentation index.
 
 Key entry points:
 
-- [Artifact 5 real GitHub comment adapter spec](docs/specs/artifact-5-real-github-comment-adapter.md)
+- [Artifact 4 real GitHub comment adapter spec](docs/specs/artifact-4-real-github-comment-adapter.md)
 - [Remote idempotency and reconciliation](docs/architecture/remote-idempotency-reconciliation.md)
 - [Manual real-mode smoke test](docs/demos/manual-real-mode-smoke-test.md)
 - [Project status](docs/status/project-status.md)
 - [Known limitations](docs/status/known-limitations.md)
 - [Roadmap](docs/status/roadmap.md)
-- [Artifact 4 vs Artifact 5](docs/comparisons/artifact-4-vs-artifact-5.md)
+- [Artifact 3 vs Artifact 4](docs/comparisons/artifact-3-vs-artifact-5.md)
 - [Interview notes](docs/status/interview-notes.md)
 
 ---

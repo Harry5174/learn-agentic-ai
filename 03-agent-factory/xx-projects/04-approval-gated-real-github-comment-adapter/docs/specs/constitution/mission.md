@@ -2,15 +2,15 @@
 
 ## Artifact Identity
 
-**Name:** Artifact 5 - Approval-Gated Real GitHub Comment Adapter
+**Name:** Artifact 4 - Approval-Gated Real GitHub Comment Adapter
 
 **Current status:** A5.0 baseline/specification sprint only.
 
-This project was copied from the completed Artifact 4 durable side-effect
-ledger. Artifact 4 remains preserved as the local/demo durable fake-client
+This project was copied from the completed Artifact 3 durable side-effect
+ledger. Artifact 3 remains preserved as the local/demo durable fake-client
 safety artifact.
 
-Artifact 5 is initialized to define the safety boundary for one future real
+Artifact 4 is initialized to define the safety boundary for one future real
 external side effect:
 
 ```text
@@ -57,7 +57,7 @@ allowlists, real-mode enablement, idempotency markers, or execution authority.
 
 A5.0 defines:
 
-- why Artifact 4 is the baseline
+- why Artifact 3 is the baseline
 - why local SQLite idempotency is insufficient for real GitHub execution
 - GitHub/SQLite crash window
 - remote idempotency marker format
@@ -71,7 +71,7 @@ A5.0 defines:
 
 ## Non-Goals
 
-Artifact 5 A5.0 does not include:
+Artifact 4 A5.0 does not include:
 
 - real GitHub client implementation
 - token provider implementation

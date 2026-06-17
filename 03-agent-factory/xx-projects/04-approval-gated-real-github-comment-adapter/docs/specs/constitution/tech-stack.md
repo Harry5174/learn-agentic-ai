@@ -1,6 +1,6 @@
 # Tech Stack
 
-This file records the current Artifact 2 technology choices and the boundaries
+This file records the current Artifact 1 technology choices and the boundaries
 future agents should preserve.
 
 ## Runtime And Application Stack
@@ -70,7 +70,7 @@ contracts are stable.
 
 ## Tool Argument Boundary
 
-Artifact 2.2 validates proposed runtime arguments against trusted
+Artifact 1.2 validates proposed runtime arguments against trusted
 `ToolArgumentSpec` metadata.
 
 Skill graph execution uses validator-approved scalar arguments from

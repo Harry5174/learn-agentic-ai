@@ -2,107 +2,133 @@
 
 ## Summary
 
-Artifact 1 proves the execution harness.
+Artifact 1 proves the model-proposed skill runner.
 
-Artifact 2 adds model-shaped skill proposals while keeping execution authority in
-the harness.
+Artifact 2 applies that runner shape to one approval-gated local/demo GitHub
+issue-comment path.
 
-## Artifact 1: Identity-Aware Stateful Agent Harness
-
-Artifact 1 focused on deterministic task interpretation and safe execution
-control.
-
-It implemented:
-
-- server-derived API-key identity
-- deterministic task-to-tool selection
-- controlled dry-run tools
-- deterministic policy guard
-- approval gate for high-risk tools
-- checkpointed resume
-- structured audit trail
-- local/demo FastAPI task API
-- in-memory rate limiting
-
-Artifact 1's key idea:
-
-```text
-Do not let request bodies control identity, policy, approval, or execution.
-```
-
-## Artifact 2: LLM-Proposed, Harness-Controlled Skill Runner
-
-Artifact 2 keeps the Artifact 1 harness foundation and adds:
-
-- structured skill contracts
-- `SkillProposal` as model-shaped output
-- `ProposalValidator`
-- trusted `SkillRegistry`
-- deterministic `FakeProposer`
-- optional provider-neutral `LLMProposer`
-- skill execution graph
-- proposal and validation audit evidence
-
-Artifact 2's key idea:
+The shared principle is:
 
 ```text
 The LLM proposes.
 The harness validates, authorizes, approval-gates, executes, and audits.
 ```
 
-## Difference In The Proposer
+## Artifact 1: Skill Runner Boundary
 
-Artifact 1:
+Artifact 1 introduced the skill-runner layer:
+
+- structured `SkillSpec`, `SkillStep`, and `SkillProposal` contracts
+- trusted `SkillRegistry`
+- deterministic `ProposalValidator`
+- deterministic `FakeProposer`
+- optional provider-neutral `LLMProposer` tested with mocked clients
+- checkpointed skill execution graph
+- skill-runner HTTP lifecycle
+- scalar runtime argument validation
+- raw proposed argument non-execution
+- adversarial argument-boundary evidence
+
+Artifact 1.2's key contribution is that model-shaped proposals may include
+runtime arguments, but only registry-declared scalar arguments accepted by the
+validator can reach controlled dry-run execution.
+
+## Artifact 2: Approval-Gated GitHub Tool Harness
+
+Artifact 2 starts from the completed Artifact 1.2 baseline and focuses on a
+narrow GitHub side-effect boundary.
+
+It adds:
+
+- A3.1 real side-effect boundary specification
+- A3.2 GitHub issue-comment client protocol, fake client, request/result/failure
+  schemas, side-effect id helpers, and in-memory ledger boundary
+- A3.3 one approval-gated local/demo GitHub issue-comment skill path:
+  `post_github_issue_comment`
+- A3.4 adversarial side-effect safety suite
+- A3.5 demo and portfolio packaging
+
+The implemented Artifact 2 path is:
 
 ```text
-user query -> deterministic task interpreter -> selected tool
+model-shaped proposal
+-> proposal validation
+-> scalar argument validation
+-> repository policy
+-> approval gate
+-> side_effect_id computation
+-> in-memory ledger check
+-> fake GitHub client
+-> audit evidence
 ```
 
-Artifact 2:
+## What Changed From Artifact 1
 
-```text
-user task -> proposer -> SkillProposal -> ProposalValidator -> registered skill steps
-```
+Artifact 1 demonstrated generic skill-runner safety.
 
-The model-shaped proposal layer is new in Artifact 2.
+Artifact 2 adds a concrete side-effect-shaped path:
 
-## Difference In The Safety Boundary
-
-Artifact 1 prevents clients from claiming identity or bypassing policy.
-
-Artifact 2 also prevents model output from:
-
-- inventing trusted skills
-- inventing tools
-- understating risk
-- skipping required scopes
-- executing before validation
-- executing high-risk work before approval
+- GitHub issue-comment request/result/failure schemas
+- `GitHubIssueCommentClient` protocol
+- `FakeGitHubIssueCommentClient`
+- `validated_arguments_hash`
+- deterministic `side_effect_id`
+- `InMemorySideEffectLedger`
+- repository allowlist policy
+- GitHub-comment-specific audit evidence
+- adversarial tests for credentials, client config, repository bypass,
+  approval bypass, replay, and fake-client failure behavior
 
 ## What Stayed The Same
 
-Both artifacts keep these decisions out of the model:
+Artifact 2 keeps the Artifact 1 trust boundary:
 
-- identity
-- authorization
-- approval
-- execution
-- audit
+- the model does not authorize
+- the model does not approve
+- the model does not select arbitrary tools
+- raw proposed arguments do not execute directly
+- high-risk work pauses before execution
+- identity is server-derived
+- policy is deterministic
+- audit evidence is structured
 
-Both artifacts use dry-run tools only.
+## What Artifact 2 Still Does Not Do
 
-## Current Integration Boundary
+Artifact 2 is still local/demo only.
 
-The public FastAPI API includes the inherited Artifact 1 task API and the
-Artifact 2.1 skill-runner lifecycle API.
+It does not implement:
 
-The inherited task API remains useful for demonstrating the original execution
-harness. The Artifact 2.1 skill-runner API is the primary demo surface for
-model-shaped skill proposals.
+- real GitHub API adapter
+- GitHub token loading
+- arbitrary repository targeting
+- workflow dispatch
+- PR creation
+- branch creation
+- issue creation
+- repo file writes
+- durable audit storage
+- durable ledger storage
+- OAuth/OIDC
+- MCP
+- frontend
+- production deployment
 
-See:
+## Portfolio Framing
 
-- [../api/task-api.md](../api/task-api.md)
-- [../api/skill-runner-api.md](../api/skill-runner-api.md)
-- [../demos/task-api-demo.md](../demos/task-api-demo.md)
-- [../demos/skill-runner-api-demo.md](../demos/skill-runner-api-demo.md)
+Artifact 1 answers:
+
+```text
+Can a harness accept model-shaped skill plans without trusting the model to
+authorize or execute?
+```
+
+Artifact 2 answers:
+
+```text
+Can that harness shape be extended toward a real side-effect boundary while
+keeping execution fake-client-only, approval-gated, idempotency-checked, and
+audited?
+```
+
+The answer in Artifact 2 is yes, within local/demo scope. It is not a real
+GitHub write system.

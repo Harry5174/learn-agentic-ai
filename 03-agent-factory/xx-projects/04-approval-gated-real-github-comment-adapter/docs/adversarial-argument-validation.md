@@ -1,8 +1,8 @@
 # Adversarial Argument Validation
 
-This note documents the Artifact 2.2 E2.3 adversarial boundary suite.
+This note documents the Artifact 1.2 E2.3 adversarial boundary suite.
 
-Artifact 2.2 proves this local/demo claim:
+Artifact 1.2 proves this local/demo claim:
 
 ```text
 A model-shaped SkillProposal can include runtime tool arguments,
@@ -43,7 +43,7 @@ approval request context, and dry-run tool execution.
 
 ## Supported V1 Argument Shapes
 
-Artifact 2.2 V1 supports only:
+Artifact 1.2 V1 supports only:
 
 - string
 - integer
@@ -147,7 +147,7 @@ Authorization and approval remain harness decisions.
 
 ## Deferred Work
 
-Artifact 2.2 does not support:
+Artifact 1.2 does not support:
 
 - object arguments
 - list arguments
