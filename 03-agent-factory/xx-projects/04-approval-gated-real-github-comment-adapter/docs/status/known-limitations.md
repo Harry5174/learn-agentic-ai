@@ -8,7 +8,7 @@ Artifact 4 is a local/demo artifact. It is not production-ready.
 
 The fake client remains the default. Real mode is disabled by default.
 Automated tests use fake/mocked clients and do not call GitHub or require
-credentials. The manual smoke test was not run in A5.5.
+credentials. The manual smoke test was not run in A4.5.
 
 ## Not Implemented
 
@@ -113,4 +113,4 @@ Artifact 4 does not add:
 
 Live testing must be separately approved and must use a single allowlisted test
 repository with minimum privileges. The optional manual smoke guide is present
-but was not run as part of A5.5 validation.
+but was not run as part of A4.5 validation.

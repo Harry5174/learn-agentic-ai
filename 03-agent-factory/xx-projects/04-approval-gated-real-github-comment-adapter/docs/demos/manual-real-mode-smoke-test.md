@@ -3,7 +3,7 @@
 This page documents an optional manual smoke test for the one
 approval-gated real GitHub issue-comment path.
 
-Manual smoke execution is disabled by default and was not run as part of A5.5
+Manual smoke execution is disabled by default and was not run as part of A4.5
 validation. Do not run it unless the Product Owner explicitly approves live
 execution in the implementation session.
 
@@ -11,7 +11,7 @@ execution in the implementation session.
 
 ```text
 documented but not run
-not run in A5.5
+not run in A4.5
 ```
 
 ## Important Safety Statements
@@ -26,7 +26,7 @@ not run in A5.5
 - The token **must never be committed** to version control.
 - This test **posts at most one comment for an approved `side_effect_id`**.
 - **Remote marker lookup happens before posting.**
-- This test was **not run in A5.5**.
+- This test was **not run in A4.5**.
 
 ## Scope
 

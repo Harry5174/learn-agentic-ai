@@ -46,12 +46,12 @@ atomically. The critical crash window is:
 6. Without remote marker lookup, duplicate real comment may be posted.
 ```
 
-Artifact 4 addresses that design gap. A5.1 adds safe client, server-side
-token-provider, and real-mode configuration boundaries. A5.2 adds remote
+Artifact 4 addresses that design gap. A4.1 adds safe client, server-side
+token-provider, and real-mode configuration boundaries. A4.2 adds remote
 idempotency marker construction, fake/mocked remote comment listing, marker
-lookup, and durable reconciliation for the GitHub/SQLite crash window. A5.3 adds
+lookup, and durable reconciliation for the GitHub/SQLite crash window. A4.3 adds
 one approval-gated real GitHub issue-comment execution path behind explicit
-server-side real-mode configuration. A5.4 adds adversarial real-mode safety
+server-side real-mode configuration. A4.4 adds adversarial real-mode safety
 tests and minimal hardening for token redaction, approval/hash binding, marker
 ambiguity, HTTP failure classification, and crash-window replay.
 
@@ -158,7 +158,7 @@ No test requires a GitHub token, `.env`, or live GitHub access.
 ## Manual Smoke Test
 
 An optional manual real-mode smoke test is [documented](docs/demos/manual-real-mode-smoke-test.md)
-but disabled by default and was not run as part of A5.5 validation. It requires
+but disabled by default and was not run as part of A4.5 validation. It requires
 explicit Product Owner approval and uses a single allowlisted test repository.
 See the [manual smoke-test guide](docs/demos/manual-real-mode-smoke-test.md) for
 the full checklist and preconditions.
@@ -195,12 +195,12 @@ See [known limitations](docs/status/known-limitations.md) for the full list.
 
 | Sprint | Title | Scope |
 |--------|-------|-------|
-| A5.0 | Real-Adapter Safety Spec, Token Scope, and Remote Idempotency Design | Documentation/specification only |
-| A5.1 | GitHub Client Interface and Server-Side Token Provider | Safe client, token-provider, real-mode config boundaries |
-| A5.2 | Remote Idempotency Marker and Reconciliation | Marker construction, fake/mocked reconciliation |
-| A5.3 | Approval-Gated Real Comment Execution Path | One real issue-comment path, server-side real-mode config |
-| A5.4 | Real-Mode Adversarial and Crash-Window Safety Suite | Adversarial tests, minimal hardening |
-| A5.5 | Demo, Safety Notes, and Portfolio Packaging | Documentation, demo, portfolio packaging |
+| A4.0 | Real-Adapter Safety Spec, Token Scope, and Remote Idempotency Design | Documentation/specification only |
+| A4.1 | GitHub Client Interface and Server-Side Token Provider | Safe client, token-provider, real-mode config boundaries |
+| A4.2 | Remote Idempotency Marker and Reconciliation | Marker construction, fake/mocked reconciliation |
+| A4.3 | Approval-Gated Real Comment Execution Path | One real issue-comment path, server-side real-mode config |
+| A4.4 | Real-Mode Adversarial and Crash-Window Safety Suite | Adversarial tests, minimal hardening |
+| A4.5 | Demo, Safety Notes, and Portfolio Packaging | Documentation, demo, portfolio packaging |
 
 ---
 
@@ -229,7 +229,7 @@ Key entry points:
 - [Project status](docs/status/project-status.md)
 - [Known limitations](docs/status/known-limitations.md)
 - [Roadmap](docs/status/roadmap.md)
-- [Artifact 3 vs Artifact 4](docs/comparisons/artifact-3-vs-artifact-5.md)
+- [Artifact 3 vs Artifact 4](docs/comparisons/artifact-3-vs-artifact-4.md)
 - [Interview notes](docs/status/interview-notes.md)
 
 ---

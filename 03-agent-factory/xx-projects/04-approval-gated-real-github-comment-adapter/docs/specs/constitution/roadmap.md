@@ -18,12 +18,12 @@ issue-comment path:
 Artifact 3 did not implement real GitHub execution, GitHub token loading, or
 production-grade exactly-once semantics.
 
-## Current Step: A5.0
+## Current Step: A4.0
 
-A5.0 initializes Artifact 4 as a baseline/specification artifact for a future
+A4.0 initializes Artifact 4 as a baseline/specification artifact for a future
 approval-gated real GitHub issue-comment adapter.
 
-A5.0 defines:
+A4.0 defines:
 
 - real-mode safety boundary
 - fake-client default behavior
@@ -38,11 +38,11 @@ A5.0 defines:
 - future testing strategy
 - explicit non-goals
 
-A5.0 does not implement real GitHub execution.
+A4.0 does not implement real GitHub execution.
 
 ## Next Recommended Steps
 
-Prepare explicit A5.1/A5.2 proposals before adding runtime real-mode behavior.
+Prepare explicit A4.1/A4.2 proposals before adding runtime real-mode behavior.
 
 Good next slices:
 

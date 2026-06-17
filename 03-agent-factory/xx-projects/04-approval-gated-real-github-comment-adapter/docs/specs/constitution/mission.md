@@ -4,7 +4,7 @@
 
 **Name:** Artifact 4 - Approval-Gated Real GitHub Comment Adapter
 
-**Current status:** A5.0 baseline/specification sprint only.
+**Current status:** A4.0 baseline/specification sprint only.
 
 This project was copied from the completed Artifact 3 durable side-effect
 ledger. Artifact 3 remains preserved as the local/demo durable fake-client
@@ -17,7 +17,7 @@ external side effect:
 post one GitHub issue comment
 ```
 
-A5.0 does not implement real GitHub execution.
+A4.0 does not implement real GitHub execution.
 
 ## Mission Statement
 
@@ -53,9 +53,9 @@ Request bodies and model output must not define identity, role, scopes, policy
 decisions, approval authority, trusted tools, token values, repository
 allowlists, real-mode enablement, idempotency markers, or execution authority.
 
-## A5.0 Safety Model
+## A4.0 Safety Model
 
-A5.0 defines:
+A4.0 defines:
 
 - why Artifact 3 is the baseline
 - why local SQLite idempotency is insufficient for real GitHub execution
@@ -71,7 +71,7 @@ A5.0 defines:
 
 ## Non-Goals
 
-Artifact 4 A5.0 does not include:
+Artifact 4 A4.0 does not include:
 
 - real GitHub client implementation
 - token provider implementation

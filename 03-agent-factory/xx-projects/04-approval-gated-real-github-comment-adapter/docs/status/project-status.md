@@ -4,7 +4,7 @@
 
 **Title:** Artifact 4 — Approval-Gated Real GitHub Comment Adapter
 
-**Current sprint:** A5.5 — Demo, Safety Notes, and Portfolio Packaging
+**Current sprint:** A4.5 — Demo, Safety Notes, and Portfolio Packaging
 
 **Status:** Artifact 4 is complete as a local/demo approval-gated real GitHub
 issue-comment adapter. Documentation, demo guides, safety notes, and portfolio
@@ -36,26 +36,26 @@ The Artifact 4 workspace is:
 
 ## Sprint History
 
-### A5.0 — Real-Adapter Safety Spec, Token Scope, And Remote Idempotency Design
+### A4.0 — Real-Adapter Safety Spec, Token Scope, And Remote Idempotency Design
 
-A5.0 defined the safety design: real-mode boundary, fake-client default,
+A4.0 defined the safety design: real-mode boundary, fake-client default,
 server-side token handling, minimum-privilege token guidance, repository
 allowlist requirements, GitHub/SQLite crash window, remote idempotency marker
 format, remote reconciliation behavior, fail-closed ambiguity behavior, durable
 audit requirements, future test strategy, and explicit non-goals.
 
-### A5.1 — GitHub Client Interface And Server-Side Token Provider
+### A4.1 — GitHub Client Interface And Server-Side Token Provider
 
-A5.1 added `GitHubTokenProvider`, `EnvironmentGitHubTokenProvider`,
+A4.1 added `GitHubTokenProvider`, `EnvironmentGitHubTokenProvider`,
 `MissingGitHubTokenError`, `GitHubRealModeConfig`,
 `DisabledRealGitHubIssueCommentClient`, safe credentials-unavailable failure
 construction, and tests proving fake client remains default, real mode remains
 disabled by default, missing or blank token values fail closed, and token-like
 values stay out of produced audit/results/failures.
 
-### A5.2 — Remote Idempotency Marker And Reconciliation
+### A4.2 — Remote Idempotency Marker And Reconciliation
 
-A5.2 added deterministic remote idempotency marker builder/parser, fake/mocked
+A4.2 added deterministic remote idempotency marker builder/parser, fake/mocked
 `RemoteIssueComment` listing boundary, marker lookup outcomes (found, absent,
 mismatch, ambiguous, lookup failed), durable reconciliation for existing
 approved/executing local records, durable audit events for marker lookup and
@@ -63,9 +63,9 @@ remote reconciliation, crash-window simulation proving marker recovery does not
 post, and tests proving unapproved planned records are not authorized by marker
 text.
 
-### A5.3 — Approval-Gated Real Comment Execution Path
+### A4.3 — Approval-Gated Real Comment Execution Path
 
-A5.3 added one narrow real GitHub issue-comment client using standard-library
+A4.3 added one narrow real GitHub issue-comment client using standard-library
 HTTP, list issue comments and create issue comment only, bounded pagination for
 complete-enough marker lookup, explicit timeout handling, safe GitHub HTTP
 failure mapping, server-side real-mode graph/service injection points,
@@ -77,9 +77,9 @@ deterministic marker appended, external comment id/url persistence, durable
 audit events for real-mode safety decisions, token redaction tests, and
 disabled-by-default optional manual smoke test documentation.
 
-### A5.4 — Real-Mode Adversarial And Crash-Window Safety Suite
+### A4.4 — Real-Mode Adversarial And Crash-Window Safety Suite
 
-A5.4 added adversarial token/header leakage tests, hostile transport exception
+A4.4 added adversarial token/header leakage tests, hostile transport exception
 redaction tests, repository allowlist bypass tests, request/model control-plane
 smuggling tests, approval/hash mutation tests, remote marker spoofing tests,
 ambiguous/quoted/duplicated/malformed/extra-field marker tests, GitHub HTTP/
@@ -89,9 +89,9 @@ binding, approval-binding consistency, status-specific HTTP failures, remote
 listing failure redaction, ambiguous marker classification, and timeout/replay
 handling without blind same-call retry.
 
-### A5.5 — Demo, Safety Notes, And Portfolio Packaging
+### A4.5 — Demo, Safety Notes, And Portfolio Packaging
 
-A5.5 packaged the completed Artifact 4 as a clear, interview-ready portfolio
+A4.5 packaged the completed Artifact 4 as a clear, interview-ready portfolio
 artifact. README was rewritten as the portfolio entry point. Documentation
 index, spec, architecture docs, project status, known limitations, roadmap,
 interview notes, manual smoke-test guide, artifact comparison, and parent

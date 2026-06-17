@@ -5,12 +5,12 @@
 This page defines the Artifact 4 boundary for remote idempotency in the real
 GitHub issue-comment adapter.
 
-A5.2 implements marker construction, marker parsing, fake/mocked remote comment
-listing, marker lookup, and durable reconciliation tests. A5.3 adds one
+A4.2 implements marker construction, marker parsing, fake/mocked remote comment
+listing, marker lookup, and durable reconciliation tests. A4.3 adds one
 approval-gated real issue-comment path that performs live remote lookup and
 posting only when explicit server-side real-mode configuration is injected.
-A5.4 adds adversarial tests and minimal safety hardening for ambiguous markers,
-incomplete lookup, timeout recovery, and crash-window replay. A5.5 packages
+A4.4 adds adversarial tests and minimal safety hardening for ambiguous markers,
+incomplete lookup, timeout recovery, and crash-window replay. A4.5 packages
 the completed artifact with documentation, demo guides, and portfolio framing.
 
 ## Local And Remote State
@@ -41,7 +41,7 @@ This is why local SQLite idempotency alone cannot support real GitHub execution.
 
 ## Marker Format
 
-A5.3 real GitHub comments include this marker in the posted body:
+A4.3 real GitHub comments include this marker in the posted body:
 
 ```html
 <!-- agent_factory:v1 side_effect_id=<side_effect_id> args_hash=<validated_arguments_hash> -->
@@ -62,7 +62,7 @@ Required properties:
 
 ## Reconciliation Before Posting
 
-A5.3 applies the following rule before any real post:
+A4.3 applies the following rule before any real post:
 
 ```text
 1. List existing issue comments.
@@ -78,7 +78,7 @@ The lookup must happen after local validation, repository allowlist checks,
 durable ledger checks, durable approval binding, explicit real-mode checks, and
 server-side token loading, but before the real POST.
 
-The marker is not authorization. A5.3 reconciliation does not bypass approval,
+The marker is not authorization. A4.3 reconciliation does not bypass approval,
 does not authorize unapproved planned records, and does not create local durable
 records from remote marker text. It reconciles only existing approved/executing
 durable records whose side-effect id, validated argument hash, repository, issue
@@ -104,7 +104,7 @@ Required fail-closed cases:
 
 ## Durable Audit Evidence
 
-A5.4 records durable audit evidence for the remote marker decision. These
+A4.4 records durable audit evidence for the remote marker decision. These
 decisions are auditable:
 
 - `remote_marker_check_started`
@@ -134,11 +134,11 @@ state. Remote reconciliation is an additional safety step for real external
 effects, not a replacement for local validation, approval binding, or durable
 audit.
 
-When an exact remote marker already exists, A5.3 real mode reconciles local
+When an exact remote marker already exists, A4.3 real mode reconciles local
 durable state to a succeeded/already_posted outcome and preserves the external
 comment id/url if GitHub exposes them.
 
-When marker lookup fails or is ambiguous, A5.3 real mode records a blocked
+When marker lookup fails or is ambiguous, A4.3 real mode records a blocked
 outcome and avoids the POST.
 
 Bounded pagination, remote deletion, and human-edited marker text remain known

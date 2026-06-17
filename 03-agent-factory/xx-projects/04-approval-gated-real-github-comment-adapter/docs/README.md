@@ -16,10 +16,10 @@ and include adversarial crash-window safety coverage.
 - [Artifact 4 real GitHub comment adapter spec](specs/artifact-4-real-github-comment-adapter.md): safety contract and non-goals.
 - [Remote idempotency and reconciliation](architecture/remote-idempotency-reconciliation.md): GitHub/SQLite crash window, marker format, reconciliation, and fail-closed behavior.
 - [Manual real-mode smoke test](demos/manual-real-mode-smoke-test.md): optional disabled-by-default live smoke checklist.
-- [Project status](status/project-status.md): current A5.5 status.
+- [Project status](status/project-status.md): current A4.5 status.
 - [Known limitations](status/known-limitations.md): what Artifact 4 does not implement.
 - [Roadmap](status/roadmap.md): completed and future sprint sequencing.
-- [Artifact 3 vs Artifact 4](comparisons/artifact-3-vs-artifact-5.md): baseline comparison.
+- [Artifact 3 vs Artifact 4](comparisons/artifact-3-vs-artifact-4.md): baseline comparison.
 - [Interview notes](status/interview-notes.md): short explanation of the artifact.
 
 ## A5 Safety Topics
@@ -37,11 +37,11 @@ A5 docs cover:
 - real-mode boundary
 - fake-client default behavior
 - server-side token handling requirements
-- A5.1 token-provider and real-mode config boundaries
-- A5.2 fake/mocked marker lookup and reconciliation boundaries
-- A5.3 approval-gated real comment execution path
-- A5.4 adversarial safety tests and crash-window replay hardening
-- A5.5 documentation, demo, and portfolio packaging
+- A4.1 token-provider and real-mode config boundaries
+- A4.2 fake/mocked marker lookup and reconciliation boundaries
+- A4.3 approval-gated real comment execution path
+- A4.4 adversarial safety tests and crash-window replay hardening
+- A4.5 documentation, demo, and portfolio packaging
 - marker is not authorization and does not bypass approval
 - minimum-privilege GitHub token guidance
 - repository allowlist requirements

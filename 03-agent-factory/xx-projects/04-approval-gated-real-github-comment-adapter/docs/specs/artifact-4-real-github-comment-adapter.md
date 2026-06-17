@@ -2,7 +2,7 @@
 
 ## Status
 
-Artifact 4 is complete through A5.5 (Demo, Safety Notes, and Portfolio
+Artifact 4 is complete through A4.5 (Demo, Safety Notes, and Portfolio
 Packaging).
 
 Artifact 4 demonstrates a local/demo approval-gated real GitHub issue-comment
@@ -109,7 +109,7 @@ succeed before a crash.
 
 ## Required GitHub/SQLite Crash Window
 
-A5.3 accounts for this crash window:
+A4.3 accounts for this crash window:
 
 ```text
 1. GitHub comment POST succeeds.
@@ -122,7 +122,7 @@ A5.3 accounts for this crash window:
 
 ## Required Remote Idempotency Marker
 
-A5.3 real GitHub comment bodies include this marker:
+A4.3 real GitHub comment bodies include this marker:
 
 ```html
 <!-- agent_factory:v1 side_effect_id=<side_effect_id> args_hash=<validated_arguments_hash> -->
@@ -143,9 +143,9 @@ The marker is not a secret. It is an idempotency and reconciliation affordance.
 It is not authorization, not a replacement for approval, and not sufficient by
 itself to mark an action succeeded.
 
-## A5.3 Remote Reconciliation Behavior
+## A4.3 Remote Reconciliation Behavior
 
-A5.3 applies this behavior before any real post:
+A4.3 applies this behavior before any real post:
 
 ```text
 1. List existing issue comments.
@@ -157,7 +157,7 @@ A5.3 applies this behavior before any real post:
 7. If marker lookup fails, fail closed.
 ```
 
-A5.3 reconciliation only operates on existing local durable records in approved
+A4.3 reconciliation only operates on existing local durable records in approved
 or executing recovery states. It verifies that the local record matches the
 side-effect id, validated argument hash, repository, issue number, and tool name.
 It does not create a side-effect record from a remote marker and does not
@@ -165,7 +165,7 @@ authorize unapproved planned side effects.
 
 ## Required Fail-Closed Behavior
 
-A5.4 real mode fails closed for:
+A4.4 real mode fails closed for:
 
 - marker lookup failure
 - multiple matching remote markers unless separately approved
@@ -184,7 +184,7 @@ The harness must not post a real GitHub comment when marker state is ambiguous.
 
 ## Real-Mode Boundary
 
-A5.1 adds explicit real-mode settings and keeps them disabled by default. A5.3
+A4.1 adds explicit real-mode settings and keeps them disabled by default. A4.3
 wires real mode only through explicit server-side constructor/config injection.
 Trusted server-side configuration owns whether real mode is enabled and which
 repositories are allowlisted. Request bodies, model output, skill arguments, and
@@ -197,7 +197,7 @@ fake/mocked and no CI-style validation may require a GitHub token.
 
 ## Token Requirements
 
-A5.1 adds a server-side environment token-provider boundary for real mode. The
+A4.1 adds a server-side environment token-provider boundary for real mode. The
 default environment variable name is `AGENT_FACTORY_GITHUB_TOKEN`. Missing or
 blank values fail closed with generic safe messages.
 
@@ -223,7 +223,7 @@ Minimum-privilege guidance:
 
 Do not hardcode token values. Do not include realistic-looking secrets.
 
-The default local/demo fake-client path does not require a token. A5.3 loads the
+The default local/demo fake-client path does not require a token. A4.3 loads the
 token only after local gates and durable approval binding pass.
 
 ## Repository Allowlist Requirements
@@ -232,13 +232,13 @@ The repository allowlist must be server-owned and explicit. Request bodies,
 model output, and tool arguments may propose a repository value, but they must
 not define or widen the trusted allowlist.
 
-A5.3 real mode uses exact server-owned repository allowlist matching. The
+A4.3 real mode uses exact server-owned repository allowlist matching. The
 prepared optional manual test repository is
 `Harry5174/artifact-5-github-comment-test`.
 
 ## Durable Audit Requirements
 
-A5.3 real mode makes the remote marker decision auditable. Safety decisions are
+A4.3 real mode makes the remote marker decision auditable. Safety decisions are
 visible for events such as:
 
 - `remote_marker_check_started`
@@ -258,7 +258,7 @@ Durable audit rows must not store tokens or realistic secrets.
 
 ## Real-Mode Testing Strategy
 
-A5.4 automated tests use fake transports and fake real clients. They cover:
+A4.4 automated tests use fake transports and fake real clients. They cover:
 
 - real client pagination, page bound, create response, HTTP failures, and
   malformed responses
@@ -275,7 +275,7 @@ A5.4 automated tests use fake transports and fake real clients. They cover:
 - create-timeout ambiguous outcome replay
 - crash-window replay through existing executing durable records
 
-A5.4 does not run a manual live smoke test. The disabled-by-default optional
+A4.4 does not run a manual live smoke test. The disabled-by-default optional
 manual live smoke guide remains separately approved work.
 
 ## Explicit Non-Goals
@@ -302,7 +302,7 @@ Artifact 4 does not add:
 
 ## Completed Roadmap
 
-All implementation sprints (A5.0–A5.5) are complete. See
+All implementation sprints (A4.0–A4.5) are complete. See
 [roadmap](../status/roadmap.md) for full details.
 
 Possible future work:

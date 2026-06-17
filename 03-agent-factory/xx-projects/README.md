@@ -12,7 +12,7 @@ This directory contains the numbered artifact sequence for the Agent Factory tra
 | 1 | [01-llm-proposed-skill-runner](01-llm-proposed-skill-runner) | LLM-Proposed, Harness-Controlled Skill Runner | Complete / tagged `artifact-2.2` |
 | 2 | [02-approval-gated-github-tool-harness](02-approval-gated-github-tool-harness) | Approval-Gated GitHub Tool Harness | Complete as local/demo fake-client artifact |
 | 3 | [03-durable-side-effect-ledger](03-durable-side-effect-ledger) | Durable Side-Effect Ledger and Approval Binding | Complete as local/demo durable fake-client safety artifact |
-| 4 | [04-approval-gated-real-github-comment-adapter](04-approval-gated-real-github-comment-adapter) | Approval-Gated Real GitHub Comment Adapter | Complete as local/demo real-comment adapter (A5.5) |
+| 4 | [04-approval-gated-real-github-comment-adapter](04-approval-gated-real-github-comment-adapter) | Approval-Gated Real GitHub Comment Adapter | Complete as local/demo real-comment adapter (A4.5) |
 
 ---
 
@@ -60,7 +60,7 @@ This directory contains the numbered artifact sequence for the Agent Factory tra
 **Path:** `03-durable-side-effect-ledger`
 **Status:** Complete as local/demo durable fake-client safety artifact
 
-**A4.5 claim:** Artifact 3 demonstrates restart-safe local/demo side-effect execution for an approval-gated fake-client GitHub comment path using SQLite-backed side-effect records, durable approval bindings, restart/replay duplicate suppression, durable local/demo audit events, and adversarial persistence tests.
+**A3.5 claim:** Artifact 3 demonstrates restart-safe local/demo side-effect execution for an approval-gated fake-client GitHub comment path using SQLite-backed side-effect records, durable approval bindings, restart/replay duplicate suppression, durable local/demo audit events, and adversarial persistence tests.
 
 **Current limitation:** Fake-client only. It has not implemented real GitHub execution, token loading, or production-grade exactly-once claims.
 
@@ -75,9 +75,9 @@ This directory contains the numbered artifact sequence for the Agent Factory tra
 ## Artifact 4 - Approval-Gated Real GitHub Comment Adapter
 
 **Path:** `04-approval-gated-real-github-comment-adapter`
-**Status:** Complete as local/demo real-comment adapter (A5.5)
+**Status:** Complete as local/demo real-comment adapter (A4.5)
 
-**A5.5 claim:** Artifact 4 demonstrates a local/demo approval-gated real GitHub issue-comment adapter. The fake client remains the default. An explicitly configured real mode can perform one repository-allowlisted GitHub issue-comment side effect after validated scalar arguments, durable approval binding, local durable ledger checks, remote idempotency marker lookup/reconciliation, server-side token loading, and durable audit recording. Automated tests use fake/mocked clients and include adversarial crash-window safety coverage.
+**A4.5 claim:** Artifact 4 demonstrates a local/demo approval-gated real GitHub issue-comment adapter. The fake client remains the default. An explicitly configured real mode can perform one repository-allowlisted GitHub issue-comment side effect after validated scalar arguments, durable approval binding, local durable ledger checks, remote idempotency marker lookup/reconciliation, server-side token loading, and durable audit recording. Automated tests use fake/mocked clients and include adversarial crash-window safety coverage.
 
 **Current limitation:** Local/demo artifact. Not production-ready. One issue-comment operation only. No arbitrary repository support. No OAuth/OIDC, MCP, frontend, or deployment. Manual smoke test not run unless separately approved.
 

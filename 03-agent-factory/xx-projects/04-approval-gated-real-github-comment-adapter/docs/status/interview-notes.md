@@ -34,26 +34,26 @@ real external side effect: posting a single GitHub issue comment.
 
 ## Sprint Progression
 
-- **A5.0:** Defined the real-mode boundary, token scope, remote idempotency
+- **A4.0:** Defined the real-mode boundary, token scope, remote idempotency
   marker format, reconciliation behavior, fail-closed rules, and non-goals.
   Documentation/specification only.
-- **A5.1:** Added safe client interface, server-side environment token provider,
+- **A4.1:** Added safe client interface, server-side environment token provider,
   real-mode config boundary, and disabled real client. Tests prove fake client
   remains default, missing tokens fail closed, and token values stay out of
   results/audit.
-- **A5.2:** Added deterministic marker builder/parser, fake/mocked remote
+- **A4.2:** Added deterministic marker builder/parser, fake/mocked remote
   comment listing, marker lookup outcomes (found, absent, mismatch, ambiguous,
   lookup failed), durable reconciliation, and crash-window simulation proving
   marker recovery does not post.
-- **A5.3:** Added narrow real GitHub issue-comment client using standard-library
+- **A4.3:** Added narrow real GitHub issue-comment client using standard-library
   HTTP, bounded pagination, repository allowlist enforcement, remote marker
   lookup before posting, marker-found reconciliation, marker-absent posting
   with deterministic marker appended, and durable audit for real-mode decisions.
-- **A5.4:** Added adversarial token leakage tests, hostile transport exception
+- **A4.4:** Added adversarial token leakage tests, hostile transport exception
   redaction, repository allowlist bypass tests, approval/hash mutation tests,
   marker spoofing tests (quoted, duplicated, extra-field), HTTP/timeout failure
   tests, and crash-window replay through executing durable records.
-- **A5.5:** Documentation, demo, and portfolio packaging. No runtime changes.
+- **A4.5:** Documentation, demo, and portfolio packaging. No runtime changes.
 
 ## Key Technical Decision: Remote Idempotency
 

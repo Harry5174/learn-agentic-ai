@@ -8,59 +8,59 @@ The LLM proposes.
 The harness decides.
 ```
 
-## A5.0 — Real-Adapter Safety Spec, Token Scope, And Remote Idempotency Design
+## A4.0 — Real-Adapter Safety Spec, Token Scope, And Remote Idempotency Design
 
 Status: complete.
 
-A5.0 created the Artifact 4 workspace from completed Artifact 3 and defined the
+A4.0 created the Artifact 4 workspace from completed Artifact 3 and defined the
 real-mode boundary, fake-client default, server-side token handling requirements,
 minimum-privilege token guidance, repository allowlist requirements,
 GitHub/SQLite crash window, remote idempotency marker format, remote
 reconciliation behavior, fail-closed ambiguity behavior, durable audit
 requirements, future test strategy, and explicit non-goals.
 
-## A5.1 — GitHub Client Interface And Server-Side Token Provider
+## A4.1 — GitHub Client Interface And Server-Side Token Provider
 
 Status: complete.
 
-A5.1 added safe client interface, server-side environment token-provider
+A4.1 added safe client interface, server-side environment token-provider
 boundary, missing-token fail-closed behavior, real-mode config boundary,
 disabled real-client boundary, and token redaction/source-rejection tests.
 
-## A5.2 — Remote Idempotency Marker And Reconciliation
+## A4.2 — Remote Idempotency Marker And Reconciliation
 
 Status: complete.
 
-A5.2 added deterministic marker builder/parser, fake/mocked remote comment
+A4.2 added deterministic marker builder/parser, fake/mocked remote comment
 listing, marker lookup outcomes (found, absent, mismatch, ambiguous, lookup
 failed), durable reconciliation for existing approved/executing local records,
 and proof that marker text does not authorize unapproved planned side effects.
 
-## A5.3 — Approval-Gated Real Comment Execution Path
+## A4.3 — Approval-Gated Real Comment Execution Path
 
 Status: complete.
 
-A5.3 added one narrow real GitHub issue-comment client using standard-library
+A4.3 added one narrow real GitHub issue-comment client using standard-library
 HTTP, bounded pagination, repository allowlist enforcement, remote marker lookup
 before posting, marker-found reconciliation, marker-absent posting with
 deterministic marker appended, external comment id/url persistence, and durable
 audit for real-mode safety decisions.
 
-## A5.4 — Real-Mode Adversarial And Crash-Window Safety Suite
+## A4.4 — Real-Mode Adversarial And Crash-Window Safety Suite
 
 Status: complete.
 
-A5.4 added adversarial token/header leakage tests, hostile transport exception
+A4.4 added adversarial token/header leakage tests, hostile transport exception
 redaction, repository allowlist bypass tests, request/model control-plane
 smuggling tests, approval/hash mutation tests, marker spoofing and ambiguity
 tests, HTTP/timeout/malformed-response failure tests, crash-window replay
 through executing durable records, and narrow safety hardening.
 
-## A5.5 — Demo, Safety Notes, And Portfolio Packaging
+## A4.5 — Demo, Safety Notes, And Portfolio Packaging
 
 Status: complete.
 
-A5.5 packaged the completed Artifact 4 as a clear, interview-ready portfolio
+A4.5 packaged the completed Artifact 4 as a clear, interview-ready portfolio
 artifact. Documentation, demo guides, safety notes, known limitations, and
 portfolio framing were updated. No runtime behavior was changed.
 
