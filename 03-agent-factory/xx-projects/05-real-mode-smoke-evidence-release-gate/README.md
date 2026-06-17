@@ -66,9 +66,14 @@ Artifact 05 is not:
 
 ## Current Status
 
-A5.0 creates the documentation scaffold only. No live GitHub execution was run
-for this scaffold sprint, no credentials were required, and no `.env` contents
-were read.
+A5.0 created the documentation scaffold only. A5.1 hardens the redacted
+evidence bundle, token redaction checklist, manual runbook, and live-smoke
+threat model. A5.1 remains non-live: no live GitHub execution is run, no
+credentials are required, no `.env` contents are read, and no runtime behavior
+is changed.
+
+A5.1 creates readiness for later reviewable evidence. It is not proof that a
+live smoke run has occurred.
 
 ## Documentation
 
@@ -91,3 +96,12 @@ Key entry points:
 
 The final Artifact 04 tag must point to `9ef8ab8`, unless a newer closeout
 commit has been explicitly approved by the Design Supervisor.
+
+## A5.x Sequence
+
+- A5.0: Artifact 04 closeout verification and Artifact 05 scaffold.
+- A5.1: redacted evidence bundle and safety checklist hardening.
+- A5.2: manual preflight gate using non-live validation.
+- A5.3: explicitly approved manual live smoke, if Product Owner approval is
+  granted in that sprint.
+- A5.4: replay, negative evidence review, and final closeout report.

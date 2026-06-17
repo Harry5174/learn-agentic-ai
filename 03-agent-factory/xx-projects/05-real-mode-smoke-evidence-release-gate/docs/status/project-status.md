@@ -4,11 +4,10 @@
 
 **Title:** Artifact 05 - Real-Mode Smoke Evidence and Release Gate
 
-**Current sprint:** A5.0 - Artifact 04 Closeout Verification and Artifact 05
-Scaffold
+**Current sprint:** A5.1 - Redacted Evidence Bundle and Safety Checklist
 
-**Status:** A5.0 scaffold created. Documentation only. No runtime behavior was
-added.
+**Status:** A5.0 scaffold complete. A5.1 redacted evidence and safety
+checklist hardening complete. Documentation only. No runtime behavior is added.
 
 ## Current Claim
 
@@ -18,7 +17,7 @@ The fake client remains default, real mode remains explicit, and any live
 GitHub smoke run requires explicit Product Owner approval in the sprint that
 runs it.
 
-## A5.0 Scope
+## Completed A5.0 Scope
 
 A5.0:
 
@@ -37,6 +36,28 @@ A5.0 does not:
 - add a new adapter
 - add runtime execution behavior
 - push or tag
+
+## A5.1 Scope
+
+A5.1 completed:
+
+- strengthens the evidence bundle template
+- adds explicit redaction proof requirements
+- defines safe token-presence recording
+- separates intentional safety-documentation pattern matches from generated
+  evidence/log scans
+- strengthens manual runbook preconditions for A5.3
+- strengthens the threat model for evidence leakage, false-positive proof, and
+  accidental network execution
+
+A5.1 does not:
+
+- run live GitHub
+- require credentials
+- read `.env`
+- add runtime execution behavior
+- create a new GitHub adapter
+- prove that a live smoke run occurred
 
 ## Methodology Preserved
 
@@ -62,5 +83,5 @@ commit has been explicitly approved by the Design Supervisor.
 ## Recommended Next Step
 
 ```text
-A5.1 - Redacted Evidence Bundle and Safety Checklist
+A5.2 - Manual Preflight Gate
 ```

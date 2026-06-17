@@ -5,7 +5,7 @@ gate layer, not a new automation layer.
 
 ## A5.0 - Artifact 04 Closeout Verification And Artifact 05 Scaffold
 
-Status: complete when the scaffold is validated.
+Status: complete.
 
 A5.0 verifies the Artifact 04 closeout baseline and creates documentation for
 future manual smoke evidence. It does not run live GitHub, require credentials,
@@ -13,12 +13,23 @@ or add runtime behavior.
 
 ## A5.1 - Redacted Evidence Bundle And Safety Checklist
 
-Recommended next step.
+Status: complete.
 
 Define concrete evidence checklist items, redaction proof commands, and review
 criteria for accepting or rejecting a future release-gate packet.
 
-## A5.2 - Dry-Run Release Gate Validation
+Deliverables:
+
+- stricter evidence bundle template
+- safe redacted evidence example
+- token redaction checklist
+- redaction proof requirements
+- manual runbook start gate
+- live-smoke threat-model hardening
+
+No live GitHub execution is allowed in A5.1.
+
+## A5.2 - Manual Preflight Gate
 
 Use fake/mocked execution to prove the release-gate checklist can be completed
 without credentials or network access.
@@ -46,8 +57,9 @@ Before the live run, one of the following must be true:
 
 ## A5.4 - Evidence Review And Closeout
 
-Review redacted evidence, document pass/fail decision, record known limitations,
-and recommend only narrow hardening if the evidence shows a real gap.
+Review replay/no-duplicate evidence, negative allowlist evidence, redacted
+evidence, pass/fail decision, known limitations, and final closeout report.
+Recommend only narrow hardening if the evidence shows a real gap.
 
 ## Premature Work To Avoid
 
@@ -70,4 +82,3 @@ Do not add:
 - Digital FTE behavior
 - arbitrary repository support
 - universal exactly-once claims
-

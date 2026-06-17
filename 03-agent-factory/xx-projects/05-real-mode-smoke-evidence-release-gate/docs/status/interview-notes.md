@@ -38,12 +38,30 @@ Artifact 05 adds documentation for:
 
 It does not add a new adapter or runtime path.
 
+## What A5.1 Adds
+
+A5.1 makes the evidence system stricter before any live smoke is allowed:
+
+- safe placeholders instead of realistic secret-looking examples
+- explicit token-presence recording without token values
+- redaction proof requirements
+- generated evidence/log scan guidance
+- zero-network proof requirements for negative allowlist tests
+- future A5.3 start gates
+- threat-model coverage for false-positive evidence and operator copying
+  mistakes
+
+A5.1 remains non-live. It prepares the evidence packet shape; it does not
+claim that the live smoke happened.
+
 ## What To Highlight
 
 - The fake client remains the default.
 - Real mode is explicit and manual.
 - No CI live GitHub execution is allowed.
 - A5.3 needs explicit Product Owner approval before any live run.
+- A5.1 hardens redaction and evidence readiness only.
+- A5.2 is the manual preflight gate.
 - The release gate must prove repository allowlist rejection before network.
 - The evidence bundle must include redaction proof.
 - The scope remains one GitHub operation: post issue comment.
@@ -54,4 +72,5 @@ It does not add a new adapter or runtime path.
 - Not arbitrary GitHub automation.
 - Not a universal exactly-once guarantee.
 - Not OAuth, MCP, deployment, or operator UI.
-- Not a live smoke execution in A5.0.
+- Not a live smoke execution in A5.0 or A5.1.
+- Not proof that A5.3 live evidence exists yet.

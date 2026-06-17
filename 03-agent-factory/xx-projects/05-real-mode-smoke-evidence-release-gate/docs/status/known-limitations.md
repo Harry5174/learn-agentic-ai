@@ -4,8 +4,10 @@ This file keeps Artifact 05 honest.
 
 ## Status
 
-A5.0 is documentation/scaffold only. It does not run live GitHub, require
-credentials, read `.env`, add runtime behavior, or create a production system.
+A5.0 is complete as a documentation scaffold. A5.1 is documentation-only
+redaction and evidence-readiness hardening. It does not run live GitHub,
+require credentials, read `.env`, add runtime behavior, or create a production
+system.
 
 ## Not Implemented
 
@@ -62,3 +64,11 @@ Redacted evidence can prove the release-gate shape, but it must not expose
 tokens, Authorization headers, `.env` contents, raw unredacted transport
 exceptions, or realistic-looking secrets.
 
+A5.1 does not create generated live evidence/log artifacts. If a later sprint
+creates such artifacts, redaction proof must scan that generated evidence/log
+directory separately from safety documentation that intentionally names
+detection patterns.
+
+A5.1 proves readiness of the checklist and template only. It does not prove a
+real comment was posted, replay was performed against GitHub, or a negative
+allowlist check ran against a live transport.

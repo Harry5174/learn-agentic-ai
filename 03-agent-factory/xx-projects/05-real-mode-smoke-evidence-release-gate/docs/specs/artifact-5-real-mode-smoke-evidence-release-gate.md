@@ -2,9 +2,13 @@
 
 ## Status
 
-A5.0 creates the Artifact 05 documentation scaffold. It does not run live
-GitHub, require credentials, inspect `.env`, add a new adapter, or change
-runtime execution behavior.
+A5.0 created the Artifact 05 documentation scaffold. A5.1 hardens the redacted
+evidence bundle, token redaction checklist, manual runbook, live-smoke threat
+model, and status wording.
+
+A5.1 does not run live GitHub, require credentials, inspect `.env`, add a new
+adapter, or change runtime execution behavior. It creates redaction and
+evidence readiness only.
 
 ## Purpose
 
@@ -74,18 +78,21 @@ A5.0 is documentation/scaffold only:
 
 A5.0 does not run live GitHub and does not require credentials.
 
-## Future A5.x Direction
+## A5.x Direction
 
-Future sprints may proceed only if separately approved:
+Sprints may proceed only if separately approved:
 
+- **A5.0 - Artifact 04 Closeout Verification and Artifact 05 Scaffold:**
+  completed documentation scaffold.
 - **A5.1 - Redacted Evidence Bundle and Safety Checklist:** define concrete
-  evidence collection checklists and redaction proof commands.
-- **A5.2 - Dry-Run Release Gate Validation:** prove the release gate with
-  fake/mocked execution and no network.
+  evidence collection checklists, redaction proof commands, safe placeholders,
+  and threat-model evidence requirements.
+- **A5.2 - Manual Preflight Gate:** prove the release gate with fake/mocked
+  execution and no network.
 - **A5.3 - Manual Real-Mode Smoke:** run one live smoke only if the Product
   Owner explicitly approves the live step in that sprint.
-- **A5.4 - Evidence Review and Closeout:** review redacted evidence and
-  document any narrow hardening recommendations.
+- **A5.4 - Replay, Negative Evidence, and Closeout:** review replay,
+  no-duplicate, negative allowlist, redaction, and final report evidence.
 
 No A5.x sprint may infer live-run approval from this scaffold.
 
@@ -162,15 +169,21 @@ A release-gate evidence bundle must include:
 - Artifact 04 baseline and tag verification
 - branch and workspace status
 - explicit Product Owner live-run approval for the sprint that runs live smoke
+- A5.1 checklist completion
+- A5.2 preflight completion
 - `.env` ignored/untracked proof without printing `.env`
 - minimum-scope token checklist confirmation without token values
+- token presence recorded only as a redacted placeholder
 - repository and issue allowlist confirmation
+- fresh side-effect rule evidence
 - durable approval binding evidence
 - durable side-effect ledger evidence
 - remote marker lookup evidence before post
 - marker-found duplicate-prevention evidence or marker-absent post evidence
 - durable audit event evidence
 - external comment id/url if a live comment is posted
+- negative allowlist zero-network proof
+- replay/no-duplicate evidence
 - redaction proof
 - block-condition review
 
@@ -189,17 +202,32 @@ grep output proving no token-like values appear in docs/evidence/logs
 Evidence must not include token values, Authorization header values, raw
 unredacted transport exceptions, `.env` contents, or realistic-looking secrets.
 
-## Acceptance Criteria
+Safety docs may intentionally mention token-detection strings. Redaction proof
+for a live evidence packet must target generated evidence/log artifacts and
+label documentation-only detection-pattern matches as intentional.
 
-A5.0 is acceptable when:
+## A5.1 Acceptance Criteria
 
-- Artifact 04 closeout verification is documented
-- Artifact 05 scaffold exists with README, spec, demos, safety, and status docs
-- the spec defines purpose, relationship to Artifact 04, scope, future sprint
-  direction, acceptance criteria, invariants, evidence requirements, redaction
-  requirements, manual-only boundary, block conditions, non-goals, and known
+A5.1 is acceptable when:
+
+- the evidence bundle template includes concrete sections for closeout
+  verification, branch/commit status, live-run approval, preflight evidence,
+  fresh side-effect rule evidence, allowlist evidence, token-presence
+  redaction, remote marker lookup, comment URL placeholder, SQLite ledger
+  evidence, audit evidence, replay/no-duplicate evidence, negative allowlist
+  zero-network evidence, redaction proof, final conclusion, and known
   limitations
-- all five design tightening notes are explicitly documented
+- the redacted evidence example uses safe placeholders only
+- the token redaction checklist defines forbidden captures, safe captures,
+  token-presence recording, command-output redaction, grep checks, expected
+  results, and remediation if a possible secret is found
+- the manual runbook makes A5.3 start gates explicit and marks future live
+  commands as not runnable in A5.1
+- the threat model covers secret leakage, false-positive proof, wrong scan
+  paths, manual token copying, pre-existing markers, accidental network in
+  negative allowlist tests, implicit live approval, CI live smoke, and evidence
+  overclaiming
+- A5.1 remains non-live and documentation-only
 - no runtime execution behavior is added
 - no live GitHub execution occurs
 - no credentials are read or required

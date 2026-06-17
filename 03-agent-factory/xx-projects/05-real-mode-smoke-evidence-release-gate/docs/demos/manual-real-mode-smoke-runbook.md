@@ -1,13 +1,13 @@
 # Manual Real-Mode Smoke Runbook
 
 This runbook is a future A5.x guide. It is not approval to run live GitHub.
-A5.0 does not run live GitHub.
+A5.1 does not run live GitHub.
 
 ## Status
 
 ```text
 documented for future use
-not run in A5.0
+not run in A5.1
 requires explicit Product Owner approval in the sprint that runs it
 ```
 
@@ -35,6 +35,8 @@ arbitrary repository support.
 
 Before any live smoke:
 
+- complete A5.1 redaction checklist
+- complete A5.2 preflight gate
 - confirm Product Owner live-run approval for the current sprint
 - verify Artifact 04 final tag points to `9ef8ab8`, unless a newer closeout
   commit was explicitly approved by the Design Supervisor
@@ -47,8 +49,15 @@ Before any live smoke:
 - keep token server-side only
 - keep fake client as default outside the explicit smoke setup
 - keep automated tests mocked and credential-free
+- satisfy the fresh side-effect rule
+- confirm target repository and issue are allowlisted
+- prepare an evidence output path
+- prepare the redaction proof command
+- document rollback or cleanup notes
 
 Safe `.env` tracking checks:
+
+DO NOT RUN IN A5.1:
 
 ```bash
 git status --short -- .env
@@ -102,6 +111,18 @@ The posted comment body must include:
 The marker is idempotency evidence only. It is not authorization and does not
 bypass durable approval binding.
 
+## Future Live Commands
+
+This document intentionally does not include a runnable live GitHub command.
+Any future live command must be added only in A5.3 after explicit Product Owner
+approval for that sprint.
+
+DO NOT RUN IN A5.1:
+
+```text
+future A5.3 live smoke command placeholder
+```
+
 ## Negative Allowlist Proof
 
 Before accepting a live-smoke release gate, prove that a non-allowlisted
@@ -137,3 +158,19 @@ Collect only redacted evidence:
 Do not collect token values, Authorization headers, `.env` contents, raw
 unredacted transport exceptions, or realistic-looking secrets.
 
+## A5.3 Start Gate
+
+A5.3 live smoke cannot start unless all of these are true:
+
+```text
+Artifact 04 tag verified
+A5.1 redaction checklist complete
+A5.2 preflight gate complete
+Product Owner explicitly approves live run
+fresh side-effect rule satisfied
+target repo/issue allowlisted
+token present locally but never printed
+evidence output path prepared
+redaction proof command prepared
+rollback/cleanup note documented
+```
