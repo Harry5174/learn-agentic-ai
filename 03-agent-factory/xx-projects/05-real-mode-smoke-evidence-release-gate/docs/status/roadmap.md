@@ -31,6 +31,8 @@ No live GitHub execution is allowed in A5.1.
 
 ## A5.2 - Manual Preflight Gate
 
+Status: complete.
+
 Use fake/mocked execution to prove the release-gate checklist can be completed
 without credentials or network access.
 
@@ -41,6 +43,9 @@ Required focus:
 - durable approval binding evidence shape
 - durable side-effect ledger evidence shape
 - audit event evidence shape
+- token-present-without-token-value preflight output
+- explicit CI block for real-mode preflight
+- Artifact 04-backed marker format check
 
 ## A5.3 - Manual Real-Mode Smoke
 

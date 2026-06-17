@@ -6,6 +6,7 @@ It continues the Artifact 04 safety model without adding runtime behavior.
 ## Read First
 
 - [Artifact 05 spec](specs/artifact-5-real-mode-smoke-evidence-release-gate.md)
+- [Manual preflight gate](demos/preflight-gate.md)
 - [Manual real-mode smoke runbook](demos/manual-real-mode-smoke-runbook.md)
 - [Evidence bundle template](demos/evidence-bundle-template.md)
 - [Redacted evidence example](demos/redacted-evidence-example.md)
@@ -45,4 +46,3 @@ The default runtime remains:
 
 Real mode remains explicit and manual. A future live smoke run requires explicit
 Product Owner approval in that sprint.
-

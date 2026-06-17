@@ -5,7 +5,7 @@
 This page defines the threats that Artifact 05 release-gate evidence must
 address before a future manual real-mode smoke run can be accepted.
 
-A5.1 does not run live GitHub.
+A5.2 does not run live GitHub.
 
 ## Assets
 
@@ -40,6 +40,7 @@ The harness decides.
 | Live approval assumed implicitly | Require Product Owner explicit approval in the live sprint | Approval record in evidence bundle |
 | CI accidentally runs live smoke | Keep live smoke manual only and automated tests fake/mocked | CI/test command evidence requires no credentials and no network |
 | Evidence overclaims production readiness | Preserve local/demo, one-operation, non-production wording | Final conclusion states limitations and avoids production/universal claims |
+| Preflight mistaken for live proof | Keep A5.2 output explicitly offline/non-live | Evidence states `network_calls_attempted: 0` and no real comment URL |
 | Model or request enables real mode | Real mode controlled only by trusted server-side configuration | Evidence that request/model/tool did not enable real mode |
 | Repository allowlist bypass | Exact server-owned allowlist before token loading or network | Allowlist evidence and zero-network rejection proof |
 | Approval/hash mutation | Durable approval binding for exact `side_effect_id` and validated arguments hash | Approval binding evidence before network |
@@ -82,6 +83,7 @@ The release gate must show:
   smoke
 - generated evidence/log artifacts contain no token-like values
 - intentional safety-documentation pattern matches are not mistaken for secrets
+- A5.2 preflight output is not treated as A5.3 live evidence
 - final conclusions remain local/demo and non-production
 
 ## Non-Goals

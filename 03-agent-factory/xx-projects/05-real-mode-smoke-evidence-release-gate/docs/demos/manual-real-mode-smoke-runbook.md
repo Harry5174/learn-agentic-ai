@@ -1,13 +1,13 @@
 # Manual Real-Mode Smoke Runbook
 
 This runbook is a future A5.x guide. It is not approval to run live GitHub.
-A5.1 does not run live GitHub.
+A5.2 does not run live GitHub.
 
 ## Status
 
 ```text
 documented for future use
-not run in A5.1
+not run in A5.2
 requires explicit Product Owner approval in the sprint that runs it
 ```
 
@@ -57,7 +57,7 @@ Before any live smoke:
 
 Safe `.env` tracking checks:
 
-DO NOT RUN IN A5.1:
+DO NOT RUN IN A5.2:
 
 ```bash
 git status --short -- .env
@@ -117,7 +117,7 @@ This document intentionally does not include a runnable live GitHub command.
 Any future live command must be added only in A5.3 after explicit Product Owner
 approval for that sprint.
 
-DO NOT RUN IN A5.1:
+DO NOT RUN IN A5.2:
 
 ```text
 future A5.3 live smoke command placeholder
@@ -174,3 +174,6 @@ evidence output path prepared
 redaction proof command prepared
 rollback/cleanup note documented
 ```
+
+The A5.2 preflight gate must pass before this start gate can be considered, but
+passing A5.2 is not live-run approval.

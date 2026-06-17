@@ -4,10 +4,10 @@ This file keeps Artifact 05 honest.
 
 ## Status
 
-A5.0 is complete as a documentation scaffold. A5.1 is documentation-only
-redaction and evidence-readiness hardening. It does not run live GitHub,
-require credentials, read `.env`, add runtime behavior, or create a production
-system.
+A5.0 is complete as a documentation scaffold. A5.1 completed redaction and
+evidence-readiness hardening. A5.2 adds an offline manual preflight gate. It
+does not run live GitHub, require credentials, read `.env`, change Artifact 04
+runtime behavior, or create a production system.
 
 ## Not Implemented
 
@@ -72,3 +72,6 @@ detection patterns.
 A5.1 proves readiness of the checklist and template only. It does not prove a
 real comment was posted, replay was performed against GitHub, or a negative
 allowlist check ran against a live transport.
+
+A5.2 proves only offline preflight behavior. It does not prove remote marker
+freshness, GitHub availability, token scope, or that a real comment was posted.

@@ -2,13 +2,14 @@
 
 ## Status
 
-A5.0 created the Artifact 05 documentation scaffold. A5.1 hardens the redacted
-evidence bundle, token redaction checklist, manual runbook, live-smoke threat
-model, and status wording.
+A5.0 created the Artifact 05 documentation scaffold. A5.1 hardened the
+redacted evidence bundle, token redaction checklist, manual runbook,
+live-smoke threat model, and status wording. A5.2 adds an offline manual
+preflight gate with tests and redacted output.
 
-A5.1 does not run live GitHub, require credentials, inspect `.env`, add a new
-adapter, or change runtime execution behavior. It creates redaction and
-evidence readiness only.
+A5.2 does not run live GitHub, require credentials, inspect `.env`, add a new
+adapter, or change Artifact 04 runtime execution behavior. It creates
+preflight readiness only.
 
 ## Purpose
 
@@ -87,8 +88,8 @@ Sprints may proceed only if separately approved:
 - **A5.1 - Redacted Evidence Bundle and Safety Checklist:** define concrete
   evidence collection checklists, redaction proof commands, safe placeholders,
   and threat-model evidence requirements.
-- **A5.2 - Manual Preflight Gate:** prove the release gate with fake/mocked
-  execution and no network.
+- **A5.2 - Manual Preflight Gate:** prove the release gate with offline
+  preflight validation, redacted output, and no network.
 - **A5.3 - Manual Real-Mode Smoke:** run one live smoke only if the Product
   Owner explicitly approves the live step in that sprint.
 - **A5.4 - Replay, Negative Evidence, and Closeout:** review replay,
@@ -171,6 +172,7 @@ A release-gate evidence bundle must include:
 - explicit Product Owner live-run approval for the sprint that runs live smoke
 - A5.1 checklist completion
 - A5.2 preflight completion
+- A5.2 redacted preflight output
 - `.env` ignored/untracked proof without printing `.env`
 - minimum-scope token checklist confirmation without token values
 - token presence recorded only as a redacted placeholder
@@ -232,6 +234,24 @@ A5.1 is acceptable when:
 - no live GitHub execution occurs
 - no credentials are read or required
 - `.env` remains ignored and untracked
+- validation commands pass or any failure is reported plainly
+
+## A5.2 Acceptance Criteria
+
+A5.2 is acceptable when:
+
+- an isolated Artifact 05 preflight helper exists
+- tests prove fake mode passes without a token
+- tests prove real-mode preflight requires explicit opt-in
+- tests prove real-mode preflight fails closed in CI
+- tests prove token presence is boolean-only and token values are redacted
+- tests prove repository and issue allowlist failures attempt zero network calls
+- tests prove fresh side-effect mode is required
+- tests prove the marker format matches Artifact 04 source behavior
+- serialized output omits token values, Authorization header text, and `.env`
+  contents
+- docs describe A5.2 as offline, non-live, preflight-only, and not proof of a
+  real GitHub post
 - validation commands pass or any failure is reported plainly
 
 ## Block Conditions

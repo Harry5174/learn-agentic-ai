@@ -28,9 +28,27 @@ Remote main target: 9ef8ab8...
 .env tracked: no
 .env contents printed: no
 Token source: server-side environment only
+Token env name: AGENT_FACTORY_GITHUB_TOKEN
 Token present: [TOKEN_PRESENT_TRUE]
 Token value: [REDACTED]
 Token scope: [SAFE_PLACEHOLDER_ONLY]
+```
+
+## A5.2 Preflight
+
+```text
+preflight_status: passed
+mode: real
+real_mode_explicit: true
+ci_block_active: false
+token_env_name: AGENT_FACTORY_GITHUB_TOKEN
+token_present: true
+token_value: REDACTED
+allowlisted_repo: true
+allowlisted_issue: true
+fresh_side_effect_mode: fresh_issue
+marker_format_verified: true
+network_calls_attempted: 0
 ```
 
 ## Allowlist
@@ -87,7 +105,7 @@ zero-network negative proof: [ZERO HTTP CALLS PROOF]
 ```text
 Final conclusion: release gate packet is reviewable and redacted
 Known limitations: local/demo harness, manual smoke only, no production claim
-Next sprint: A5.2 manual preflight gate
+Next sprint: A5.3 controlled live smoke execution, only after explicit approval
 ```
 
 This example intentionally omits token values, Authorization headers, raw

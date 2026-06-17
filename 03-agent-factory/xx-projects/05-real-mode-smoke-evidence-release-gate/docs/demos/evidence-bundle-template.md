@@ -75,6 +75,10 @@ live smoke step in that sprint. No implicit live approval is allowed.
 ```text
 A5.1 redaction checklist complete:
 A5.2 preflight gate complete:
+A5.2 preflight status:
+A5.2 preflight token_env_name: AGENT_FACTORY_GITHUB_TOKEN
+A5.2 preflight token_present: [TOKEN PRESENT: YES/NO]
+A5.2 preflight network_calls_attempted: 0
 .env ignored:
 .env untracked:
 .env unstaged:
@@ -223,6 +227,7 @@ Rejected repository/issue test:
 Rejection point:
 Zero HTTP call proof: [ZERO HTTP CALLS PROOF]
 Mocked/spy transport HTTP call count:
+A5.2 preflight network_calls_attempted: 0
 ```
 
 Evidence that only shows a GitHub error after a network attempt is not

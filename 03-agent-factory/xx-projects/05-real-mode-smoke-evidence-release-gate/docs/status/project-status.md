@@ -4,10 +4,10 @@
 
 **Title:** Artifact 05 - Real-Mode Smoke Evidence and Release Gate
 
-**Current sprint:** A5.1 - Redacted Evidence Bundle and Safety Checklist
+**Current sprint:** A5.2 - Manual Preflight Gate
 
 **Status:** A5.0 scaffold complete. A5.1 redacted evidence and safety
-checklist hardening complete. Documentation only. No runtime behavior is added.
+checklist hardening complete. A5.2 manual preflight gate complete.
 
 ## Current Claim
 
@@ -59,6 +59,27 @@ A5.1 does not:
 - create a new GitHub adapter
 - prove that a live smoke run occurred
 
+## A5.2 Scope
+
+A5.2 completed:
+
+- adds an isolated Artifact 05 preflight helper
+- adds tests for fake mode, explicit real-mode opt-in, CI blocking,
+  token-presence redaction, allowlist checks, fresh side-effect strategy, and
+  marker-format alignment
+- keeps `network_calls_attempted` at `0` for all preflight paths
+- uses the Artifact 04 token environment name `AGENT_FACTORY_GITHUB_TOKEN`
+- documents preflight output as redacted evidence, not live smoke proof
+
+A5.2 does not:
+
+- run live GitHub
+- require credentials
+- read `.env`
+- change Artifact 04 runtime behavior
+- create a new GitHub adapter
+- prove that a real GitHub comment was posted
+
 ## Methodology Preserved
 
 ```text
@@ -83,5 +104,5 @@ commit has been explicitly approved by the Design Supervisor.
 ## Recommended Next Step
 
 ```text
-A5.2 - Manual Preflight Gate
+A5.3 - Controlled Live Smoke Execution
 ```

@@ -66,14 +66,14 @@ Artifact 05 is not:
 
 ## Current Status
 
-A5.0 created the documentation scaffold only. A5.1 hardens the redacted
+A5.0 created the documentation scaffold only. A5.1 hardened the redacted
 evidence bundle, token redaction checklist, manual runbook, and live-smoke
-threat model. A5.1 remains non-live: no live GitHub execution is run, no
-credentials are required, no `.env` contents are read, and no runtime behavior
-is changed.
+threat model. A5.2 adds an offline manual preflight gate with tests and
+redacted output.
 
-A5.1 creates readiness for later reviewable evidence. It is not proof that a
-live smoke run has occurred.
+A5.2 remains non-live: no live GitHub execution is run, no credentials are
+required, no `.env` contents are read, and no Artifact 04 runtime behavior is
+changed. A5.2 is not proof that a live smoke run has occurred.
 
 ## Documentation
 
@@ -82,6 +82,7 @@ Use [docs/README.md](docs/README.md) as the documentation index.
 Key entry points:
 
 - [Artifact 05 spec](docs/specs/artifact-5-real-mode-smoke-evidence-release-gate.md)
+- [Manual preflight gate](docs/demos/preflight-gate.md)
 - [Manual real-mode smoke runbook](docs/demos/manual-real-mode-smoke-runbook.md)
 - [Evidence bundle template](docs/demos/evidence-bundle-template.md)
 - [Redacted evidence example](docs/demos/redacted-evidence-example.md)
@@ -101,7 +102,7 @@ commit has been explicitly approved by the Design Supervisor.
 
 - A5.0: Artifact 04 closeout verification and Artifact 05 scaffold.
 - A5.1: redacted evidence bundle and safety checklist hardening.
-- A5.2: manual preflight gate using non-live validation.
+- A5.2: manual preflight gate using offline, non-live validation.
 - A5.3: explicitly approved manual live smoke, if Product Owner approval is
   granted in that sprint.
 - A5.4: replay, negative evidence review, and final closeout report.

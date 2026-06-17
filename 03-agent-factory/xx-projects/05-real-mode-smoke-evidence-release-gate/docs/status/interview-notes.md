@@ -54,6 +54,17 @@ A5.1 makes the evidence system stricter before any live smoke is allowed:
 A5.1 remains non-live. It prepares the evidence packet shape; it does not
 claim that the live smoke happened.
 
+## What A5.2 Adds
+
+A5.2 adds a test-backed offline preflight gate. It verifies that fake mode can
+pass without a token, real-mode preflight requires explicit opt-in, CI blocks
+real-mode preflight, token presence is reported without the token value,
+allowlist failures attempt zero network calls, fresh side-effect strategy is
+declared, and the marker format matches Artifact 04.
+
+A5.2 remains non-live. It does not call GitHub and does not prove that a real
+comment was posted.
+
 ## What To Highlight
 
 - The fake client remains the default.
@@ -61,7 +72,7 @@ claim that the live smoke happened.
 - No CI live GitHub execution is allowed.
 - A5.3 needs explicit Product Owner approval before any live run.
 - A5.1 hardens redaction and evidence readiness only.
-- A5.2 is the manual preflight gate.
+- A5.2 is the offline manual preflight gate.
 - The release gate must prove repository allowlist rejection before network.
 - The evidence bundle must include redaction proof.
 - The scope remains one GitHub operation: post issue comment.
@@ -73,4 +84,5 @@ claim that the live smoke happened.
 - Not a universal exactly-once guarantee.
 - Not OAuth, MCP, deployment, or operator UI.
 - Not a live smoke execution in A5.0 or A5.1.
+- Not a live smoke execution in A5.2.
 - Not proof that A5.3 live evidence exists yet.
