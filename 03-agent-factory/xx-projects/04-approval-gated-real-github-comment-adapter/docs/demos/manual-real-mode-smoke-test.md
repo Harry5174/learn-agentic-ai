@@ -3,9 +3,30 @@
 This page documents an optional manual smoke test for the one
 approval-gated real GitHub issue-comment path.
 
-Manual smoke execution is disabled by default and was not run as part of A5.4
-automated validation. Do not run it unless the Product Owner explicitly
-approves live execution in the implementation session.
+Manual smoke execution is disabled by default and was not run as part of A5.5
+validation. Do not run it unless the Product Owner explicitly approves live
+execution in the implementation session.
+
+## Status
+
+```text
+documented but not run
+not run in A5.5
+```
+
+## Important Safety Statements
+
+- This test is **disabled by default**.
+- This test is **optional**.
+- This test **requires explicit Product Owner approval** before any live
+  execution.
+- This test uses **only the allowlisted test repository**.
+- This test uses **`.env` locally** for token storage.
+- The token **must never be pasted into ChatGPT** or any LLM interface.
+- The token **must never be committed** to version control.
+- This test **posts at most one comment for an approved `side_effect_id`**.
+- **Remote marker lookup happens before posting.**
+- This test was **not run in A5.5**.
 
 ## Scope
 
@@ -116,11 +137,3 @@ The report must not include:
 - raw response headers
 - raw unredacted transport exceptions
 - `.env` contents
-
-## A5.4 Status
-
-Manual smoke test status for A5.4:
-
-```text
-documented but not run
-```

@@ -10,7 +10,8 @@ listing, marker lookup, and durable reconciliation tests. A5.3 adds one
 approval-gated real issue-comment path that performs live remote lookup and
 posting only when explicit server-side real-mode configuration is injected.
 A5.4 adds adversarial tests and minimal safety hardening for ambiguous markers,
-incomplete lookup, timeout recovery, and crash-window replay.
+incomplete lookup, timeout recovery, and crash-window replay. A5.5 packages
+the completed artifact with documentation, demo guides, and portfolio framing.
 
 ## Local And Remote State
 
@@ -145,13 +146,14 @@ limitations. If lookup cannot prove a complete-enough marker search, or marker
 text cannot be classified as exactly one clean marker for the approved action,
 the adapter fails closed rather than posting or reconciling.
 
-## A5.4 Boundary
+## Scope Boundary
 
-A5.4 keeps real issue-comment list/create behavior only for the explicitly
+Artifact 5 keeps real issue-comment list/create behavior only for the explicitly
 configured approval-gated path. It does not add:
 
 - automated live GitHub tests
 - manual smoke execution by default
 - arbitrary repository support
+- broad GitHub automation
 - issue creation, PR creation, branch creation, repo file writes, workflow
   dispatch, labels, milestones, assignees, edit, or delete operations

@@ -2,16 +2,16 @@
 
 ## Status
 
-A5.4 is the Real-Mode Adversarial and Crash-Window Safety Suite sprint.
+Artifact 5 is complete through A5.5 (Demo, Safety Notes, and Portfolio
+Packaging).
 
-Artifact 5 is an approval-gated real GitHub issue-comment adapter. A5.1 adds
-the client/interface boundary, server-side token-provider boundary, disabled
-real-mode configuration boundary, redaction-safe failure behavior, and tests.
-A5.2 adds the remote marker builder/parser, fake/mocked remote issue-comment
-listing boundary, marker lookup, and durable reconciliation tests. A5.3 adds
-one approval-gated real GitHub issue-comment execution path behind explicit
-server-side real-mode configuration. A5.4 adds adversarial tests and minimal
-safety hardening for the existing real-mode boundary.
+Artifact 5 demonstrates a local/demo approval-gated real GitHub issue-comment
+adapter. The fake client remains the default. An explicitly configured real mode
+can perform one repository-allowlisted GitHub issue-comment side effect after
+validated scalar arguments, durable approval binding, local durable ledger
+checks, remote idempotency marker lookup/reconciliation, server-side token
+loading, and durable audit recording. Automated tests use fake/mocked clients
+and include adversarial crash-window safety coverage.
 
 The copied fake-client runtime remains the default behavior.
 
@@ -60,18 +60,19 @@ That side effect must stay behind server-owned controls:
 
 ## What Artifact 5 Is Not
 
-Artifact 5 A5.4 is not:
+Artifact 5 is not:
 
 - a general GitHub automation platform
 - support for arbitrary repositories
 - a production-ready system
 - an OAuth/OIDC-secured product
 - an MCP integration
-- a frontend
+- a frontend or operator console
 - a deployment project
 - a live GitHub smoke test
 - a universal exactly-once guarantee
 - a multi-tool GitHub automation suite
+- an end-user product
 - support for GitHub operations beyond issue-comment list/create for the one
   approved path
 
@@ -277,13 +278,13 @@ A5.4 automated tests use fake transports and fake real clients. They cover:
 A5.4 does not run a manual live smoke test. The disabled-by-default optional
 manual live smoke guide remains separately approved work.
 
-## Explicit Non-Goals For A5.4
+## Explicit Non-Goals
 
-A5.4 does not add:
+Artifact 5 does not add:
 
 - OAuth/OIDC
 - MCP
-- frontend
+- frontend or operator console
 - deployment
 - PR creation
 - branch creation
@@ -296,15 +297,18 @@ A5.4 does not add:
 - universal exactly-once claims
 - automated live GitHub tests
 - manual live smoke execution by default
+- broad GitHub automation
+- arbitrary repository support
 
-## A5.4 Onward Roadmap
+## Completed Roadmap
 
-A5.4 intentionally stops at adversarial testing and minimal safety hardening
-for one approval-gated real GitHub issue-comment path. Recommended next slices
-are:
+All implementation sprints (A5.0–A5.5) are complete. See
+[roadmap](../status/roadmap.md) for full details.
 
+Possible future work:
+
+- separately approved optional manual live smoke test
 - evidence review for the real-mode safety boundary
-- separately approved manual live smoke test, if the Product Owner wants one
-- hardening only after the single-comment path is accepted
+- narrow hardening only if the single-comment path needs it
 
 Do not expand Artifact 5 into general GitHub automation.

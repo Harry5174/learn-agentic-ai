@@ -1,19 +1,22 @@
 # Known Limitations
 
-This file keeps Artifact 5 A5.4 honest.
+This file keeps Artifact 5 honest.
 
-A5.1 adds safe client/token/config boundaries for an approval-gated real GitHub
-issue-comment adapter. A5.2 adds fake/mocked remote marker and reconciliation
-logic. A5.3 adds one explicit server-configured real issue-comment execution
-path. A5.4 adds adversarial tests and minimal safety hardening for that path.
+## Status
+
+Artifact 5 is a local/demo artifact. It is not production-ready.
+
+The fake client remains the default. Real mode is disabled by default.
+Automated tests use fake/mocked clients and do not call GitHub or require
+credentials. The manual smoke test was not run in A5.5.
 
 ## Not Implemented
 
-A5.4 does not implement:
+Artifact 5 does not implement:
 
 - OAuth/OIDC
 - MCP
-- frontend
+- frontend or operator console
 - deployment
 - PR creation
 - branch creation
@@ -24,32 +27,30 @@ A5.4 does not implement:
 - automated live GitHub tests
 - manual live smoke execution by default
 - arbitrary repository support
+- broad GitHub automation
 - production-ready guarantees
 - production-grade audit guarantees
 - universal exactly-once guarantees
 
-## Current Runtime Limit
+## Operational Constraints
 
-The default runtime remains inherited from Artifact 4 and earlier artifacts. It
-is local/demo and fake-client-only.
+- **One issue-comment operation only.** The real adapter supports list and
+  create for GitHub issue comments. No other GitHub operation is implemented.
+- **One allowlisted repository for manual test.** The prepared manual test
+  target is `Harry5174/artifact-5-github-comment-test`. No arbitrary repository
+  support exists.
+- **Real mode disabled by default.** Real mode requires explicit trusted
+  server-side configuration injection. Request bodies, model output, and tool
+  arguments cannot enable real mode or provide tokens.
+- **Manual smoke test not run unless separately approved.** The optional manual
+  smoke-test guide is documented but requires explicit Product Owner approval
+  before any live execution.
 
-The fake-client GitHub issue-comment path can demonstrate validation, policy,
-approval, durable side-effect records, durable approval bindings, durable audit
-events, and restart/replay duplicate suppression when durable dependencies are
-explicitly injected.
-
-It does not perform a real GitHub API call unless trusted server-side real-mode
-dependencies are explicitly injected.
-
-A5.4 real mode is narrow: list issue comments, check the marker, and post one
-issue comment only for an exact allowlisted repository after durable approval.
-Request bodies, model output, tool arguments, and approval payloads cannot
-enable real mode or provide tokens.
-
-## SQLite Is Not Enough For Future Real Execution
+## No Distributed Transaction With GitHub
 
 SQLite-backed idempotency remains necessary, but it is insufficient by itself
 for real GitHub execution because SQLite and GitHub cannot commit atomically.
+There is no distributed transaction between the two systems.
 
 The required crash window is:
 
@@ -62,43 +63,48 @@ The required crash window is:
 6. Without remote marker lookup, duplicate real comment may be posted.
 ```
 
-A5.4 applies marker lookup and reconciliation before posting. If marker lookup
-fails, is ambiguous, or cannot prove complete-enough listing, the harness fails
-closed and does not post.
+The adapter applies marker lookup and reconciliation before posting. If marker
+lookup fails, is ambiguous, or cannot prove complete-enough listing, the harness
+fails closed and does not post.
 
-The marker is not authorization and does not bypass approval. A5.4
-reconciliation does not authorize unapproved planned side effects; it only
-operates on existing approved/executing local durable records.
+The marker is not authorization and does not bypass approval. Reconciliation
+operates only on existing approved/executing local durable records.
+
+## No Universal Exactly-Once Guarantee
+
+Artifact 5 does not claim universal exactly-once execution. Remote marker lookup
+reduces duplicate-post risk for the scoped GitHub issue-comment path, but the
+following limitations remain:
+
+- **Remote marker can be deleted or edited by humans.** If a human deletes or
+  edits the marker text on GitHub, the harness may not detect a prior post.
+- **GitHub availability and rate limits can block execution.** GitHub API
+  failures, rate limits, and timeouts are handled with fail-closed behavior but
+  can prevent the adapter from completing execution or lookup.
+- **Bounded pagination limitation.** If the issue has more comments than the
+  configured page bound allows, marker lookup may be incomplete. The harness
+  fails closed when pagination completeness is uncertain.
 
 ## No Production Claims
 
-Artifact 5 A5.4 is not production-ready and does not claim production-grade
-audit behavior.
-
-It does not claim universal exactly-once execution. Remote marker lookup reduces
-duplicate-post risk for the scoped GitHub issue-comment path, but real mode must
-be described with precise crash-window and ambiguity boundaries.
-
-Known remote limitations include bounded pagination, remote comment deletion,
-and human-edited marker text. If marker lookup exceeds the configured page
-bound, pagination cannot be parsed, a marker is missing after remote deletion,
-or marker text is quoted/duplicated/malformed/edited in a way the harness cannot
-classify as exactly one clean marker, the harness fails closed.
+Artifact 5 is not production-ready and does not claim production-grade audit
+behavior. It is a local/demo safety artifact demonstrating staged progression
+from fake-client to one real external side effect.
 
 ## Token Limitations
 
-A5.1 adds a server-side token-provider boundary for real mode. The default
-local/demo fake-client path does not load, validate, store, or use GitHub
-tokens.
+The server-side token-provider boundary loads `AGENT_FACTORY_GITHUB_TOKEN` from
+the server-side environment. The default local/demo fake-client path does not
+load, validate, store, or use GitHub tokens.
 
-A5.4 real mode must not accept tokens from request bodies, model output, tool
+Real mode must not accept tokens from request bodies, model output, tool
 arguments, logs, audit rows, exception messages, or test snapshots.
 
 ## Testing Limitations
 
 The automated suite remains fake/mocked only.
 
-A5.4 does not add:
+Artifact 5 does not add:
 
 - a live GitHub smoke execution by default
 - a real token requirement
@@ -107,4 +113,4 @@ A5.4 does not add:
 
 Live testing must be separately approved and must use a single allowlisted test
 repository with minimum privileges. The optional manual smoke guide is present
-but was not run as part of A5.4 automated validation.
+but was not run as part of A5.5 validation.

@@ -1,107 +1,70 @@
 # Roadmap
 
-This roadmap is intentionally narrow. Artifact 5 should move toward one future
-real external side effect without weakening the core thesis:
+This roadmap is intentionally narrow. Artifact 5 demonstrates one safely
+controlled real external side effect without weakening the core thesis:
 
 ```text
 The LLM proposes.
 The harness decides.
 ```
 
-## A5.0 - Real-Adapter Safety Spec, Token Scope, And Remote Idempotency Design
+## A5.0 — Real-Adapter Safety Spec, Token Scope, And Remote Idempotency Design
 
-Status: implemented as documentation/specification only.
+Status: complete.
 
-A5.0 creates the Artifact 5 workspace from completed Artifact 4 and defines:
+A5.0 created the Artifact 5 workspace from completed Artifact 4 and defined the
+real-mode boundary, fake-client default, server-side token handling requirements,
+minimum-privilege token guidance, repository allowlist requirements,
+GitHub/SQLite crash window, remote idempotency marker format, remote
+reconciliation behavior, fail-closed ambiguity behavior, durable audit
+requirements, future test strategy, and explicit non-goals.
 
-- real-mode boundary
-- fake-client default behavior
-- server-side token handling requirements
-- minimum-privilege token guidance
-- repository allowlist requirements
-- GitHub/SQLite crash window
-- remote idempotency marker format
-- remote reconciliation behavior
-- fail-closed ambiguity behavior
-- durable audit requirements
-- future test strategy
-- explicit non-goals
+## A5.1 — GitHub Client Interface And Server-Side Token Provider
 
-A5.0 does not add real GitHub execution, token loading, network code, runtime
-remote marker lookup, or a live smoke test.
+Status: complete.
 
-## A5.1 - GitHub Client Interface And Server-Side Token Provider
+A5.1 added safe client interface, server-side environment token-provider
+boundary, missing-token fail-closed behavior, real-mode config boundary,
+disabled real-client boundary, and token redaction/source-rejection tests.
 
-Status: implemented as safe boundaries only.
+## A5.2 — Remote Idempotency Marker And Reconciliation
 
-A5.1 adds:
+Status: complete.
 
-- GitHub client/interface boundary refinement
-- server-side environment token-provider boundary
-- missing-token fail-closed behavior
-- real-mode config boundary
-- disabled future real-client boundary
-- token redaction and source-rejection tests
-- documentation updates
+A5.2 added deterministic marker builder/parser, fake/mocked remote comment
+listing, marker lookup outcomes (found, absent, mismatch, ambiguous, lookup
+failed), durable reconciliation for existing approved/executing local records,
+and proof that marker text does not authorize unapproved planned side effects.
 
-A5.1 does not add real GitHub posting, live network calls, runtime remote marker
-lookup, remote reconciliation, or a live smoke test.
+## A5.3 — Approval-Gated Real Comment Execution Path
 
-## A5.2 - Marker Contract And Mocked Reconciliation Tests
+Status: complete.
 
-Status: implemented with fake/mocked clients only.
+A5.3 added one narrow real GitHub issue-comment client using standard-library
+HTTP, bounded pagination, repository allowlist enforcement, remote marker lookup
+before posting, marker-found reconciliation, marker-absent posting with
+deterministic marker appended, external comment id/url persistence, and durable
+audit for real-mode safety decisions.
 
-- harness-owned marker construction contract
-- marker parser or exact-match helper
-- mocked remote comment shapes
-- tests for marker found, not found, ambiguous, mismatch, and lookup failure
-- fail-closed behavior tests
-- no real GitHub posting
-- no live network calls
-- durable reconciliation for existing approved/executing local records
-- proof that marker text does not authorize unapproved planned side effects
+## A5.4 — Real-Mode Adversarial And Crash-Window Safety Suite
 
-## A5.3 - Approval-Gated Real Comment Execution Path
+Status: complete.
 
-Status: implemented with mocked automated tests and disabled-by-default real
-mode.
+A5.4 added adversarial token/header leakage tests, hostile transport exception
+redaction, repository allowlist bypass tests, request/model control-plane
+smuggling tests, approval/hash mutation tests, marker spoofing and ambiguity
+tests, HTTP/timeout/malformed-response failure tests, crash-window replay
+through executing durable records, and narrow safety hardening.
 
-A5.3 adds:
+## A5.5 — Demo, Safety Notes, And Portfolio Packaging
 
-- one approval-gated real GitHub issue-comment path
-- explicit server-side real-mode configuration
-- exact server-owned repository allowlist checks
-- server-side token loading after local gates
-- remote marker lookup before post
-- remote marker found reconciliation without posting
-- marker absent posting with deterministic marker appended
-- external comment id/url persistence
-- durable audit evidence for real-mode safety decisions
-- mocked automated tests only
+Status: complete.
 
-A5.3 does not add automated live GitHub tests or manual live smoke execution by
-default.
+A5.5 packaged the completed Artifact 5 as a clear, interview-ready portfolio
+artifact. Documentation, demo guides, safety notes, known limitations, and
+portfolio framing were updated. No runtime behavior was changed.
 
-## A5.4 - Real-Mode Adversarial And Crash-Window Safety Suite
-
-Status: implemented with mocked automated tests and narrow safety hardening.
-
-A5.4 adds:
-
-- adversarial token/header leakage tests
-- hostile transport exception redaction tests
-- repository allowlist bypass tests
-- request/model control-plane smuggling tests
-- approval/hash mutation tests
-- remote marker spoofing and ambiguity tests
-- HTTP, timeout, malformed response, and incomplete lookup tests
-- crash-window replay through executing durable records
-- docs/status updates for A5.4 limitations and non-goals
-
-A5.4 does not add new GitHub operations, automated live GitHub tests, or manual
-live smoke execution.
-
-## A5.5 - Separately Approved Manual Live Smoke Test
+## Future — Optional Manual Real-Mode Smoke Test
 
 Possible future scope only if the Product Owner explicitly approves it:
 
@@ -114,9 +77,9 @@ Possible future scope only if the Product Owner explicitly approves it:
 
 No CI-style validation should require a GitHub token.
 
-## A5.6 - Evidence Review And Narrow Hardening
+## Future — Evidence Review And Narrow Hardening
 
-Possible future scope after A5.4 is accepted:
+Possible future scope after the current artifact is accepted:
 
 - review real-mode evidence and audit rows
 - clarify any remaining operator docs
@@ -134,7 +97,7 @@ Do not add these as incidental cleanup:
 - deployment
 - PR creation
 - branch creation
-- issue creation beyond the one future issue-comment path
+- issue creation beyond the one issue-comment path
 - repo file writes
 - workflow dispatch
 - multiple real tools

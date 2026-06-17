@@ -12,7 +12,7 @@ This directory contains the numbered artifact sequence for the Agent Factory tra
 | 1 | [01-llm-proposed-skill-runner](01-llm-proposed-skill-runner) | LLM-Proposed, Harness-Controlled Skill Runner | Complete / tagged `artifact-2.2` |
 | 2 | [02-approval-gated-github-tool-harness](02-approval-gated-github-tool-harness) | Approval-Gated GitHub Tool Harness | Complete as local/demo fake-client artifact |
 | 3 | [03-durable-side-effect-ledger](03-durable-side-effect-ledger) | Durable Side-Effect Ledger and Approval Binding | Complete as local/demo durable fake-client safety artifact |
-| 4 | [04-approval-gated-real-github-comment-adapter](04-approval-gated-real-github-comment-adapter) | Approval-Gated Real GitHub Comment Adapter | Initialized as A5.0 baseline/specification artifact |
+| 4 | [04-approval-gated-real-github-comment-adapter](04-approval-gated-real-github-comment-adapter) | Approval-Gated Real GitHub Comment Adapter | Complete as local/demo real-comment adapter (A5.5) |
 
 ---
 
@@ -75,20 +75,22 @@ This directory contains the numbered artifact sequence for the Agent Factory tra
 ## Artifact 5 - Approval-Gated Real GitHub Comment Adapter
 
 **Path:** `04-approval-gated-real-github-comment-adapter`
-**Status:** Initialized as A5.0 baseline/specification artifact
+**Status:** Complete as local/demo real-comment adapter (A5.5)
 
-**A5.0 claim:** Artifact 5 defines the safety design for a future approval-gated real GitHub issue-comment adapter, including the real-mode boundary, fake-client default, server-side token handling requirements, repository allowlist requirements, GitHub/SQLite crash-window analysis, remote idempotency marker format, reconciliation behavior, fail-closed ambiguity handling, durable audit requirements, future test strategy, explicit non-goals, known limitations, and A5.1 onward roadmap.
+**A5.5 claim:** Artifact 5 demonstrates a local/demo approval-gated real GitHub issue-comment adapter. The fake client remains the default. An explicitly configured real mode can perform one repository-allowlisted GitHub issue-comment side effect after validated scalar arguments, durable approval binding, local durable ledger checks, remote idempotency marker lookup/reconciliation, server-side token loading, and durable audit recording. Automated tests use fake/mocked clients and include adversarial crash-window safety coverage.
 
-**Current limitation:** No real GitHub client, token loading, network code, real GitHub API call, or runtime remote marker implementation exists yet.
+**Current limitation:** Local/demo artifact. Not production-ready. One issue-comment operation only. No arbitrary repository support. No OAuth/OIDC, MCP, frontend, or deployment. Manual smoke test not run unless separately approved.
 
 **Read first:**
 
 - [Artifact 5 README](04-approval-gated-real-github-comment-adapter/README.md)
 - [Artifact 5 real GitHub comment adapter spec](04-approval-gated-real-github-comment-adapter/docs/specs/artifact-5-real-github-comment-adapter.md)
 - [Remote idempotency and reconciliation](04-approval-gated-real-github-comment-adapter/docs/architecture/remote-idempotency-reconciliation.md)
+- [Known limitations](04-approval-gated-real-github-comment-adapter/docs/status/known-limitations.md)
+- [Interview notes](04-approval-gated-real-github-comment-adapter/docs/status/interview-notes.md)
 
 ## What Is Not Here Yet
 
-Artifact 4 is complete as a local/demo durable fake-client safety artifact. It implements SQLite-backed side-effect records, durable approval bindings, durable audit events, and restart/replay duplicate suppression for the fake-client GitHub comment path. It does not implement real GitHub execution, GitHub token loading, or production-grade exactly-once semantics.
+All five artifacts are complete as local/demo safety artifacts. None claims production readiness, universal exactly-once execution, or arbitrary repository support.
 
-Artifact 5 is initialized as a baseline/specification artifact for a future approval-gated real GitHub issue-comment adapter. A5.0 defines the real-mode safety boundary, token guidance, remote idempotency marker, reconciliation behavior, audit requirements, and non-goals. No real GitHub client, token loading, network code, or runtime remote marker implementation exists yet.
+Artifact 5 is the most recent. It extends the fake-client durable safety of Artifact 4 with one real GitHub issue-comment side effect behind explicit server-side configuration, remote idempotency marker reconciliation, and adversarial safety testing. It does not implement general GitHub automation, OAuth/OIDC, MCP, frontend, or deployment. The optional manual smoke test is documented but was not run.
