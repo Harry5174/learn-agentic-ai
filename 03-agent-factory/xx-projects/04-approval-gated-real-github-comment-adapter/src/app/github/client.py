@@ -11,10 +11,10 @@ GitHubIssueCommentResponse = GitHubIssueCommentResult | GitHubIssueCommentFailur
 
 
 class GitHubIssueCommentClient(Protocol):
-    """Minimal boundary for posting a GitHub issue comment."""
+    """Minimal boundary for fake or future issue-comment clients."""
 
     def post_issue_comment(
         self,
         request: GitHubIssueCommentRequest,
     ) -> GitHubIssueCommentResponse:
-        """Post or simulate posting an issue comment for an already validated request."""
+        """Return a structured response for an already validated request."""

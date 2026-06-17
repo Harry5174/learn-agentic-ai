@@ -30,9 +30,24 @@ A5.0 creates the Artifact 5 workspace from completed Artifact 4 and defines:
 A5.0 does not add real GitHub execution, token loading, network code, runtime
 remote marker lookup, or a live smoke test.
 
-## A5.1 - Marker Contract And Mocked Reconciliation Tests
+## A5.1 - GitHub Client Interface And Server-Side Token Provider
 
-Recommended next step.
+Status: implemented as safe boundaries only.
+
+A5.1 adds:
+
+- GitHub client/interface boundary refinement
+- server-side environment token-provider boundary
+- missing-token fail-closed behavior
+- real-mode config boundary
+- disabled future real-client boundary
+- token redaction and source-rejection tests
+- documentation updates
+
+A5.1 does not add real GitHub posting, live network calls, runtime remote marker
+lookup, remote reconciliation, or a live smoke test.
+
+## A5.2 - Marker Contract And Mocked Reconciliation Tests
 
 Possible scope:
 
@@ -41,33 +56,18 @@ Possible scope:
 - mocked remote comment shapes
 - tests for marker found, not found, ambiguous, mismatch, and lookup failure
 - fail-closed behavior tests
-- no real GitHub client
-- no token loading
-- no network calls
+- no real GitHub posting
+- no live network calls
 
-## A5.2 - Remote Client Interface Boundary
+## A5.3 - Mocked Remote Client And Reconciliation Boundary
 
 Possible scope:
 
-- define a narrow issue-comment listing/posting interface
-- keep fake/mocked implementation as default
-- add explicit real-mode-disabled behavior
+- mocked issue-comment listing/posting interface
 - define external comment id/url persistence shape
-- test that unsupported real mode fails closed
+- mocked reconciliation outcomes
+- durable audit event extension design
 - no live GitHub API calls unless separately approved
-
-## A5.3 - Server-Side Token Provider Design
-
-Possible scope:
-
-- token provider interface
-- redaction rules
-- token-source rejection tests
-- docs for fine-grained token setup
-- no tokens from request/model/tool/audit/logs
-- no hardcoded token values
-
-Implementation of environment token loading should require separate approval.
 
 ## A5.4 - Allowlisted Real Adapter Implementation
 

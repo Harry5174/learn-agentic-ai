@@ -42,3 +42,18 @@ class GitHubIssueCommentFailure(BaseModel):
     error_type: str
     message: str
     retryable: bool = False
+
+    @classmethod
+    def credentials_unavailable(
+        cls,
+        *,
+        request: GitHubIssueCommentRequest,
+        error_type: str = "github_credentials_unavailable",
+    ) -> "GitHubIssueCommentFailure":
+        return cls(
+            repository=request.repository,
+            issue_number=request.issue_number,
+            error_type=error_type,
+            message="GitHub credentials are unavailable.",
+            retryable=False,
+        )

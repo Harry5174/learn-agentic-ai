@@ -1,18 +1,15 @@
 # Known Limitations
 
-This file keeps Artifact 5 A5.0 honest.
+This file keeps Artifact 5 A5.1 honest.
 
-A5.0 is a baseline/specification sprint only. It defines safety requirements
-for a future approval-gated real GitHub issue-comment adapter, but it does not
-implement that adapter.
+A5.1 adds safe client/token/config boundaries for a future approval-gated real
+GitHub issue-comment adapter, but it does not implement that adapter.
 
 ## Not Implemented
 
-A5.0 does not implement:
+A5.1 does not implement:
 
-- real GitHub client
-- token provider
-- environment token loading
+- live real GitHub client execution
 - HTTP/network code
 - real GitHub API calls
 - runtime remote marker lookup
@@ -63,7 +60,7 @@ real post.
 
 ## No Production Claims
 
-Artifact 5 A5.0 is not production-ready.
+Artifact 5 A5.1 is not production-ready.
 
 It does not claim universal exactly-once execution. Future remote marker lookup
 reduces duplicate-post risk for the scoped GitHub issue-comment path, but even
@@ -72,8 +69,9 @@ boundaries.
 
 ## Token Limitations
 
-A5.0 provides guidance only. It does not load, validate, store, or use GitHub
-tokens.
+A5.1 adds a server-side token-provider boundary for future real mode. The
+default local/demo fake-client path does not load, validate, store, or use
+GitHub tokens.
 
 Future real mode must not accept tokens from request bodies, model output, tool
 arguments, logs, audit rows, exception messages, or test snapshots.
@@ -82,7 +80,7 @@ arguments, logs, audit rows, exception messages, or test snapshots.
 
 The automated suite remains fake/mocked only.
 
-A5.0 does not add:
+A5.1 does not add:
 
 - a live GitHub smoke test
 - a real token requirement

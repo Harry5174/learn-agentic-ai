@@ -2,12 +2,15 @@
 
 ## Status
 
-A5.0 is a baseline/specification sprint only.
+A5.1 is a safe-boundary implementation sprint.
 
 Artifact 5 is initialized as a future approval-gated real GitHub issue-comment
-adapter, but A5.0 does not implement a real GitHub client, token provider,
-token loading, HTTP/network code, real GitHub API calls, or runtime remote
-marker lookup.
+adapter. A5.1 adds the client/interface boundary, server-side token-provider
+boundary, disabled real-mode configuration boundary, redaction-safe failure
+behavior, and tests.
+
+A5.1 does not implement real GitHub posting, HTTP/network code, live GitHub API
+calls, runtime remote marker lookup, or remote reconciliation.
 
 The copied fake-client runtime remains the default behavior.
 
@@ -54,7 +57,7 @@ That future side effect must stay behind server-owned controls:
 
 ## What Artifact 5 Is Not
 
-Artifact 5 A5.0 is not:
+Artifact 5 A5.1 is not:
 
 - a general GitHub automation platform
 - support for arbitrary repositories
@@ -161,11 +164,12 @@ The harness must not post a real GitHub comment when marker state is ambiguous.
 
 ## Real-Mode Boundary
 
-Future real mode must be explicit. A future sprint must define and implement the
-configuration boundary, token provider, client interface, tests, and operator
-instructions before any real GitHub API call exists.
+A5.1 adds explicit real-mode settings and keeps them disabled by default.
+Trusted server-side configuration owns whether real mode is enabled and which
+repositories are allowlisted. Request bodies, model output, skill arguments, and
+tool arguments cannot enable real mode.
 
-A5.0 keeps real mode absent.
+A5.1 does not wire real mode into graph/service execution.
 
 ## Fake-Client Default
 
@@ -174,7 +178,10 @@ fake/mocked only. No CI-style validation may require a GitHub token.
 
 ## Token Requirements
 
-Future real mode must use server-side token loading only.
+A5.1 adds a server-side environment token-provider boundary for future real
+mode. The default environment variable name is
+`AGENT_FACTORY_GITHUB_TOKEN`. Missing or blank values fail closed with generic
+safe messages.
 
 Tokens must not be accepted from:
 
@@ -197,6 +204,8 @@ Minimum-privilege guidance:
 - no broad repo scope
 
 Do not hardcode token values. Do not include realistic-looking secrets.
+
+The default local/demo fake-client path does not require a token.
 
 ## Repository Allowlist Requirements
 
@@ -236,19 +245,18 @@ Future implementation sprints should add tests in stages:
 - no-token-required default test suite
 - separately approved manual live smoke test only after real mode exists
 
-A5.0 does not add a live smoke test.
+A5.1 does not add a live smoke test.
 
-## Explicit Non-Goals For A5.0
+## Explicit Non-Goals For A5.1
 
-A5.0 does not add:
+A5.1 does not add:
 
-- real GitHub client implementation
-- token provider implementation
-- environment token loading
+- live real GitHub client execution
 - HTTP/network code
 - real GitHub API calls
 - new runtime side-effect behavior
 - remote marker runtime code
+- remote reconciliation runtime behavior
 - OAuth/OIDC
 - MCP
 - frontend
@@ -263,16 +271,14 @@ A5.0 does not add:
 - universal exactly-once claims
 - manual live smoke test
 
-## A5.1 Onward Roadmap
+## A5.2 Onward Roadmap
 
-A5.1 should remain design/test focused unless explicitly approved otherwise.
-Recommended next slices are:
+A5.1 intentionally stops at client/token/config boundaries. Recommended next
+slices are:
 
 - marker construction/parsing contract
 - remote comment listing client interface with mocked implementation
 - fail-closed reconciliation tests
-- token provider interface design without loading real tokens
-- server-owned allowlist configuration design
 - durable audit event extension design
 
 Real GitHub execution must wait for a separately approved implementation sprint.

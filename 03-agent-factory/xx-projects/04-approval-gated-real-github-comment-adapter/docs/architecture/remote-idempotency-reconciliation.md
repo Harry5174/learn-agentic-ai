@@ -2,10 +2,11 @@
 
 ## Purpose
 
-This page defines the A5.0 design boundary for future remote idempotency when a
-real GitHub issue-comment adapter is implemented.
+This page defines the Artifact 5 design boundary for future remote idempotency
+when a real GitHub issue-comment adapter is implemented.
 
-A5.0 does not implement runtime marker lookup or real GitHub calls.
+A5.1 does not implement runtime marker lookup, remote reconciliation, or real
+GitHub calls. It adds safe client/token/config boundaries only.
 
 ## Local And Remote State
 
@@ -121,15 +122,14 @@ external comment id/url if GitHub exposes them.
 When marker lookup fails or is ambiguous, future real mode should record a
 blocked outcome and avoid the POST.
 
-## A5.0 Non-Implementation Boundary
+## A5.1 Non-Implementation Boundary
 
-A5.0 does not add:
+A5.1 does not add:
 
 - marker construction code
 - marker parsing code
 - GitHub comment listing code
 - GitHub POST code
-- token loading
 - real network calls
 - runtime reconciliation code
 - live smoke tests

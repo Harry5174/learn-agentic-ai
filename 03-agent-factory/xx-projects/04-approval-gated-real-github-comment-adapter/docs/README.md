@@ -1,33 +1,32 @@
 # Artifact 5 Documentation
 
-This directory is organized so Artifact 5 A5.0 is easy to review from GitHub
+This directory is organized so Artifact 5 A5.1 is easy to review from GitHub
 and easy for future IDE agents to navigate.
 
 Artifact 5 - Approval-Gated Real GitHub Comment Adapter is initialized from the
 completed Artifact 4 local/demo durable fake-client safety artifact.
 
-A5.0 is a baseline/specification sprint only. It defines the future real-mode
-safety boundary, token guidance, repository allowlist requirements, remote
-idempotency marker format, reconciliation behavior, durable audit requirements,
-known limitations, and A5.1 onward roadmap.
+A5.0 is the baseline/specification sprint. A5.1 adds safe client,
+token-provider, and real-mode configuration boundaries only.
 
-No real GitHub client, token loading, HTTP/network code, real GitHub API call,
-or runtime remote marker implementation exists in A5.0. The copied fake-client
-path remains the default runtime behavior.
+No real GitHub posting, HTTP/network code, real GitHub API call, or runtime
+remote marker implementation exists in A5.1. The copied fake-client path remains
+the default runtime behavior, and no CI-style validation requires a GitHub
+token.
 
 ## Read First
 
-- [Artifact 5 real GitHub comment adapter spec](specs/artifact-5-real-github-comment-adapter.md): A5.0 safety contract and non-goals.
+- [Artifact 5 real GitHub comment adapter spec](specs/artifact-5-real-github-comment-adapter.md): A5.1 safety contract and non-goals.
 - [Remote idempotency and reconciliation](architecture/remote-idempotency-reconciliation.md): GitHub/SQLite crash window, marker format, reconciliation, and fail-closed behavior.
-- [Project status](status/project-status.md): current A5.0 status.
-- [Known limitations](status/known-limitations.md): what A5.0 does not implement.
-- [Roadmap](status/roadmap.md): A5.1 onward sequencing.
+- [Project status](status/project-status.md): current A5.1 status.
+- [Known limitations](status/known-limitations.md): what A5.1 does not implement.
+- [Roadmap](status/roadmap.md): A5.2 onward sequencing.
 - [Artifact 4 vs Artifact 5](comparisons/artifact-4-vs-artifact-5.md): baseline comparison.
 - [Interview notes](status/interview-notes.md): short explanation of the artifact.
 
-## A5.0 Safety Topics
+## A5 Safety Topics
 
-A5.0 docs cover:
+A5 docs cover:
 
 - what Artifact 5 is
 - what Artifact 5 is not
@@ -40,19 +39,20 @@ A5.0 docs cover:
 - real-mode boundary
 - fake-client default behavior
 - server-side token handling requirements
+- A5.1 token-provider and real-mode config boundaries
 - minimum-privilege GitHub token guidance
 - repository allowlist requirements
 - durable audit requirements
 - future real-mode testing strategy
 - explicit non-goals
 - known limitations
-- A5.1 onward sprint roadmap
+- A5.2 onward sprint roadmap
 
 ## Inherited Baseline Docs
 
 The copied project still contains Artifact 4, Artifact 3, Artifact 2, and
 Artifact 1 docs. Those pages are historical/source-baseline context unless an
-A5.0 page says otherwise.
+A5 page says otherwise.
 
 Useful inherited context:
 
@@ -65,7 +65,7 @@ Useful inherited context:
 
 ## Current Runtime Boundary
 
-A5.0 does not add runtime behavior.
+A5.1 does not add real GitHub runtime behavior.
 
 The inherited runtime remains:
 
@@ -74,8 +74,9 @@ The inherited runtime remains:
 - approval-gated
 - policy-checked
 - durable-store capable through explicit dependency injection
+- real mode disabled by default
 - free of real GitHub API calls
-- free of GitHub token loading
+- free of GitHub token requirements for default local/demo execution
 - free of runtime remote marker lookup
 
 Future real-mode work must be separately specified, implemented, tested, and

@@ -6,8 +6,12 @@ approval-gated real GitHub issue-comment adapter.
 A5.0 defines the real-mode safety boundary, token guidance, remote idempotency
 marker, reconciliation behavior, audit requirements, and non-goals.
 
-No real GitHub client, token loading, network code, or runtime remote marker
-implementation exists yet.
+No live real GitHub client, network code, real GitHub posting, or runtime
+remote marker implementation exists yet.
+
+A5.1 adds safe client, server-side token-provider, and real-mode configuration
+boundaries only. The real-client boundary is disabled and non-executing. No
+real GitHub comments are posted.
 
 The core thesis remains:
 
@@ -44,7 +48,7 @@ toward one future external side effect:
 post one GitHub issue comment
 ```
 
-A5.0 does not implement that real side effect.
+A5.1 still does not implement that real side effect.
 
 ## What Artifact 5 Is
 
@@ -53,16 +57,16 @@ approval-gated GitHub issue comment only after harness-owned validation,
 repository policy, approval, local durable checks, remote marker lookup, and
 durable audit recording.
 
-A5.0 is documentation/specification only. It keeps the copied fake-client
-runtime as the default behavior.
+A5.1 adds boundary code only. It keeps the copied fake-client runtime as the
+default behavior.
 
 ## What Artifact 5 Is Not
 
-Artifact 5 A5.0 is not:
+Artifact 5 A5.1 is not:
 
 - a general GitHub automation platform
-- a real GitHub client implementation
-- a token provider
+- a live real GitHub client implementation
+- real GitHub execution
 - an OAuth/OIDC project
 - an MCP integration
 - a frontend or deployment artifact
@@ -125,9 +129,10 @@ ambiguous.
 
 ## Token And Repository Boundary
 
-Future real mode must use server-side token loading only. Tokens must not come
-from request bodies, model output, tool arguments, audit metadata, logs, or test
-snapshots.
+A5.1 adds a server-side environment token-provider boundary for future real
+mode. Tokens must not come from request bodies, model output, tool arguments,
+audit metadata, logs, or test snapshots. Missing or blank server-side token
+values fail closed.
 
 Minimum-privilege guidance for future real mode:
 
@@ -152,8 +157,10 @@ The copied runtime remains local/demo and fake-client-only:
 - explicit approval
 - durable stores available through explicit dependency injection
 - `FakeGitHubIssueCommentClient` simulated execution
+- disabled future-facing real-client boundary
+- real mode disabled by default
 - no real GitHub API call
-- no token loading
+- no token required for default local/demo execution
 - no network execution
 - no remote marker runtime lookup
 
@@ -161,7 +168,7 @@ The copied runtime remains local/demo and fake-client-only:
 
 Use [docs/README.md](docs/README.md) as the documentation index.
 
-High-value A5.0 entry points:
+High-value A5.1 entry points:
 
 - [Artifact 5 real GitHub comment adapter spec](docs/specs/artifact-5-real-github-comment-adapter.md)
 - [Remote idempotency and reconciliation](docs/architecture/remote-idempotency-reconciliation.md)
@@ -171,7 +178,7 @@ High-value A5.0 entry points:
 - [Artifact 4 vs Artifact 5](docs/comparisons/artifact-4-vs-artifact-5.md)
 - [Interview notes](docs/status/interview-notes.md)
 
-Historical copied docs remain as inherited baseline context unless an A5.0 page
+Historical copied docs remain as inherited baseline context unless an A5 page
 says otherwise.
 
 ## Quickstart

@@ -4,10 +4,11 @@
 
 **Title:** Artifact 5 - Approval-Gated Real GitHub Comment Adapter
 
-**Current sprint:** A5.0 - Real-Adapter Safety Spec, Token Scope, and Remote
-Idempotency Design
+**Current sprint:** A5.1 - GitHub Client Interface and Server-Side Token
+Provider
 
-**Status:** Baseline/specification sprint implemented in documentation only.
+**Status:** Safe boundary implementation. Real GitHub execution remains
+disabled and unwired.
 
 ## Current State
 
@@ -24,7 +25,8 @@ The new Artifact 5 workspace is:
 ```
 
 A5.0 defines the safety design for a future approval-gated real GitHub
-issue-comment adapter. It does not implement the real adapter.
+issue-comment adapter. A5.1 adds client/interface, token-provider, and
+real-mode configuration boundaries without enabling the real adapter.
 
 ## A5.0 Adds
 
@@ -50,9 +52,25 @@ A5.0 adds documentation for:
 - known limitations
 - A5.1 onward roadmap
 
+## A5.1 Adds
+
+A5.1 adds:
+
+- `GitHubTokenProvider`
+- `EnvironmentGitHubTokenProvider`
+- `MissingGitHubTokenError`
+- `GitHubRealModeConfig`
+- `DisabledRealGitHubIssueCommentClient`
+- safe credentials-unavailable failure construction
+- tests proving fake client remains default
+- tests proving real mode remains disabled by default
+- tests proving missing or blank token values fail closed
+- tests proving token-like values stay out of produced audit/results/failures
+- docs confirming no real GitHub execution or network behavior exists
+
 ## Runtime Status
 
-A5.0 does not change runtime behavior.
+A5.1 does not enable real GitHub runtime behavior.
 
 The inherited runtime remains:
 
@@ -65,17 +83,16 @@ The inherited runtime remains:
 
 The copied fake-client GitHub issue-comment path remains the default behavior.
 
-## Not Implemented In A5.0
+## Not Implemented In A5.1
 
-A5.0 does not add:
+A5.1 does not add:
 
-- real GitHub client implementation
-- token provider implementation
-- environment token loading
+- live real GitHub client execution
 - HTTP/network code
 - real GitHub API calls
 - new runtime side-effect behavior
 - remote marker runtime code
+- remote reconciliation runtime behavior
 - OAuth/OIDC
 - MCP
 - frontend
@@ -103,7 +120,8 @@ harness must fail closed.
 
 ## Token Status
 
-A5.0 adds token guidance only. It does not load or use a GitHub token.
+A5.1 adds a server-side environment token-provider boundary. The default
+local/demo fake-client path does not load or use a GitHub token.
 
 Future real mode should use:
 
@@ -121,7 +139,7 @@ audit rows, exception messages, or test snapshots.
 
 ## Validation Expectation
 
-A5.0 should validate with:
+A5.1 should validate with:
 
 ```bash
 uv run pytest
