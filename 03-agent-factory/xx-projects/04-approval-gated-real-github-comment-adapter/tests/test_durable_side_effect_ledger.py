@@ -121,6 +121,57 @@ def test_valid_transitions(ledger):
     assert ledger.get("se_happy").status == DurableSideEffectStatus.SKIPPED_DUPLICATE
     assert ledger.get("se_happy").skipped_at is not None
 
+
+def test_remote_reconciliation_marks_approved_record_succeeded(ledger):
+    ledger.create_planned(make_planned_record("se_remote"))
+    ledger.mark_approved("se_remote")
+
+    ledger.mark_remote_reconciled(
+        "se_remote",
+        {
+            "comment_id": "remote-comment-1",
+            "comment_url": "https://example.invalid/issuecomment/remote-comment-1",
+            "remote_reconciled": True,
+            "client_called": False,
+            "source": "remote_marker",
+        },
+    )
+
+    record = ledger.get("se_remote")
+    external_result = json.loads(record.external_result_json or "{}")
+
+    assert record.status == DurableSideEffectStatus.SUCCEEDED
+    assert record.executed_at is not None
+    assert external_result["comment_id"] == "remote-comment-1"
+    assert external_result["remote_reconciled"] is True
+
+
+def test_remote_reconciliation_rejects_unapproved_planned_record(ledger):
+    ledger.create_planned(make_planned_record("se_remote_planned"))
+
+    with pytest.raises(InvalidSideEffectTransitionError):
+        ledger.mark_remote_reconciled(
+            "se_remote_planned",
+            {"comment_id": "remote-comment-1"},
+        )
+
+    assert ledger.get("se_remote_planned").status == DurableSideEffectStatus.PLANNED
+
+
+def test_remote_reconciliation_rejects_terminal_record(ledger):
+    ledger.create_planned(make_planned_record("se_remote_failed"))
+    ledger.mark_approved("se_remote_failed")
+    ledger.mark_executing("se_remote_failed")
+    ledger.mark_failed("se_remote_failed")
+
+    with pytest.raises(TerminalSideEffectStateError):
+        ledger.mark_remote_reconciled(
+            "se_remote_failed",
+            {"comment_id": "remote-comment-1"},
+        )
+
+    assert ledger.get("se_remote_failed").status == DurableSideEffectStatus.FAILED
+
 def test_transition_planned_to_rejected(ledger):
     ledger.create_planned(make_planned_record("se_rej"))
     ledger.mark_rejected("se_rej", reason="policy violation")

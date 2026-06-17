@@ -1,19 +1,20 @@
 # Known Limitations
 
-This file keeps Artifact 5 A5.1 honest.
+This file keeps Artifact 5 A5.2 honest.
 
 A5.1 adds safe client/token/config boundaries for a future approval-gated real
-GitHub issue-comment adapter, but it does not implement that adapter.
+GitHub issue-comment adapter. A5.2 adds fake/mocked remote marker and
+reconciliation logic, but it does not implement that adapter.
 
 ## Not Implemented
 
-A5.1 does not implement:
+A5.2 does not implement:
 
 - live real GitHub client execution
 - HTTP/network code
 - real GitHub API calls
-- runtime remote marker lookup
-- runtime remote marker reconciliation
+- live remote marker lookup
+- real GitHub remote reconciliation
 - real mode enablement
 - manual live smoke test
 - OAuth/OIDC
@@ -39,6 +40,9 @@ explicitly injected.
 
 It does not perform a real GitHub API call.
 
+A5.2 remote marker reconciliation uses fake/mocked listers only. It does not
+call GitHub, does not post real comments, and does not enable real mode.
+
 ## SQLite Is Not Enough For Future Real Execution
 
 SQLite-backed idempotency remains necessary, but it is insufficient by itself
@@ -55,12 +59,17 @@ The required crash window is:
 6. Without remote marker lookup, duplicate real comment may be posted.
 ```
 
-Future real mode must add remote marker lookup and reconciliation before any
-real post.
+A5.2 adds the marker lookup and reconciliation logic with fake/mocked clients
+only. Future real mode must still add live remote lookup and real posting only
+after separate approval.
+
+The marker is not authorization and does not bypass approval. A5.2
+reconciliation does not authorize unapproved planned side effects; it only
+operates on existing approved/executing local durable records.
 
 ## No Production Claims
 
-Artifact 5 A5.1 is not production-ready.
+Artifact 5 A5.2 is not production-ready.
 
 It does not claim universal exactly-once execution. Future remote marker lookup
 reduces duplicate-post risk for the scoped GitHub issue-comment path, but even
@@ -80,7 +89,7 @@ arguments, logs, audit rows, exception messages, or test snapshots.
 
 The automated suite remains fake/mocked only.
 
-A5.1 does not add:
+A5.2 does not add:
 
 - a live GitHub smoke test
 - a real token requirement

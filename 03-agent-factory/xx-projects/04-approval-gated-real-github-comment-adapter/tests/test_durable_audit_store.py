@@ -90,6 +90,29 @@ def test_events_survive_store_reinstantiation(tmp_path: Path) -> None:
     }
 
 
+def test_remote_marker_audit_events_can_be_persisted(tmp_path: Path) -> None:
+    db_path = tmp_path / "durable.sqlite"
+    store = store_for(db_path)
+
+    event = store.append_event(
+        run_id="run-audit-remote",
+        side_effect_id="side-effect-remote",
+        event_type=DurableAuditEventType.REMOTE_RECONCILED,
+        message="Remote marker reconciled.",
+        metadata={
+            "marker_status": "marker_found",
+            "comment_id": "remote-comment-1",
+            "comment_url": "https://example.invalid/issuecomment/remote-comment-1",
+            "reconciliation_status": "remote_reconciled",
+        },
+    )
+
+    assert store.get(event.event_id).event_type == (
+        DurableAuditEventType.REMOTE_RECONCILED
+    )
+    assert store.get(event.event_id).metadata["marker_status"] == "marker_found"
+
+
 def test_duplicate_event_id_fails_safely(tmp_path: Path) -> None:
     db_path = tmp_path / "durable.sqlite"
     store = store_for(db_path)

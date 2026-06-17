@@ -22,6 +22,7 @@ def durable_result(
     replay_outcome: str | None = None,
     duplicate_suppressed: bool = False,
     approval_checked: bool = False,
+    remote_reconciled: bool = False,
     cached_external_result: dict[str, Any] | None = None,
     cached_failure: dict[str, Any] | None = None,
     failure_message: str | None = None,
@@ -40,6 +41,7 @@ def durable_result(
         "client_called": client_called,
         "skipped": skipped,
         "duplicate_suppressed": duplicate_suppressed,
+        "remote_reconciled": remote_reconciled,
     }
 
     if error_type is not None:

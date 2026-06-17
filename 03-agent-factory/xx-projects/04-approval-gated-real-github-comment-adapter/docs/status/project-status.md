@@ -4,11 +4,10 @@
 
 **Title:** Artifact 5 - Approval-Gated Real GitHub Comment Adapter
 
-**Current sprint:** A5.1 - GitHub Client Interface and Server-Side Token
-Provider
+**Current sprint:** A5.2 - Remote Idempotency Marker and Reconciliation
 
-**Status:** Safe boundary implementation. Real GitHub execution remains
-disabled and unwired.
+**Status:** Fake/mocked remote marker reconciliation implemented. Real GitHub
+execution remains disabled and unwired.
 
 ## Current State
 
@@ -26,7 +25,8 @@ The new Artifact 5 workspace is:
 
 A5.0 defines the safety design for a future approval-gated real GitHub
 issue-comment adapter. A5.1 adds client/interface, token-provider, and
-real-mode configuration boundaries without enabling the real adapter.
+real-mode configuration boundaries without enabling the real adapter. A5.2 adds
+remote marker/reconciliation logic with fake/mocked clients only.
 
 ## A5.0 Adds
 
@@ -50,7 +50,7 @@ A5.0 adds documentation for:
 - future real-mode testing strategy
 - explicit non-goals
 - known limitations
-- A5.1 onward roadmap
+- A5.1/A5.2 onward roadmap
 
 ## A5.1 Adds
 
@@ -68,9 +68,21 @@ A5.1 adds:
 - tests proving token-like values stay out of produced audit/results/failures
 - docs confirming no real GitHub execution or network behavior exists
 
+## A5.2 Adds
+
+A5.2 adds:
+
+- deterministic remote idempotency marker builder/parser
+- fake/mocked-only `RemoteIssueComment` listing boundary
+- marker lookup outcomes for found, absent, mismatch, ambiguous, and lookup failed
+- durable reconciliation for existing approved/executing local records
+- durable audit events for marker lookup and remote reconciliation
+- crash-window simulation proving marker recovery does not post
+- tests proving unapproved planned records are not authorized by marker text
+
 ## Runtime Status
 
-A5.1 does not enable real GitHub runtime behavior.
+A5.2 does not enable real GitHub runtime behavior.
 
 The inherited runtime remains:
 
@@ -80,19 +92,20 @@ The inherited runtime remains:
 - policy-checked
 - durable-store capable through explicit dependency injection
 - covered by fake/mocked automated tests
+- remote marker reconciliation tested with fake/mocked listers only
 
 The copied fake-client GitHub issue-comment path remains the default behavior.
 
-## Not Implemented In A5.1
+## Not Implemented In A5.2
 
-A5.1 does not add:
+A5.2 does not add:
 
 - live real GitHub client execution
 - HTTP/network code
 - real GitHub API calls
 - new runtime side-effect behavior
-- remote marker runtime code
-- remote reconciliation runtime behavior
+- live remote marker lookup
+- real GitHub remote reconciliation
 - OAuth/OIDC
 - MCP
 - frontend
@@ -107,16 +120,20 @@ A5.1 does not add:
 
 ## Remote Idempotency Status
 
-A5.0 specifies, but does not implement, the future remote idempotency marker:
+A5.2 implements the remote idempotency marker for fake/mocked reconciliation:
 
 ```html
 <!-- agent_factory:v1 side_effect_id=<side_effect_id> args_hash=<validated_arguments_hash> -->
 ```
 
 Future real mode must list existing issue comments and search for this exact
-marker before any real post. If the marker exists, the harness must not post
-again and must reconcile local state. If lookup fails or is ambiguous, the
-harness must fail closed.
+marker before any real post. In A5.2, fake/mocked lookup proves marker-found,
+marker-absent, mismatch, ambiguous, and lookup-failed behavior. If lookup fails
+or is ambiguous, the harness fails closed.
+
+The remote marker is not authorization. A5.2 reconciliation does not authorize
+unapproved planned side effects and does not create local durable records from
+remote marker text.
 
 ## Token Status
 
@@ -139,7 +156,7 @@ audit rows, exception messages, or test snapshots.
 
 ## Validation Expectation
 
-A5.1 should validate with:
+A5.2 should validate with:
 
 ```bash
 uv run pytest

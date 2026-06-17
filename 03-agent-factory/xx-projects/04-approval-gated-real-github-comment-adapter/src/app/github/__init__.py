@@ -7,11 +7,21 @@ from app.github.schemas import (
     GitHubIssueCommentRequest,
     GitHubIssueCommentResult,
 )
+from app.github.remote_comments import (
+    FakeRemoteIssueCommentLister,
+    RemoteIssueComment,
+    RemoteIssueCommentLister,
+)
+from app.github.remote_marker import build_remote_idempotency_marker
 
 __all__ = [
     "FakeGitHubIssueCommentClient",
+    "FakeRemoteIssueCommentLister",
     "GitHubIssueCommentClient",
     "GitHubIssueCommentFailure",
     "GitHubIssueCommentRequest",
     "GitHubIssueCommentResult",
+    "RemoteIssueComment",
+    "RemoteIssueCommentLister",
+    "build_remote_idempotency_marker",
 ]

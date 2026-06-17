@@ -21,6 +21,13 @@ class DurableAuditEventType(StrEnum):
     EXECUTION_FAILED = "execution_failed"
     DUPLICATE_SUPPRESSED = "duplicate_suppressed"
     EXECUTION_BLOCKED = "execution_blocked"
+    REMOTE_MARKER_CHECK_STARTED = "remote_marker_check_started"
+    REMOTE_MARKER_FOUND = "remote_marker_found"
+    REMOTE_MARKER_NOT_FOUND = "remote_marker_not_found"
+    REMOTE_MARKER_AMBIGUOUS = "remote_marker_ambiguous"
+    REMOTE_MARKER_MISMATCH = "remote_marker_mismatch"
+    REMOTE_MARKER_LOOKUP_FAILED = "remote_marker_lookup_failed"
+    REMOTE_RECONCILED = "remote_reconciled"
 
 
 class DurableAuditEvent(BaseModel):

@@ -202,6 +202,47 @@ class DurableSideEffectLedger:
                 "external_result_json": result_json
             }
         )
+
+    def mark_remote_reconciled(
+        self,
+        side_effect_id: str,
+        external_result: dict | None = None,
+    ) -> None:
+        """Recover an approved/executing record after finding its remote marker."""
+
+        record = self.get(side_effect_id)
+        if record.status not in {
+            DurableSideEffectStatus.APPROVED,
+            DurableSideEffectStatus.EXECUTING,
+        }:
+            if record.status in self.TERMINAL_STATES:
+                raise TerminalSideEffectStateError(
+                    f"Cannot remote-reconcile terminal state {record.status}"
+                )
+            raise InvalidSideEffectTransitionError(
+                f"Cannot remote-reconcile from {record.status}"
+            )
+
+        result_json = json.dumps(external_result) if external_result else None
+        now = datetime.now(timezone.utc).isoformat()
+        sql = """
+            UPDATE side_effect_records
+            SET status = ?, updated_at = ?, executed_at = ?,
+                external_result_json = ?
+            WHERE side_effect_id = ?
+        """
+        with self.db_manager.get_connection() as conn:
+            conn.execute(
+                sql,
+                (
+                    DurableSideEffectStatus.SUCCEEDED,
+                    now,
+                    now,
+                    result_json,
+                    side_effect_id,
+                ),
+            )
+            conn.commit()
         
     def close(self) -> None:
         """Close the ledger resources if necessary."""

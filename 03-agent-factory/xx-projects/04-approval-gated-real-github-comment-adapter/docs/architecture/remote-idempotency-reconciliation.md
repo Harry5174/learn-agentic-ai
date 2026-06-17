@@ -2,11 +2,13 @@
 
 ## Purpose
 
-This page defines the Artifact 5 design boundary for future remote idempotency
-when a real GitHub issue-comment adapter is implemented.
+This page defines the Artifact 5 boundary for remote idempotency when a future
+real GitHub issue-comment adapter is implemented.
 
-A5.1 does not implement runtime marker lookup, remote reconciliation, or real
-GitHub calls. It adds safe client/token/config boundaries only.
+A5.2 implements marker construction, marker parsing, fake/mocked remote comment
+listing, marker lookup, and durable reconciliation tests. It does not implement
+real GitHub calls, live remote lookup, real posting, credentials, or real-mode
+graph/service execution.
 
 ## Local And Remote State
 
@@ -58,7 +60,8 @@ Required properties:
 
 ## Reconciliation Before Posting
 
-Before any future real post, the harness must:
+A5.2 implements the following rule with fake/mocked clients only. Before any
+future real post, the harness must:
 
 ```text
 1. List existing issue comments.
@@ -72,6 +75,12 @@ Before any future real post, the harness must:
 
 The lookup must happen after local validation, policy, and approval checks, but
 before the real POST.
+
+The marker is not authorization. A5.2 reconciliation does not bypass approval,
+does not authorize unapproved planned records, and does not create local durable
+records from remote marker text. It reconciles only existing approved/executing
+durable records whose side-effect id, validated argument hash, repository, issue
+number, and tool match the local request.
 
 ## Fail-Closed Cases
 
@@ -103,7 +112,8 @@ auditable:
 - `execution_blocked`
 
 Audit metadata may include marker status, side-effect id, validated argument
-hash, external comment id, and external comment URL when available.
+hash, repository, issue number, external comment id, and external comment URL
+when available.
 
 Audit metadata must not include GitHub tokens, Authorization headers, realistic
 secret values, or raw exception text that could contain credentials.
@@ -122,16 +132,14 @@ external comment id/url if GitHub exposes them.
 When marker lookup fails or is ambiguous, future real mode should record a
 blocked outcome and avoid the POST.
 
-## A5.1 Non-Implementation Boundary
+## A5.2 Non-Implementation Boundary
 
-A5.1 does not add:
+A5.2 does not add:
 
-- marker construction code
-- marker parsing code
-- GitHub comment listing code
 - GitHub POST code
 - real network calls
-- runtime reconciliation code
+- live remote comment lookup
+- real-mode graph/service execution
 - live smoke tests
 
 Those require separate future sprint approval.

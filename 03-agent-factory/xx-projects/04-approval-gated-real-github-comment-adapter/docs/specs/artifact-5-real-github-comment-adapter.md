@@ -2,15 +2,17 @@
 
 ## Status
 
-A5.1 is a safe-boundary implementation sprint.
+A5.2 is a fake/mocked remote idempotency implementation sprint.
 
 Artifact 5 is initialized as a future approval-gated real GitHub issue-comment
 adapter. A5.1 adds the client/interface boundary, server-side token-provider
 boundary, disabled real-mode configuration boundary, redaction-safe failure
-behavior, and tests.
+behavior, and tests. A5.2 adds the remote marker builder/parser,
+fake/mocked-only remote issue-comment listing boundary, marker lookup, and
+durable reconciliation tests.
 
-A5.1 does not implement real GitHub posting, HTTP/network code, live GitHub API
-calls, runtime remote marker lookup, or remote reconciliation.
+A5.2 does not implement real GitHub posting, HTTP/network code, live GitHub API
+calls, live remote marker lookup, or real-mode graph/service execution.
 
 The copied fake-client runtime remains the default behavior.
 
@@ -57,7 +59,7 @@ That future side effect must stay behind server-owned controls:
 
 ## What Artifact 5 Is Not
 
-Artifact 5 A5.1 is not:
+Artifact 5 A5.2 is not:
 
 - a general GitHub automation platform
 - support for arbitrary repositories
@@ -134,10 +136,13 @@ The marker must be:
 - bound to `validated_arguments_hash`
 
 The marker is not a secret. It is an idempotency and reconciliation affordance.
+It is not authorization, not a replacement for approval, and not sufficient by
+itself to mark an action succeeded.
 
-## Required Remote Reconciliation Behavior
+## A5.2 Remote Reconciliation Behavior
 
-Before any future real post:
+A5.2 implements this behavior with fake/mocked clients only. Before any future
+real post:
 
 ```text
 1. List existing issue comments.
@@ -148,6 +153,12 @@ Before any future real post:
 6. Record durable audit event.
 7. If marker lookup fails, fail closed.
 ```
+
+A5.2 reconciliation only operates on existing local durable records in approved
+or executing recovery states. It verifies that the local record matches the
+side-effect id, validated argument hash, repository, issue number, and tool name.
+It does not create a side-effect record from a remote marker and does not
+authorize unapproved planned side effects.
 
 ## Required Fail-Closed Behavior
 
@@ -169,7 +180,7 @@ Trusted server-side configuration owns whether real mode is enabled and which
 repositories are allowlisted. Request bodies, model output, skill arguments, and
 tool arguments cannot enable real mode.
 
-A5.1 does not wire real mode into graph/service execution.
+A5.2 still does not wire real mode into graph/service execution.
 
 ## Fake-Client Default
 
@@ -245,18 +256,18 @@ Future implementation sprints should add tests in stages:
 - no-token-required default test suite
 - separately approved manual live smoke test only after real mode exists
 
-A5.1 does not add a live smoke test.
+A5.2 does not add a live smoke test.
 
-## Explicit Non-Goals For A5.1
+## Explicit Non-Goals For A5.2
 
-A5.1 does not add:
+A5.2 does not add:
 
 - live real GitHub client execution
 - HTTP/network code
 - real GitHub API calls
 - new runtime side-effect behavior
-- remote marker runtime code
-- remote reconciliation runtime behavior
+- live remote marker lookup
+- real GitHub remote reconciliation
 - OAuth/OIDC
 - MCP
 - frontend
@@ -271,14 +282,13 @@ A5.1 does not add:
 - universal exactly-once claims
 - manual live smoke test
 
-## A5.2 Onward Roadmap
+## A5.3 Onward Roadmap
 
-A5.1 intentionally stops at client/token/config boundaries. Recommended next
-slices are:
+A5.2 intentionally stops at fake/mocked marker lookup and reconciliation.
+Recommended next slices are:
 
-- marker construction/parsing contract
-- remote comment listing client interface with mocked implementation
-- fail-closed reconciliation tests
-- durable audit event extension design
+- broader mocked remote-client boundary work, if needed
+- external comment persistence shape review, if needed
+- allowlisted real adapter design after fake/mocked safety work is accepted
 
 Real GitHub execution must wait for a separately approved implementation sprint.

@@ -49,7 +49,7 @@ lookup, remote reconciliation, or a live smoke test.
 
 ## A5.2 - Marker Contract And Mocked Reconciliation Tests
 
-Possible scope:
+Status: implemented with fake/mocked clients only.
 
 - harness-owned marker construction contract
 - marker parser or exact-match helper
@@ -58,10 +58,12 @@ Possible scope:
 - fail-closed behavior tests
 - no real GitHub posting
 - no live network calls
+- durable reconciliation for existing approved/executing local records
+- proof that marker text does not authorize unapproved planned side effects
 
 ## A5.3 - Mocked Remote Client And Reconciliation Boundary
 
-Possible scope:
+Possible future scope, if needed:
 
 - mocked issue-comment listing/posting interface
 - define external comment id/url persistence shape

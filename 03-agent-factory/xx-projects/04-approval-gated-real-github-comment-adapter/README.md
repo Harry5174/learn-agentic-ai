@@ -6,12 +6,14 @@ approval-gated real GitHub issue-comment adapter.
 A5.0 defines the real-mode safety boundary, token guidance, remote idempotency
 marker, reconciliation behavior, audit requirements, and non-goals.
 
-No live real GitHub client, network code, real GitHub posting, or runtime
-remote marker implementation exists yet.
+No live real GitHub client, network code, real GitHub posting, or live remote
+marker lookup exists yet.
 
 A5.1 adds safe client, server-side token-provider, and real-mode configuration
-boundaries only. The real-client boundary is disabled and non-executing. No
-real GitHub comments are posted.
+boundaries only. A5.2 adds remote idempotency marker construction, fake/mocked
+remote comment listing, marker lookup, and durable reconciliation for the
+future GitHub/SQLite crash window. The real-client boundary is disabled and
+non-executing. No real GitHub comments are posted.
 
 The core thesis remains:
 
@@ -48,7 +50,7 @@ toward one future external side effect:
 post one GitHub issue comment
 ```
 
-A5.1 still does not implement that real side effect.
+A5.2 still does not implement that real side effect.
 
 ## What Artifact 5 Is
 
@@ -57,12 +59,12 @@ approval-gated GitHub issue comment only after harness-owned validation,
 repository policy, approval, local durable checks, remote marker lookup, and
 durable audit recording.
 
-A5.1 adds boundary code only. It keeps the copied fake-client runtime as the
-default behavior.
+A5.2 adds remote marker/reconciliation code with fake/mocked clients only. It
+keeps the copied fake-client runtime as the default behavior.
 
 ## What Artifact 5 Is Not
 
-Artifact 5 A5.1 is not:
+Artifact 5 A5.2 is not:
 
 - a general GitHub automation platform
 - a live real GitHub client implementation
@@ -103,9 +105,10 @@ not model-controlled, not user-controlled, included in the actual future posted
 GitHub comment body, bound to `side_effect_id`, and bound to
 `validated_arguments_hash`.
 
-## Future Remote Reconciliation Rule
+## A5.2 Remote Reconciliation Rule
 
-Before any future real post, the harness must:
+A5.2 implements the remote marker lookup and reconciliation rule with
+fake/mocked clients only. Before any future real post, the harness must:
 
 ```text
 1. List existing issue comments.
@@ -126,6 +129,12 @@ Fail-closed behavior is required for:
 
 No future real GitHub comment may be posted when remote marker state is
 ambiguous.
+
+The remote marker is not authorization, not a secret, and not a replacement for
+approval. A5.2 remote marker reconciliation does not authorize unapproved
+planned side effects; it only reconciles existing local durable records in
+approved or executing recovery states when the local record matches the
+side-effect id, validated argument hash, repository, issue number, and tool.
 
 ## Token And Repository Boundary
 
@@ -162,13 +171,14 @@ The copied runtime remains local/demo and fake-client-only:
 - no real GitHub API call
 - no token required for default local/demo execution
 - no network execution
-- no remote marker runtime lookup
+- remote marker/reconciliation tests use fake/mocked clients only
+- no live remote marker lookup
 
 ## Documentation
 
 Use [docs/README.md](docs/README.md) as the documentation index.
 
-High-value A5.1 entry points:
+High-value A5.2 entry points:
 
 - [Artifact 5 real GitHub comment adapter spec](docs/specs/artifact-5-real-github-comment-adapter.md)
 - [Remote idempotency and reconciliation](docs/architecture/remote-idempotency-reconciliation.md)
