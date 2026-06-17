@@ -26,9 +26,11 @@ def durable_result(
     cached_external_result: dict[str, Any] | None = None,
     cached_failure: dict[str, Any] | None = None,
     failure_message: str | None = None,
+    mode: str = "fake_client",
+    dry_run: bool = True,
 ) -> ToolExecutionResult:
     result: dict[str, Any] = {
-        "mode": "fake_client",
+        "mode": mode,
         "persistence": "durable_sqlite",
         "repository": request.repository,
         "issue_number": request.issue_number,
@@ -63,7 +65,7 @@ def durable_result(
     return ToolExecutionResult(
         tool_name=tool_name,
         success=success,
-        dry_run=True,
+        dry_run=dry_run,
         result=result,
         message=message,
     )

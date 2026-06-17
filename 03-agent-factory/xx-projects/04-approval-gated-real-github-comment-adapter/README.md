@@ -1,19 +1,18 @@
 # Artifact 5 - Approval-Gated Real GitHub Comment Adapter
 
-Artifact 5 is initialized as a baseline/specification artifact for a future
-approval-gated real GitHub issue-comment adapter.
+Artifact 5 is an approval-gated real GitHub issue-comment adapter artifact.
 
 A5.0 defines the real-mode safety boundary, token guidance, remote idempotency
 marker, reconciliation behavior, audit requirements, and non-goals.
 
-No live real GitHub client, network code, real GitHub posting, or live remote
-marker lookup exists yet.
-
 A5.1 adds safe client, server-side token-provider, and real-mode configuration
-boundaries only. A5.2 adds remote idempotency marker construction, fake/mocked
-remote comment listing, marker lookup, and durable reconciliation for the
-future GitHub/SQLite crash window. The real-client boundary is disabled and
-non-executing. No real GitHub comments are posted.
+boundaries. A5.2 adds remote idempotency marker construction, fake/mocked remote
+comment listing, marker lookup, and durable reconciliation for the GitHub/SQLite
+crash window. A5.3 adds one approval-gated real GitHub issue-comment execution
+path behind explicit server-side real-mode configuration.
+
+The fake client remains the default. Real mode is disabled by default.
+Automated tests use mocks and do not call GitHub or require credentials.
 
 The core thesis remains:
 
@@ -43,45 +42,46 @@ durable fake-client safety layer:
 - restart/replay duplicate suppression for the fake-client GitHub comment path
 - explicit non-implementation of real GitHub execution and token loading
 
-Artifact 5 moves the design conversation from local durable fake-client safety
-toward one future external side effect:
+Artifact 5 moves the design from local durable fake-client safety toward one
+external side effect:
 
 ```text
 post one GitHub issue comment
 ```
 
-A5.2 still does not implement that real side effect.
+A5.3 implements that real side effect only when explicitly configured on the
+server side.
 
 ## What Artifact 5 Is
 
-Artifact 5 is a staged safety design for a future adapter that may post one
-approval-gated GitHub issue comment only after harness-owned validation,
-repository policy, approval, local durable checks, remote marker lookup, and
-durable audit recording.
+Artifact 5 is a staged safety design and implementation for one adapter that
+may post one approval-gated GitHub issue comment only after harness-owned
+validation, repository policy, approval, local durable checks, remote marker
+lookup, server-side token loading, and durable audit recording.
 
-A5.2 adds remote marker/reconciliation code with fake/mocked clients only. It
-keeps the copied fake-client runtime as the default behavior.
+A5.3 keeps the copied fake-client runtime as the default behavior. Real mode is
+available only through trusted server-side constructor/config injection.
 
 ## What Artifact 5 Is Not
 
-Artifact 5 A5.2 is not:
+Artifact 5 A5.3 is not:
 
 - a general GitHub automation platform
-- a live real GitHub client implementation
-- real GitHub execution
 - an OAuth/OIDC project
 - an MCP integration
 - a frontend or deployment artifact
-- a live smoke-test harness
+- an automated live smoke-test harness
 - a production-ready system
 - a universal exactly-once execution guarantee
 - support for arbitrary repositories
+- support for GitHub operations beyond issue-comment list/create for the one
+  approved path
 
 ## Why SQLite Alone Is Not Enough For Real GitHub
 
 Artifact 4's SQLite-backed ledger is sufficient for the local/demo fake-client
-proof, but SQLite and GitHub cannot commit atomically. A future real adapter must
-therefore reconcile with the remote GitHub issue comments before any real post.
+proof, but SQLite and GitHub cannot commit atomically. The A5.3 real adapter
+therefore reconciles with the remote GitHub issue comments before any real post.
 
 The critical crash window is:
 
@@ -94,7 +94,7 @@ The critical crash window is:
 6. Without remote marker lookup, duplicate real comment may be posted.
 ```
 
-Future real comments must include this harness-generated marker:
+A5.3 real comments include this harness-generated marker:
 
 ```html
 <!-- agent_factory:v1 side_effect_id=<side_effect_id> args_hash=<validated_arguments_hash> -->
@@ -105,10 +105,10 @@ not model-controlled, not user-controlled, included in the actual future posted
 GitHub comment body, bound to `side_effect_id`, and bound to
 `validated_arguments_hash`.
 
-## A5.2 Remote Reconciliation Rule
+## A5.3 Remote Reconciliation Rule
 
-A5.2 implements the remote marker lookup and reconciliation rule with
-fake/mocked clients only. Before any future real post, the harness must:
+A5.3 applies the remote marker lookup and reconciliation rule before any real
+post:
 
 ```text
 1. List existing issue comments.
@@ -127,23 +127,23 @@ Fail-closed behavior is required for:
 - same `side_effect_id` with different `validated_arguments_hash`
 - remote API ambiguity
 
-No future real GitHub comment may be posted when remote marker state is
-ambiguous.
+No real GitHub comment may be posted when remote marker state is ambiguous or
+lookup completeness is uncertain.
 
 The remote marker is not authorization, not a secret, and not a replacement for
-approval. A5.2 remote marker reconciliation does not authorize unapproved
+approval. A5.3 remote marker reconciliation does not authorize unapproved
 planned side effects; it only reconciles existing local durable records in
 approved or executing recovery states when the local record matches the
 side-effect id, validated argument hash, repository, issue number, and tool.
 
 ## Token And Repository Boundary
 
-A5.1 adds a server-side environment token-provider boundary for future real
-mode. Tokens must not come from request bodies, model output, tool arguments,
-audit metadata, logs, or test snapshots. Missing or blank server-side token
-values fail closed.
+A5.1 adds a server-side environment token-provider boundary for real mode. A5.3
+uses that boundary only after local gates pass. Tokens must not come from
+request bodies, model output, tool arguments, audit metadata, logs, or test
+snapshots. Missing or blank server-side token values fail closed.
 
-Minimum-privilege guidance for future real mode:
+Minimum-privilege guidance for optional manual real mode:
 
 - fine-grained GitHub token preferred
 - single allowlisted test repository
@@ -158,7 +158,7 @@ bodies must not be able to widen it.
 
 ## Current Runtime Boundary
 
-The copied runtime remains local/demo and fake-client-only:
+The default runtime remains local/demo and fake-client-only:
 
 - one approval-gated GitHub issue-comment skill path
 - validated scalar `repository`, `issue_number`, and `comment_body` arguments
@@ -166,22 +166,23 @@ The copied runtime remains local/demo and fake-client-only:
 - explicit approval
 - durable stores available through explicit dependency injection
 - `FakeGitHubIssueCommentClient` simulated execution
-- disabled future-facing real-client boundary
+- narrow real issue-comment client available only by explicit server config
 - real mode disabled by default
-- no real GitHub API call
+- no real GitHub API call in default execution
 - no token required for default local/demo execution
-- no network execution
-- remote marker/reconciliation tests use fake/mocked clients only
-- no live remote marker lookup
+- no network execution in automated tests
+- remote marker/reconciliation tests use fake/mocked clients
+- optional manual smoke test is documented but not run by default
 
 ## Documentation
 
 Use [docs/README.md](docs/README.md) as the documentation index.
 
-High-value A5.2 entry points:
+High-value A5.3 entry points:
 
 - [Artifact 5 real GitHub comment adapter spec](docs/specs/artifact-5-real-github-comment-adapter.md)
 - [Remote idempotency and reconciliation](docs/architecture/remote-idempotency-reconciliation.md)
+- [Manual real-mode smoke test](docs/demos/manual-real-mode-smoke-test.md)
 - [Project status](docs/status/project-status.md)
 - [Known limitations](docs/status/known-limitations.md)
 - [Roadmap](docs/status/roadmap.md)

@@ -61,31 +61,30 @@ Status: implemented with fake/mocked clients only.
 - durable reconciliation for existing approved/executing local records
 - proof that marker text does not authorize unapproved planned side effects
 
-## A5.3 - Mocked Remote Client And Reconciliation Boundary
+## A5.3 - Approval-Gated Real Comment Execution Path
 
-Possible future scope, if needed:
+Status: implemented with mocked automated tests and disabled-by-default real
+mode.
 
-- mocked issue-comment listing/posting interface
-- define external comment id/url persistence shape
-- mocked reconciliation outcomes
-- durable audit event extension design
-- no live GitHub API calls unless separately approved
+A5.3 adds:
 
-## A5.4 - Allowlisted Real Adapter Implementation
-
-Possible future scope only after A5.1-A5.3 safety work is accepted:
-
-- one real GitHub issue-comment adapter
-- explicit real-mode configuration
-- single allowlisted test repository
+- one approval-gated real GitHub issue-comment path
+- explicit server-side real-mode configuration
+- exact server-owned repository allowlist checks
+- server-side token loading after local gates
 - remote marker lookup before post
-- fail-closed ambiguity handling
-- durable reconciliation and audit
-- mocked automated tests remain default
+- remote marker found reconciliation without posting
+- marker absent posting with deterministic marker appended
+- external comment id/url persistence
+- durable audit evidence for real-mode safety decisions
+- mocked automated tests only
 
-## A5.5 - Separately Approved Manual Live Smoke Test
+A5.3 does not add automated live GitHub tests or manual live smoke execution by
+default.
 
-Possible future scope only after real mode exists:
+## A5.4 - Separately Approved Manual Live Smoke Test
+
+Possible future scope only if the Product Owner explicitly approves it:
 
 - manually run against a single allowlisted test repository
 - use a short-lived fine-grained token
@@ -95,6 +94,16 @@ Possible future scope only after real mode exists:
 - no broad repo scope
 
 No CI-style validation should require a GitHub token.
+
+## A5.5 - Evidence Review And Narrow Hardening
+
+Possible future scope after A5.3 is accepted:
+
+- review real-mode evidence and audit rows
+- clarify any remaining operator docs
+- harden the single issue-comment path only if needed
+- keep fake client as the default
+- avoid expanding into general GitHub automation
 
 ## Premature Work To Avoid
 

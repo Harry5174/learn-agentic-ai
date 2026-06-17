@@ -15,9 +15,12 @@ from app.audit.logger import (
     create_task_created_event,
     create_tool_executed_event,
 )
+from app.audit.durable_store import DurableAuditStore
 from app.audit.schemas import AuditEvent, AuditEventType
-from app.github.client import GitHubIssueCommentClient
+from app.github.client import GitHubIssueCommentClient, GitHubIssueCommentRemoteClient
 from app.github.fake_client import FakeGitHubIssueCommentClient
+from app.github.real_mode import GitHubRealModeConfig
+from app.github.token_provider import GitHubTokenProvider
 from app.identity.schemas import IdentityContext
 from app.policy.guard import evaluate_tool_permission
 from app.policy.schemas import PolicyDecision
@@ -71,9 +74,13 @@ def build_skill_execution_graph(
     skill_registry: SkillRegistry | None = None,
     tool_registry: ToolRegistry | None = None,
     github_issue_comment_client: GitHubIssueCommentClient | None = None,
+    real_github_issue_comment_client: GitHubIssueCommentRemoteClient | None = None,
+    github_real_mode_config: GitHubRealModeConfig | None = None,
+    github_token_provider: GitHubTokenProvider | None = None,
     side_effect_ledger: SideEffectLedger | None = None,
     durable_side_effect_ledger: DurableSideEffectLedger | None = None,
     durable_approval_binding_store: DurableApprovalBindingStore | None = None,
+    durable_audit_store: DurableAuditStore | None = None,
     allowed_github_comment_repositories: tuple[str, ...] | None = None,
 ):
     """Build the local skill execution graph with checkpointed approval resume."""
@@ -454,6 +461,10 @@ def build_skill_execution_graph(
                 github_issue_comment_client=active_github_issue_comment_client,
                 durable_side_effect_ledger=durable_side_effect_ledger,
                 durable_approval_binding_store=durable_approval_binding_store,
+                durable_audit_store=durable_audit_store,
+                real_github_issue_comment_client=real_github_issue_comment_client,
+                github_real_mode_config=github_real_mode_config,
+                github_token_provider=github_token_provider,
             )
 
             result = active_tool_registry.execute(

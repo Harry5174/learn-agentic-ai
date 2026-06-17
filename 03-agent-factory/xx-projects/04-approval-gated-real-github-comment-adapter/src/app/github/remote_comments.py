@@ -19,6 +19,10 @@ class RemoteIssueCommentListingError(RuntimeError):
     """Raised when fake/mocked remote comment listing fails."""
 
 
+class IncompleteRemoteIssueCommentListingError(RemoteIssueCommentListingError):
+    """Raised when a remote listing cannot prove marker-search completeness."""
+
+
 class RemoteIssueCommentLister(Protocol):
     """Fake/mocked-only boundary for listing existing issue comments."""
 

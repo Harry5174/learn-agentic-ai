@@ -5,6 +5,7 @@ from app.github.schemas import (
     GitHubIssueCommentRequest,
     GitHubIssueCommentResult,
 )
+from app.github.remote_comments import RemoteIssueCommentLister
 
 
 GitHubIssueCommentResponse = GitHubIssueCommentResult | GitHubIssueCommentFailure
@@ -18,3 +19,11 @@ class GitHubIssueCommentClient(Protocol):
         request: GitHubIssueCommentRequest,
     ) -> GitHubIssueCommentResponse:
         """Return a structured response for an already validated request."""
+
+
+class GitHubIssueCommentRemoteClient(
+    GitHubIssueCommentClient,
+    RemoteIssueCommentLister,
+    Protocol,
+):
+    """Narrow real-client protocol for listing and creating issue comments."""

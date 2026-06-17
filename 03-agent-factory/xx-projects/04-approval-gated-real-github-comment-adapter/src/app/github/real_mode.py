@@ -22,6 +22,12 @@ class GitHubRealModeConfig:
     def repository_is_allowed(self, repository: str) -> bool:
         return repository in self.allowed_repositories
 
+    def has_valid_exact_repository_allowlist(self) -> bool:
+        return bool(self.allowed_repositories) and all(
+            _is_exact_repository_name(repository)
+            for repository in self.allowed_repositories
+        )
+
     def __repr__(self) -> str:
         return (
             "GitHubRealModeConfig("
@@ -33,3 +39,12 @@ class GitHubRealModeConfig:
         )
 
     __str__ = __repr__
+
+
+def _is_exact_repository_name(repository: str) -> bool:
+    parts = repository.split("/")
+    return (
+        len(parts) == 2
+        and all(part.strip() == part and part for part in parts)
+        and "*" not in repository
+    )

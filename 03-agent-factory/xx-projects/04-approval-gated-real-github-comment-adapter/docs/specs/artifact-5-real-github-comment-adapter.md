@@ -2,17 +2,15 @@
 
 ## Status
 
-A5.2 is a fake/mocked remote idempotency implementation sprint.
+A5.3 is the Approval-Gated Real Comment Execution Path sprint.
 
-Artifact 5 is initialized as a future approval-gated real GitHub issue-comment
-adapter. A5.1 adds the client/interface boundary, server-side token-provider
-boundary, disabled real-mode configuration boundary, redaction-safe failure
-behavior, and tests. A5.2 adds the remote marker builder/parser,
-fake/mocked-only remote issue-comment listing boundary, marker lookup, and
-durable reconciliation tests.
-
-A5.2 does not implement real GitHub posting, HTTP/network code, live GitHub API
-calls, live remote marker lookup, or real-mode graph/service execution.
+Artifact 5 is an approval-gated real GitHub issue-comment adapter. A5.1 adds
+the client/interface boundary, server-side token-provider boundary, disabled
+real-mode configuration boundary, redaction-safe failure behavior, and tests.
+A5.2 adds the remote marker builder/parser, fake/mocked remote issue-comment
+listing boundary, marker lookup, and durable reconciliation tests. A5.3 adds
+one approval-gated real GitHub issue-comment execution path behind explicit
+server-side real-mode configuration.
 
 The copied fake-client runtime remains the default behavior.
 
@@ -38,13 +36,14 @@ The harness controls:
 
 ## What Artifact 5 Is
 
-Artifact 5 is a staged design for one future real external side effect:
+Artifact 5 is a staged design and implementation for one real external side
+effect:
 
 ```text
 post one GitHub issue comment
 ```
 
-That future side effect must stay behind server-owned controls:
+That side effect must stay behind server-owned controls:
 
 - server-derived identity
 - trusted skill/tool registry metadata
@@ -55,11 +54,12 @@ That future side effect must stay behind server-owned controls:
 - durable approval binding
 - remote idempotency marker lookup
 - fail-closed reconciliation
+- server-side token loading
 - durable audit evidence
 
 ## What Artifact 5 Is Not
 
-Artifact 5 A5.2 is not:
+Artifact 5 A5.3 is not:
 
 - a general GitHub automation platform
 - support for arbitrary repositories
@@ -71,6 +71,8 @@ Artifact 5 A5.2 is not:
 - a live GitHub smoke test
 - a universal exactly-once guarantee
 - a multi-tool GitHub automation suite
+- support for GitHub operations beyond issue-comment list/create for the one
+  approved path
 
 ## Why Artifact 4 Is The Baseline
 
@@ -95,7 +97,7 @@ That makes it the right baseline before introducing a real remote write.
 SQLite can durably record local harness state. GitHub stores the remote comment.
 Those two systems cannot commit atomically.
 
-The future real adapter must therefore use both:
+The real adapter must therefore use both:
 
 - local durable state
 - remote marker lookup and reconciliation
@@ -105,7 +107,7 @@ succeed before a crash.
 
 ## Required GitHub/SQLite Crash Window
 
-Future design must account for this crash window:
+A5.3 accounts for this crash window:
 
 ```text
 1. GitHub comment POST succeeds.
@@ -118,7 +120,7 @@ Future design must account for this crash window:
 
 ## Required Remote Idempotency Marker
 
-Future real GitHub comment bodies must include this marker:
+A5.3 real GitHub comment bodies include this marker:
 
 ```html
 <!-- agent_factory:v1 side_effect_id=<side_effect_id> args_hash=<validated_arguments_hash> -->
@@ -139,10 +141,9 @@ The marker is not a secret. It is an idempotency and reconciliation affordance.
 It is not authorization, not a replacement for approval, and not sufficient by
 itself to mark an action succeeded.
 
-## A5.2 Remote Reconciliation Behavior
+## A5.3 Remote Reconciliation Behavior
 
-A5.2 implements this behavior with fake/mocked clients only. Before any future
-real post:
+A5.3 applies this behavior before any real post:
 
 ```text
 1. List existing issue comments.
@@ -154,7 +155,7 @@ real post:
 7. If marker lookup fails, fail closed.
 ```
 
-A5.2 reconciliation only operates on existing local durable records in approved
+A5.3 reconciliation only operates on existing local durable records in approved
 or executing recovery states. It verifies that the local record matches the
 side-effect id, validated argument hash, repository, issue number, and tool name.
 It does not create a side-effect record from a remote marker and does not
@@ -162,7 +163,7 @@ authorize unapproved planned side effects.
 
 ## Required Fail-Closed Behavior
 
-Future real mode must fail closed for:
+A5.3 real mode fails closed for:
 
 - marker lookup failure
 - multiple matching remote markers unless separately approved
@@ -170,29 +171,29 @@ Future real mode must fail closed for:
 - remote API ambiguity
 - repository not in the server-owned allowlist
 - missing or unusable server-side token
+- incomplete remote issue-comment listing
+- GitHub HTTP, timeout, transport, or malformed-response failures
 
 The harness must not post a real GitHub comment when marker state is ambiguous.
 
 ## Real-Mode Boundary
 
-A5.1 adds explicit real-mode settings and keeps them disabled by default.
+A5.1 adds explicit real-mode settings and keeps them disabled by default. A5.3
+wires real mode only through explicit server-side constructor/config injection.
 Trusted server-side configuration owns whether real mode is enabled and which
 repositories are allowlisted. Request bodies, model output, skill arguments, and
 tool arguments cannot enable real mode.
 
-A5.2 still does not wire real mode into graph/service execution.
-
 ## Fake-Client Default
 
-The fake client remains the default behavior. Existing tests and demos remain
-fake/mocked only. No CI-style validation may require a GitHub token.
+The fake client remains the default behavior. Automated tests remain
+fake/mocked and no CI-style validation may require a GitHub token.
 
 ## Token Requirements
 
-A5.1 adds a server-side environment token-provider boundary for future real
-mode. The default environment variable name is
-`AGENT_FACTORY_GITHUB_TOKEN`. Missing or blank values fail closed with generic
-safe messages.
+A5.1 adds a server-side environment token-provider boundary for real mode. The
+default environment variable name is `AGENT_FACTORY_GITHUB_TOKEN`. Missing or
+blank values fail closed with generic safe messages.
 
 Tokens must not be accepted from:
 
@@ -216,7 +217,8 @@ Minimum-privilege guidance:
 
 Do not hardcode token values. Do not include realistic-looking secrets.
 
-The default local/demo fake-client path does not require a token.
+The default local/demo fake-client path does not require a token. A5.3 loads the
+token only after local gates and durable approval binding pass.
 
 ## Repository Allowlist Requirements
 
@@ -224,13 +226,14 @@ The repository allowlist must be server-owned and explicit. Request bodies,
 model output, and tool arguments may propose a repository value, but they must
 not define or widen the trusted allowlist.
 
-Future real mode should begin with a single allowlisted test repository.
+A5.3 real mode uses exact server-owned repository allowlist matching. The
+prepared optional manual test repository is
+`Harry5174/artifact-5-github-comment-test`.
 
 ## Durable Audit Requirements
 
-Future real mode must make the remote marker decision auditable. Event names may
-follow project conventions, but safety decisions must be visible for events such
-as:
+A5.3 real mode makes the remote marker decision auditable. Safety decisions are
+visible for events such as:
 
 - `remote_marker_check_started`
 - `remote_marker_found`
@@ -240,34 +243,33 @@ as:
 - `remote_marker_lookup_failed`
 - `remote_reconciled`
 - `execution_blocked`
+- `repository_allowed`
+- `repository_blocked`
+- `real_client_list_comments_called`
+- `real_client_create_comment_called`
 
 Durable audit rows must not store tokens or realistic secrets.
 
-## Future Real-Mode Testing Strategy
+## Real-Mode Testing Strategy
 
-Future implementation sprints should add tests in stages:
+A5.3 automated tests use fake transports and fake real clients. They cover:
 
-- unit tests for marker construction and parsing
-- mocked-client tests for remote marker found, not found, ambiguous, mismatch,
-  and lookup failure
-- durable reconciliation tests for local state updates after marker discovery
-- token redaction and token-source rejection tests
-- repository allowlist rejection tests
+- real client pagination, page bound, create response, HTTP failures, and
+  malformed responses
+- remote marker found, absent, ambiguous, mismatch, and lookup failure
+- durable reconciliation for local state updates after marker discovery
+- token redaction and token-source rejection
+- repository allowlist rejection
+- missing token and disabled real-mode failures
 - no-token-required default test suite
-- separately approved manual live smoke test only after real mode exists
 
-A5.2 does not add a live smoke test.
+A5.3 adds a disabled-by-default optional manual live smoke guide, but the manual
+smoke test was not run as part of the automated sprint validation.
 
-## Explicit Non-Goals For A5.2
+## Explicit Non-Goals For A5.3
 
-A5.2 does not add:
+A5.3 does not add:
 
-- live real GitHub client execution
-- HTTP/network code
-- real GitHub API calls
-- new runtime side-effect behavior
-- live remote marker lookup
-- real GitHub remote reconciliation
 - OAuth/OIDC
 - MCP
 - frontend
@@ -280,15 +282,16 @@ A5.2 does not add:
 - multiple real tools
 - production-ready claims
 - universal exactly-once claims
-- manual live smoke test
+- automated live GitHub tests
+- manual live smoke execution by default
 
 ## A5.3 Onward Roadmap
 
-A5.2 intentionally stops at fake/mocked marker lookup and reconciliation.
+A5.3 intentionally stops at one approval-gated real GitHub issue-comment path.
 Recommended next slices are:
 
-- broader mocked remote-client boundary work, if needed
-- external comment persistence shape review, if needed
-- allowlisted real adapter design after fake/mocked safety work is accepted
+- separately approved manual live smoke test, if the Product Owner wants one
+- evidence review for the real-mode safety boundary
+- hardening only after the single-comment path is accepted
 
-Real GitHub execution must wait for a separately approved implementation sprint.
+Do not expand Artifact 5 into general GitHub automation.

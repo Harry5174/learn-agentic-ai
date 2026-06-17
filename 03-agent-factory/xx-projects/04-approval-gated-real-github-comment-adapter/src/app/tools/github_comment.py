@@ -10,6 +10,7 @@ from app.github.schemas import (
 from app.tools.github_comment_durable_execution import (
     post_durable_github_issue_comment,
 )
+from app.tools.github_comment_real_execution import post_real_github_issue_comment
 from app.tools.github_comment_results import failed_result
 from app.side_effects.idempotency import (
     build_side_effect_id,
@@ -76,6 +77,15 @@ def post_github_issue_comment(
         tool_name=GITHUB_COMMENT_TOOL_NAME,
         validated_arguments_hash=argument_hash,
     )
+
+    if _real_mode_requested(context):
+        return post_real_github_issue_comment(
+            tool_name=GITHUB_COMMENT_TOOL_NAME,
+            request=request,
+            context=context,
+            side_effect_id=side_effect_id,
+            argument_hash=argument_hash,
+        )
 
     if _has_durable_dependencies(context):
         return post_durable_github_issue_comment(
@@ -187,6 +197,11 @@ def _has_durable_dependencies(context: ToolExecutionContext) -> bool:
         context.durable_side_effect_ledger is not None
         or context.durable_approval_binding_store is not None
     )
+
+
+def _real_mode_requested(context: ToolExecutionContext) -> bool:
+    config = context.github_real_mode_config
+    return config is not None and config.enabled and config.client_mode == "real"
 
 
 def _safe_failure(response: object) -> GitHubIssueCommentFailure:

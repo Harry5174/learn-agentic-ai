@@ -3,8 +3,11 @@ from uuid import uuid4
 from langgraph.types import Command
 
 from app.approval.schemas import ApprovalDecision, ApprovalStatus
+from app.audit.durable_store import DurableAuditStore
 from app.audit.schemas import AuditEvent
-from app.github.client import GitHubIssueCommentClient
+from app.github.client import GitHubIssueCommentClient, GitHubIssueCommentRemoteClient
+from app.github.real_mode import GitHubRealModeConfig
+from app.github.token_provider import GitHubTokenProvider
 from app.identity.schemas import IdentityContext
 from app.proposer.base import SkillProposer
 from app.side_effects.approval_binding import DurableApprovalBindingStore
@@ -30,17 +33,25 @@ class SkillGraphService:
         self,
         proposer: SkillProposer | None = None,
         github_issue_comment_client: GitHubIssueCommentClient | None = None,
+        real_github_issue_comment_client: GitHubIssueCommentRemoteClient | None = None,
+        github_real_mode_config: GitHubRealModeConfig | None = None,
+        github_token_provider: GitHubTokenProvider | None = None,
         side_effect_ledger: SideEffectLedger | None = None,
         durable_side_effect_ledger: DurableSideEffectLedger | None = None,
         durable_approval_binding_store: DurableApprovalBindingStore | None = None,
+        durable_audit_store: DurableAuditStore | None = None,
         allowed_github_comment_repositories: tuple[str, ...] | None = None,
     ) -> None:
         self._graph = build_skill_execution_graph(
             proposer=proposer,
             github_issue_comment_client=github_issue_comment_client,
+            real_github_issue_comment_client=real_github_issue_comment_client,
+            github_real_mode_config=github_real_mode_config,
+            github_token_provider=github_token_provider,
             side_effect_ledger=side_effect_ledger,
             durable_side_effect_ledger=durable_side_effect_ledger,
             durable_approval_binding_store=durable_approval_binding_store,
+            durable_audit_store=durable_audit_store,
             allowed_github_comment_repositories=(
                 allowed_github_comment_repositories
             ),
