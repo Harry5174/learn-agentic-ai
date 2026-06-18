@@ -4,12 +4,20 @@
 
 A5.0 created the Artifact 05 documentation scaffold. A5.1 hardened the
 redacted evidence bundle, token redaction checklist, manual runbook,
-live-smoke threat model, and status wording. A5.2 adds an offline manual
-preflight gate with tests and redacted output.
+live-smoke threat model, and status wording. A5.2 added an offline manual
+preflight gate with tests and redacted output. A5.3 completed one controlled,
+manually approved real GitHub issue-comment smoke execution with redacted
+evidence.
 
 A5.2 does not run live GitHub, require credentials, inspect `.env`, add a new
 adapter, or change Artifact 04 runtime execution behavior. It creates
 preflight readiness only.
+
+A5.3 posted exactly one approved real GitHub issue comment to the allowlisted
+test issue after preflight and explicit Product Owner approval. A5.3 did not
+run replay/no-duplicate testing, did not run non-allowlisted live testing, and
+did not perform any GitHub write besides the one issue comment. The read-only
+list-comments call was used only for remote marker lookup before posting.
 
 ## Purpose
 
@@ -99,8 +107,8 @@ Sprints may proceed only if separately approved:
   and threat-model evidence requirements.
 - **A5.2 - Manual Preflight Gate:** prove the release gate with offline
   preflight validation, redacted output, and no network.
-- **A5.3 - Manual Real-Mode Smoke:** run one live smoke only if the Product
-  Owner explicitly approves the live step in that sprint.
+- **A5.3 - Manual Real-Mode Smoke:** completed one live smoke after the
+  Product Owner explicitly approved the live step in that sprint.
 - **A5.4 - Replay, Negative Evidence, and Closeout:** review replay,
   no-duplicate, negative allowlist, redaction, and final report evidence.
 
@@ -261,6 +269,25 @@ A5.2 is acceptable when:
   contents
 - docs describe A5.2 as offline, non-live, preflight-only, and not proof of a
   real GitHub post
+- validation commands pass or any failure is reported plainly
+
+## A5.3 Acceptance Criteria
+
+A5.3 is acceptable when:
+
+- one Product Owner-approved live smoke posts exactly one GitHub issue comment
+  to the allowlisted repository and issue
+- A5.2 preflight output is redacted and shows `network_calls_attempted: 0`
+- the fresh side-effect strategy is recorded as `new_unique_body`
+- the remote marker lookup happens before the create call
+- the marker is absent before posting
+- durable side-effect status ends as `succeeded`
+- external comment id and URL are captured
+- durable audit events include the marker lookup and create-call lifecycle
+- no replay/no-duplicate testing is run in A5.3
+- no non-allowlisted live testing is run in A5.3
+- no GitHub write operation besides the one issue comment occurs
+- redaction checks against the evidence bundle show no token-like values
 - validation commands pass or any failure is reported plainly
 
 ## Block Conditions

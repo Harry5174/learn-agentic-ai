@@ -49,16 +49,21 @@ Required focus:
 
 ## A5.3 - Manual Real-Mode Smoke
 
-Possible future scope only if the Product Owner explicitly approves the live
-smoke step in that sprint.
+Status: complete.
 
-No implicit live approval is allowed.
+A5.3 ran one manually approved real GitHub issue-comment smoke against the
+allowlisted test issue. It used redacted preflight evidence, the existing
+Artifact 04 real adapter path, remote marker lookup before posting, and durable
+ledger/audit evidence.
 
-Before the live run, one of the following must be true:
+A5.3 did not run replay/no-duplicate testing, did not run non-allowlisted live
+testing, and did not perform any GitHub write besides the one issue comment.
 
-- fresh test issue with no previous marker
-- new unique validated comment body producing a new `side_effect_id`
-- explicit reconciliation path if marker already exists
+Fresh side-effect strategy used:
+
+```text
+new_unique_body
+```
 
 ## A5.4 - Evidence Review And Closeout
 

@@ -4,10 +4,11 @@
 
 **Title:** Artifact 05 - Real-Mode Smoke Evidence and Release Gate
 
-**Current sprint:** A5.2 - Manual Preflight Gate
+**Current sprint:** A5.3 - Controlled Live Smoke Execution
 
 **Status:** A5.0 scaffold complete. A5.1 redacted evidence and safety
-checklist hardening complete. A5.2 manual preflight gate complete.
+checklist hardening complete. A5.2 manual preflight gate complete. A5.3
+controlled live smoke complete.
 
 ## Current Claim
 
@@ -16,6 +17,12 @@ approval-gated real GitHub issue-comment side effect with redacted evidence.
 The fake client remains default, real mode remains explicit, and any live
 GitHub smoke run requires explicit Product Owner approval in the sprint that
 runs it.
+
+A5.3 demonstrated one controlled, manually approved real GitHub issue-comment
+smoke execution with redacted evidence. It posted exactly one issue comment to
+the allowlisted test issue. It did not run replay/no-duplicate testing, did not
+run non-allowlisted live testing, and did not perform any GitHub write besides
+the one issue comment.
 
 ## Completed A5.0 Scope
 
@@ -80,6 +87,30 @@ A5.2 does not:
 - create a new GitHub adapter
 - prove that a real GitHub comment was posted
 
+## A5.3 Scope
+
+A5.3 completed:
+
+- recorded explicit Product Owner live-run approval
+- used fresh side-effect strategy `new_unique_body`
+- ran the redacted A5.2 preflight gate
+- loaded the token for local smoke using the approved test-only `.env`
+  exception without printing or recording the token value
+- used the existing Artifact 04 approval-gated real adapter path
+- performed remote marker lookup before posting
+- posted exactly one GitHub issue comment after the marker was absent
+- recorded the comment id, comment URL, durable ledger success, and audit
+  event sequence
+- ran redaction checks against the evidence bundle
+
+A5.3 does not:
+
+- run replay/no-duplicate testing
+- run non-allowlisted live testing
+- add a new GitHub adapter or live runner
+- perform any GitHub write besides the one issue comment
+- claim production readiness or arbitrary GitHub automation
+
 ## Methodology Preserved
 
 ```text
@@ -104,5 +135,5 @@ commit has been explicitly approved by the Design Supervisor.
 ## Recommended Next Step
 
 ```text
-A5.3 - Controlled Live Smoke Execution
+A5.4 - Replay, Negative Case, and Final Release Gate Report
 ```

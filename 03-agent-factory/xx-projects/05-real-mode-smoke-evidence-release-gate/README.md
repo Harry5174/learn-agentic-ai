@@ -71,12 +71,19 @@ Artifact 05 is not:
 
 A5.0 created the documentation scaffold only. A5.1 hardened the redacted
 evidence bundle, token redaction checklist, manual runbook, and live-smoke
-threat model. A5.2 adds an offline manual preflight gate with tests and
-redacted output.
+threat model. A5.2 added an offline manual preflight gate with tests and
+redacted output. A5.3 completed one controlled, manually approved real GitHub
+issue-comment smoke execution with redacted evidence.
 
 A5.2 remains non-live: no live GitHub execution is run, no credentials are
 required, no `.env` contents are read, and no Artifact 04 runtime behavior is
 changed. A5.2 is not proof that a live smoke run has occurred.
+
+A5.3 posted exactly one approved real GitHub issue comment to the allowlisted
+test issue. A5.3 did not run replay/no-duplicate testing, did not run
+non-allowlisted live testing, and did not perform any GitHub write besides the
+one issue comment. A5.4 remains responsible for replay/no-duplicate evidence,
+negative-case evidence, and the final release-gate report.
 
 ## Documentation
 
@@ -88,6 +95,7 @@ Key entry points:
 - [Development rules](docs/process/development-rules.md)
 - [Artifact 05 constitution](docs/specs/constitution/README.md)
 - [Manual preflight gate](docs/demos/preflight-gate.md)
+- [A5.3 controlled live-smoke evidence](docs/evidence/a5.3-controlled-live-smoke/README.md)
 - [Manual real-mode smoke runbook](docs/demos/manual-real-mode-smoke-runbook.md)
 - [Evidence bundle template](docs/demos/evidence-bundle-template.md)
 - [Redacted evidence example](docs/demos/redacted-evidence-example.md)
@@ -115,6 +123,6 @@ gate, evidence, and offline preflight layer around that runtime.
 - A5.0: Artifact 04 closeout verification and Artifact 05 scaffold.
 - A5.1: redacted evidence bundle and safety checklist hardening.
 - A5.2: manual preflight gate using offline, non-live validation.
-- A5.3: explicitly approved manual live smoke, if Product Owner approval is
-  granted in that sprint.
+- A5.3: completed one explicitly approved manual live smoke against the
+  allowlisted issue.
 - A5.4: replay, negative evidence review, and final closeout report.

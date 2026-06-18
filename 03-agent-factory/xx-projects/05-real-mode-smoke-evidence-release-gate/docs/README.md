@@ -9,6 +9,7 @@ It continues the Artifact 04 safety model without adding runtime behavior.
 - [Development rules](process/development-rules.md)
 - [Artifact 05 constitution](specs/constitution/README.md)
 - [Manual preflight gate](demos/preflight-gate.md)
+- [A5.3 controlled live-smoke evidence](evidence/a5.3-controlled-live-smoke/README.md)
 - [Manual real-mode smoke runbook](demos/manual-real-mode-smoke-runbook.md)
 - [Evidence bundle template](demos/evidence-bundle-template.md)
 - [Redacted evidence example](demos/redacted-evidence-example.md)
@@ -41,11 +42,13 @@ The default runtime remains:
 - policy-checked
 - durable-state aware
 - no token required
-- no live GitHub execution
+- no live GitHub execution except the completed A5.3 manually approved smoke
 - no CI live GitHub execution
 
-Real mode remains explicit and manual. A future live smoke run requires explicit
-Product Owner approval in that sprint.
+Real mode remains explicit and manual. A5.3 completed one manually approved
+real GitHub issue-comment smoke run with redacted evidence. A5.4 remains
+responsible for replay/no-duplicate evidence, negative-case evidence, and the
+final release-gate report.
 
 Artifact 05 intentionally has no `src/app` package. Runtime code remains in
 Artifact 04; Artifact 05 contains docs plus isolated release-gate helpers under

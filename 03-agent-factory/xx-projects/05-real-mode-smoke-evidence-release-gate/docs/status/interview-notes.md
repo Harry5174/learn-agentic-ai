@@ -72,6 +72,26 @@ declared, and the marker format matches Artifact 04.
 A5.2 remains non-live. It does not call GitHub and does not prove that a real
 comment was posted.
 
+## What A5.3 Adds
+
+A5.3 completes one controlled, manually approved real GitHub issue-comment
+smoke execution with redacted evidence. It posts exactly one comment to the
+allowlisted test issue through the existing Artifact 04 real adapter path.
+
+The A5.3 evidence records:
+
+- Product Owner live-run approval
+- redacted preflight output
+- fresh side-effect strategy `new_unique_body`
+- remote marker lookup before posting
+- marker absent before the create call
+- comment id and comment URL
+- durable ledger status `succeeded`
+- durable audit event sequence
+
+A5.3 does not run replay/no-duplicate testing or non-allowlisted live testing.
+A5.4 remains responsible for those checks and the final release-gate report.
+
 ## What To Highlight
 
 - The fake client remains the default.
@@ -80,6 +100,7 @@ comment was posted.
 - A5.3 needs explicit Product Owner approval before any live run.
 - A5.1 hardens redaction and evidence readiness only.
 - A5.2 is the offline manual preflight gate.
+- A5.3 is the controlled manual live-smoke evidence packet.
 - The release gate must prove repository allowlist rejection before network.
 - The evidence bundle must include redaction proof.
 - The scope remains one GitHub operation: post issue comment.
@@ -92,4 +113,4 @@ comment was posted.
 - Not OAuth, MCP, deployment, or operator UI.
 - Not a live smoke execution in A5.0 or A5.1.
 - Not a live smoke execution in A5.2.
-- Not proof that A5.3 live evidence exists yet.
+- Not proof that replay/no-duplicate or non-allowlisted live testing has run.
