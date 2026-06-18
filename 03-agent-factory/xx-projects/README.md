@@ -13,6 +13,18 @@ This directory contains the numbered artifact sequence for the Agent Factory tra
 | 2 | [02-approval-gated-github-tool-harness](02-approval-gated-github-tool-harness) | Approval-Gated GitHub Tool Harness | Complete as local/demo fake-client artifact |
 | 3 | [03-durable-side-effect-ledger](03-durable-side-effect-ledger) | Durable Side-Effect Ledger and Approval Binding | Complete as local/demo durable fake-client safety artifact |
 | 4 | [04-approval-gated-real-github-comment-adapter](04-approval-gated-real-github-comment-adapter) | Approval-Gated Real GitHub Comment Adapter | Complete as local/demo real-comment adapter (A4.5) |
+| 5 | [05-real-mode-smoke-evidence-release-gate](05-real-mode-smoke-evidence-release-gate) | Real-Mode Smoke Evidence and Release Gate | Complete / published / tagged evidence artifact |
+| 6 | [06-operator-approval-workbench](06-operator-approval-workbench) | Operator Approval Console / Workbench | Planned / current next artifact |
+
+Numbering convention:
+
+- `00` = Artifact 00
+- `01` = Artifact 01
+- `02` = Artifact 02
+- `03` = Artifact 03
+- `04` = Artifact 04
+- `05` = Artifact 05
+- `06` = Artifact 06
 
 ---
 
@@ -89,8 +101,54 @@ This directory contains the numbered artifact sequence for the Agent Factory tra
 - [Known limitations](04-approval-gated-real-github-comment-adapter/docs/status/known-limitations.md)
 - [Interview notes](04-approval-gated-real-github-comment-adapter/docs/status/interview-notes.md)
 
+---
+
+## Artifact 5 - Real-Mode Smoke Evidence and Release Gate
+
+**Path:** `05-real-mode-smoke-evidence-release-gate`
+**Status:** Complete / published / tagged evidence artifact
+
+**Core claim:** Artifact 5 is the release-gate evidence layer for Artifact 4's
+narrow approval-gated real GitHub issue-comment path. It preserves fake-client
+default behavior, records one controlled manually approved live smoke result
+with redacted evidence, and packages offline replay/no-duplicate and negative
+zero-network proof.
+
+**Current limitation:** Evidence and release-gate context only. It does not own
+runtime code, add a GitHub adapter, broaden GitHub operations, implement an
+operator console, or claim production readiness.
+
+**Read first:**
+
+- [Artifact 5 README](05-real-mode-smoke-evidence-release-gate/README.md)
+- [Artifact 5 release-gate spec](05-real-mode-smoke-evidence-release-gate/docs/specs/artifact-5-real-mode-smoke-evidence-release-gate.md)
+- [A5.4 final release-gate report](05-real-mode-smoke-evidence-release-gate/docs/evidence/a5.4-final-release-gate-report/README.md)
+
+---
+
+## Artifact 6 - Operator Approval Console / Workbench
+
+**Path:** `06-operator-approval-workbench`
+**Status:** Planned / current next artifact
+
+**A6.0 goal:** Establish the architecture baseline, runtime/module inventory,
+operator API boundaries, and UI strategy before implementing any operator
+approval APIs or workbench UI.
+
+**Baseline rule:** Artifact 6 derives its future runtime baseline from Artifact
+4. Artifact 5 is referenced as release-gate evidence context only.
+
+**Current boundary:** A6.0 is documentation/scaffold only. No `src/app` runtime,
+operator routes, approve/reject endpoints, static HTML, Next.js frontend, live
+GitHub execution, credentials, or `.env` access are included.
+
 ## What Is Not Here Yet
 
-All five artifacts are complete as local/demo safety artifacts. None claims production readiness, universal exactly-once execution, or arbitrary repository support.
+Artifacts 00 through 05 are complete as local/demo safety and evidence
+artifacts. None claims production readiness, universal exactly-once execution,
+or arbitrary repository support.
 
-Artifact 4 is the most recent. It extends the fake-client durable safety of Artifact 3 with one real GitHub issue-comment side effect behind explicit server-side configuration, remote idempotency marker reconciliation, and adversarial safety testing. It does not implement general GitHub automation, OAuth/OIDC, MCP, frontend, or deployment. The optional manual smoke test is documented but was not run.
+Artifact 06 is the current planned next artifact. A6.0 freezes the operator
+scope before implementation. It does not implement general GitHub automation,
+OAuth/OIDC, MCP, frontend, deployment, operator approval APIs, or an operator
+workbench UI.
