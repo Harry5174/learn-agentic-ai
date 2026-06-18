@@ -26,6 +26,9 @@ docs, and constitution/process rules. If the full spec set is too large, the
 agent must target the specific relevant specs and state exactly which files
 were reviewed. No sprint should proceed from implementation intuition alone.
 
+See [development rules](docs/process/development-rules.md) and the
+[Artifact 05 constitution](docs/specs/constitution/README.md).
+
 ## What Artifact 05 Is
 
 Artifact 05 is a documentation and evidence-planning artifact for:
@@ -82,6 +85,8 @@ Use [docs/README.md](docs/README.md) as the documentation index.
 Key entry points:
 
 - [Artifact 05 spec](docs/specs/artifact-5-real-mode-smoke-evidence-release-gate.md)
+- [Development rules](docs/process/development-rules.md)
+- [Artifact 05 constitution](docs/specs/constitution/README.md)
 - [Manual preflight gate](docs/demos/preflight-gate.md)
 - [Manual real-mode smoke runbook](docs/demos/manual-real-mode-smoke-runbook.md)
 - [Evidence bundle template](docs/demos/evidence-bundle-template.md)
@@ -97,6 +102,13 @@ Key entry points:
 
 The final Artifact 04 tag must point to `9ef8ab8`, unless a newer closeout
 commit has been explicitly approved by the Design Supervisor.
+
+## Runtime Boundary
+
+Artifact 05 intentionally has no `src/app` package. Artifact 04 owns the
+application runtime, GitHub client boundary, real-mode config, token provider,
+durable ledger, and remote marker behavior. Artifact 05 stays as the release
+gate, evidence, and offline preflight layer around that runtime.
 
 ## A5.x Sequence
 

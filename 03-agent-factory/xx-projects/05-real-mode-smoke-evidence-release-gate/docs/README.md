@@ -6,6 +6,8 @@ It continues the Artifact 04 safety model without adding runtime behavior.
 ## Read First
 
 - [Artifact 05 spec](specs/artifact-5-real-mode-smoke-evidence-release-gate.md)
+- [Development rules](process/development-rules.md)
+- [Artifact 05 constitution](specs/constitution/README.md)
 - [Manual preflight gate](demos/preflight-gate.md)
 - [Manual real-mode smoke runbook](demos/manual-real-mode-smoke-runbook.md)
 - [Evidence bundle template](demos/evidence-bundle-template.md)
@@ -19,13 +21,11 @@ It continues the Artifact 04 safety model without adding runtime behavior.
 
 ## Practical Constitution
 
-Artifact 05 follows the explicit constitution-style files inherited in Artifact
-04:
+Artifact 05 follows local process and constitution files that preserve the
+Artifact 04 runtime boundary:
 
-- `docs/specs/constitution/mission.md`
-- `docs/specs/constitution/roadmap.md`
-- `docs/specs/constitution/tech-stack.md`
-- `docs/process/development-rules.md`
+- [development rules](process/development-rules.md)
+- [Artifact 05 constitution](specs/constitution/README.md)
 
 It also follows the practical constitution established by the Artifact 04
 README, spec, remote idempotency documentation, manual smoke guide, status
@@ -46,3 +46,7 @@ The default runtime remains:
 
 Real mode remains explicit and manual. A future live smoke run requires explicit
 Product Owner approval in that sprint.
+
+Artifact 05 intentionally has no `src/app` package. Runtime code remains in
+Artifact 04; Artifact 05 contains docs plus isolated release-gate helpers under
+`tools/` and tests under `tests/`.

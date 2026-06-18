@@ -28,6 +28,10 @@ durable audit recording.
 Artifact 05 does not expand that capability. It defines how a future sprint may
 collect manual smoke evidence without weakening the Artifact 04 boundaries.
 
+Artifact 05 intentionally has no `src/app` package. The real application
+runtime remains in Artifact 04. Artifact 05 docs, `tools/`, and `tests/`
+provide the release-gate evidence layer without wiring into runtime execution.
+
 ## Artifact 04 Closeout Rule
 
 The final Artifact 04 tag must point to `9ef8ab8`, unless a newer closeout
@@ -65,6 +69,11 @@ implementation, the IDE/Codex agent must review the relevant specs, status
 docs, and constitution/process rules. If the full spec set is too large, the
 agent must target the specific relevant specs and state exactly which files
 were reviewed. No sprint should proceed from implementation intuition alone.
+
+Artifact 05 records those rules in:
+
+- [development rules](../process/development-rules.md)
+- [Artifact 05 constitution](constitution/README.md)
 
 ## A5.0 Scope
 

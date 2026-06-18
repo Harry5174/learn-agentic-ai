@@ -23,6 +23,9 @@ IDE/Codex agent reviews the relevant specs, status docs, and
 constitution/process rules, then states exactly which files were reviewed when
 the full spec set is too large.
 
+Artifact 05 records those local rules in `docs/process/development-rules.md`
+and `docs/specs/constitution/README.md`.
+
 ## What Artifact 05 Adds
 
 Artifact 05 adds documentation for:
@@ -37,6 +40,10 @@ Artifact 05 adds documentation for:
 - manual-only release-gate block conditions
 
 It does not add a new adapter or runtime path.
+
+Artifact 05 intentionally has no `src/app` package. That is part of the design:
+Artifact 04 owns runtime execution, while Artifact 05 owns release-gate docs,
+redacted evidence structure, and offline preflight helpers.
 
 ## What A5.1 Adds
 
