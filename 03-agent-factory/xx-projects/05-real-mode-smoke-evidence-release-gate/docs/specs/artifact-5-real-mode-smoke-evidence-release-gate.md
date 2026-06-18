@@ -19,6 +19,11 @@ run replay/no-duplicate testing, did not run non-allowlisted live testing, and
 did not perform any GitHub write besides the one issue comment. The read-only
 list-comments call was used only for remote marker lookup before posting.
 
+A5.4 completed the final release-gate report using offline/mocked/spy replay
+proof and zero-network negative allowlist proof. Real replay against GitHub was
+not run, no second GitHub comment was posted, and no non-allowlisted live test
+was run.
+
 ## Purpose
 
 Controlled manual release gate for verifying one approval-gated real GitHub
@@ -111,6 +116,7 @@ Sprints may proceed only if separately approved:
   Product Owner explicitly approved the live step in that sprint.
 - **A5.4 - Replay, Negative Evidence, and Closeout:** review replay,
   no-duplicate, negative allowlist, redaction, and final report evidence.
+  Completed with offline/mocked/spy proof only.
 
 No A5.x sprint may infer live-run approval from this scaffold.
 
@@ -287,6 +293,23 @@ A5.3 is acceptable when:
 - no replay/no-duplicate testing is run in A5.3
 - no non-allowlisted live testing is run in A5.3
 - no GitHub write operation besides the one issue comment occurs
+- redaction checks against the evidence bundle show no token-like values
+- validation commands pass or any failure is reported plainly
+
+## A5.4 Acceptance Criteria
+
+A5.4 is acceptable when:
+
+- final release-gate report evidence exists under
+  `docs/evidence/a5.4-final-release-gate-report/`
+- replay/no-duplicate proof is evidence-backed by offline/mocked/spy tests
+- real replay against GitHub is not run unless separately approved
+- no second GitHub comment is posted
+- negative allowlist proof shows non-allowlisted repo and issue rejection before
+  network
+- no non-allowlisted live test is run
+- A5.3 comment id, comment URL, ledger success, and audit lifecycle evidence are
+  preserved
 - redaction checks against the evidence bundle show no token-like values
 - validation commands pass or any failure is reported plainly
 

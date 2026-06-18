@@ -92,6 +92,17 @@ The A5.3 evidence records:
 A5.3 does not run replay/no-duplicate testing or non-allowlisted live testing.
 A5.4 remains responsible for those checks and the final release-gate report.
 
+## What A5.4 Adds
+
+A5.4 completes the final release-gate report. It uses existing offline
+mocked/spy tests to prove marker-found reconciliation and duplicate suppression
+without a create-comment call. It uses Artifact 05 preflight tests and Artifact
+04 adversarial tests to prove non-allowlisted repository and issue cases reject
+before network.
+
+A5.4 does not run real replay against GitHub, does not post a second comment,
+and does not run non-allowlisted live tests.
+
 ## What To Highlight
 
 - The fake client remains the default.
@@ -101,6 +112,7 @@ A5.4 remains responsible for those checks and the final release-gate report.
 - A5.1 hardens redaction and evidence readiness only.
 - A5.2 is the offline manual preflight gate.
 - A5.3 is the controlled manual live-smoke evidence packet.
+- A5.4 is the final offline release-gate evidence packet.
 - The release gate must prove repository allowlist rejection before network.
 - The evidence bundle must include redaction proof.
 - The scope remains one GitHub operation: post issue comment.
@@ -113,4 +125,4 @@ A5.4 remains responsible for those checks and the final release-gate report.
 - Not OAuth, MCP, deployment, or operator UI.
 - Not a live smoke execution in A5.0 or A5.1.
 - Not a live smoke execution in A5.2.
-- Not proof that replay/no-duplicate or non-allowlisted live testing has run.
+- Not proof that real replay or non-allowlisted live testing has run.

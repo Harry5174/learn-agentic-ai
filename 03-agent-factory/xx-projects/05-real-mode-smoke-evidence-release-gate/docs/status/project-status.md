@@ -4,11 +4,11 @@
 
 **Title:** Artifact 05 - Real-Mode Smoke Evidence and Release Gate
 
-**Current sprint:** A5.3 - Controlled Live Smoke Execution
+**Current sprint:** A5.4 - Replay, Negative Case, and Final Release Gate Report
 
 **Status:** A5.0 scaffold complete. A5.1 redacted evidence and safety
 checklist hardening complete. A5.2 manual preflight gate complete. A5.3
-controlled live smoke complete.
+controlled live smoke complete. A5.4 final release-gate report complete.
 
 ## Current Claim
 
@@ -23,6 +23,10 @@ smoke execution with redacted evidence. It posted exactly one issue comment to
 the allowlisted test issue. It did not run replay/no-duplicate testing, did not
 run non-allowlisted live testing, and did not perform any GitHub write besides
 the one issue comment.
+
+A5.4 added the final release-gate evidence report. It used offline/mocked/spy
+replay proof and zero-network negative allowlist proof. Real replay against
+GitHub was not approved and was not run. No second GitHub comment was posted.
 
 ## Completed A5.0 Scope
 
@@ -135,5 +139,5 @@ commit has been explicitly approved by the Design Supervisor.
 ## Recommended Next Step
 
 ```text
-A5.4 - Replay, Negative Case, and Final Release Gate Report
+Artifact 05 final closeout review and optional tag decision
 ```

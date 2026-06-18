@@ -67,9 +67,14 @@ new_unique_body
 
 ## A5.4 - Evidence Review And Closeout
 
+Status: complete.
+
 Review replay/no-duplicate evidence, negative allowlist evidence, redacted
 evidence, pass/fail decision, known limitations, and final closeout report.
 Recommend only narrow hardening if the evidence shows a real gap.
+
+A5.4 used offline/mocked/spy replay proof. Real replay against GitHub was not
+run. No second GitHub comment was posted.
 
 ## Premature Work To Avoid
 

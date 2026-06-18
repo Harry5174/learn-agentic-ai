@@ -7,8 +7,9 @@ This file keeps Artifact 05 honest.
 A5.0 is complete as a documentation scaffold. A5.1 completed redaction and
 evidence-readiness hardening. A5.2 added an offline manual preflight gate.
 A5.3 completed one controlled, manually approved real GitHub issue-comment
-smoke execution with redacted evidence. Artifact 05 still does not create a
-production system.
+smoke execution with redacted evidence. A5.4 completed the final release-gate
+report using offline/mocked/spy replay proof and zero-network negative allowlist
+proof. Artifact 05 still does not create a production system.
 
 ## Not Implemented
 
@@ -42,7 +43,8 @@ Artifact 05 does not implement:
   manual smoke.
 - One GitHub operation is in scope: post issue comment.
 - Evidence must be redacted.
-- A5.3 did not run replay/no-duplicate testing or non-allowlisted live testing.
+- A5.4 did not run real replay, did not call GitHub, did not post a second
+  comment, and did not run non-allowlisted live testing.
 
 ## No Universal Exactly-Once Guarantee
 
@@ -79,6 +81,11 @@ A5.2 proves only offline preflight behavior. A5.3 proves one controlled manual
 live issue-comment smoke shape with redacted evidence; it does not prove
 production readiness, arbitrary repository safety, CI live execution safety, or
 universal exactly-once execution.
+
+A5.4 proves replay/no-duplicate behavior through existing offline mocked/spy
+tests and proves negative allowlist behavior through offline zero-network tests.
+It does not prove real replay against GitHub, because real replay was not
+approved or run.
 
 For local A5.3 smoke only, the live snippet loaded
 `AGENT_FACTORY_GITHUB_TOKEN` from the local Artifact 04 `.env` file into
