@@ -2,7 +2,7 @@
 
 ## A6.0 - Architecture Baseline, Parent Index Cleanup, and Operator Scope Freeze
 
-Status: current.
+Status: complete.
 
 A6.0:
 
@@ -20,21 +20,25 @@ included.
 
 ## A6.1 - Approval Inbox API
 
-Recommended next sprint.
+Status: current / implemented.
 
-Potential scope:
+A6.1 scope:
 
-- create operator route/schema modules
-- list pending approvals
-- get approval detail
+- copied tracked Artifact 04 runtime/test baseline into Artifact 06
+- created operator route/schema modules
+- added read-only approval view service
+- lists pending approvals
+- gets approval detail
 - preserve server-derived identity
-- enforce viewer/operator/admin boundaries
+- ignores query-param role/scope/identity spoofing
 - keep fake/default execution
-- add focused API tests
+- adds focused API tests
+
+A6.1 does not implement approve/reject actions or UI.
 
 ## A6.2 - Approval Action API
 
-Potential later sprint.
+Recommended next sprint.
 
 Potential scope:
 

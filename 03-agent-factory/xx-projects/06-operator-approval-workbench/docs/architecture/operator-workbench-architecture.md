@@ -31,17 +31,23 @@ FastAPI routes
 Artifact 05 is evidence context only. It proves and packages the release-gate
 shape around Artifact 04.
 
-## Future Module Boundary
+## A6.1 Module Boundary
 
-Future operator modules should be separate from existing skill-run routes and
+A6.1 operator modules are separate from existing skill-run routes and
 side-effect executors.
 
-Proposed future modules:
+A6.1 modules:
 
 - `src/app/api/operator_routes.py`: thin HTTP route layer
 - `src/app/api/operator_schemas.py`: request/response contracts
 - `src/app/operator/approval_views.py`: read-only inbox/detail views
+
+Future A6.2 modules may add:
+
 - `src/app/operator/approval_actions.py`: approve/reject service boundary
+
+Future later modules may add:
+
 - `src/app/operator/audit_views.py`: audit and side-effect evidence views
 
 Do not put operator inbox logic into:
@@ -53,18 +59,31 @@ Do not put operator inbox logic into:
 
 Those modules are already security-sensitive execution/runtime boundaries.
 
-## Future Endpoint Sketch
+## A6.1 Endpoints
 
-Future endpoints may include:
+A6.1 implements:
 
 - `GET /operator/approvals`
 - `GET /operator/approvals/{approval_id}`
+
+A6.1 does not implement:
+
 - `POST /operator/approvals/{approval_id}/approve`
 - `POST /operator/approvals/{approval_id}/reject`
 - `GET /operator/approvals/{approval_id}/audit`
 - `GET /operator/side-effects/{side_effect_id}`
 
-A6.0 does not implement them.
+## A6.1 Read-Only Data Source
+
+A6.1 derives pending approval rows from copied `SkillGraphService` state. It
+adds a read-only `list_runs()` helper and builds approval views only from runs
+paused for approval.
+
+A6.1 uses `run_id` as `approval_id` for local/demo approval inbox rows until a
+distinct durable approval identifier is introduced later.
+
+List/detail views do not resume the graph, approve, reject, execute tools, call
+GitHub, mutate ledgers, require token access, or read `.env`.
 
 ## Authority Boundary
 
@@ -81,7 +100,7 @@ but must not claim:
 - real-mode enablement
 - trusted `side_effect_id` or `args_hash` authority
 
-The approval action service must re-read the approval binding and side-effect
+A6.2 approval action service must re-read the approval binding and side-effect
 record before mutation. It must fail closed on stale ids, mismatched hashes,
 terminal states, missing records, or insufficient scopes.
 

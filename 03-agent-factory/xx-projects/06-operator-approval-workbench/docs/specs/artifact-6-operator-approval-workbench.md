@@ -2,10 +2,17 @@
 
 ## Status
 
-A6.0 is a cleanup/design-boundary sprint.
+A6.0 completed the architecture baseline and scope freeze.
 
-It is not a frontend sprint, not an operator API implementation sprint, not a
-new product feature sprint, and not a runtime refactor sprint.
+A6.1 adds the first backend operator API surface:
+
+```text
+GET /operator/approvals
+GET /operator/approvals/{approval_id}
+```
+
+A6.1 is backend/API-only. It does not implement approve/reject actions, UI,
+static HTML, Next.js, live GitHub execution, credentials, or `.env` access.
 
 ## Sprint Goal
 
@@ -61,25 +68,41 @@ Artifact 05 owns:
 Artifact 05 intentionally has no `src/app` package and must not be copied as
 the runtime baseline.
 
-## A6.0 Scope
+## A6.1 Runtime Copy
 
-A6.0 may:
+A6.1 copies the tracked Artifact 04 runtime/test baseline into Artifact 06:
 
-- create docs/scaffold
-- update the parent artifact index
-- document the runtime baseline
-- document the Artifact 05 evidence role
-- inventory Artifact 04 modules and watchlist files
-- sketch future operator API boundaries
-- document UI strategy
-- document safety requirements
-- document future test plan
+- `pyproject.toml`
+- `uv.lock`
+- `.python-version`
+- `src/app/`
+- `tests/`
 
-A6.0 must not:
+A6.1 intentionally does not copy:
 
-- create `src/app`
-- copy Artifact 04 runtime code
-- implement operator API routes
+- `.env`
+- `.env.example`
+- `.venv`
+- `.pytest_cache`
+- `.ruff_cache`
+- Artifact 04 docs/README
+
+The copy is used to make Artifact 06 self-contained for API implementation and
+tests. A6.1 does not modify Artifact 04 files.
+
+## A6.1 Scope
+
+A6.1 may:
+
+- implement read-only approval list endpoint
+- implement read-only approval detail endpoint
+- add operator response schemas
+- add read-only approval view service
+- add tests for read-only inbox/detail behavior
+- update docs/status
+
+A6.1 must not:
+
 - implement approve/reject endpoints
 - implement UI
 - create static HTML
@@ -89,29 +112,39 @@ A6.0 must not:
 - require credentials
 - read `.env`
 
-## Future Operator API Boundary
+## A6.1 Operator API Boundary
 
-Future A6.1 module names may include:
+A6.1 uses:
 
 - `src/app/api/operator_routes.py`
 - `src/app/api/operator_schemas.py`
 - `src/app/operator/approval_views.py`
-- `src/app/operator/approval_actions.py`
-- `src/app/operator/audit_views.py`
 
-These are proposals only in A6.0. A6.1 must decide and implement the actual
-names.
+A6.1 does not create `approval_actions.py`.
 
-Future endpoints may include:
+A6.1 implements:
 
 - `GET /operator/approvals`
 - `GET /operator/approvals/{approval_id}`
+
+Future A6.2 endpoints may include:
+
 - `POST /operator/approvals/{approval_id}/approve`
 - `POST /operator/approvals/{approval_id}/reject`
+
+Future A6.x endpoints may include:
+
 - `GET /operator/approvals/{approval_id}/audit`
 - `GET /operator/side-effects/{side_effect_id}`
 
-A6.0 does not implement these endpoints.
+## A6.1 Approval Identifier Limitation
+
+A6.1 uses `run_id` as `approval_id` for local/demo approval inbox rows until a
+distinct durable approval identifier is introduced later.
+
+This is acceptable for the read-only local/demo inbox because the copied
+skill-run graph already stores pending approval state by run id. A6.2 should
+revisit this when implementing approve/reject behavior.
 
 ## Future Operator API Invariants
 
@@ -157,21 +190,20 @@ Future A6 implementation must preserve these requirements:
 - No token required for UI demo.
 - No real GitHub call in tests.
 
-## Future Test Plan
+## A6.1 Test Plan
 
-Future A6 tests should include:
+A6.1 tests cover:
 
-- viewer cannot approve
-- request body cannot claim role/scopes
-- operator/admin approval records actor
-- stale approval id rejected
-- `args_hash` mismatch rejected
-- `side_effect_id` mismatch rejected
-- rejection records audit
-- approved fake execution updates status
-- comment body safely rendered/escaped in UI
-- no token required for UI demo
-- no real GitHub call in tests
+- approval list returns summaries
+- approval detail returns detail
+- unknown approval id returns safe 404
+- list/detail are read-only and do not execute tools
+- operator approve/reject routes do not exist
+- query-param identity/role/scope/actor spoofing is ignored
+- no token or `.env` is required
+- no live GitHub client is called
+- fake/default execution mode is visible
+- operator responses do not expose token-like values
 
 ## Block Conditions
 

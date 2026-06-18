@@ -1,14 +1,11 @@
 # Known Limitations
 
-A6.0 is not a working operator console.
+A6.1 is not a working operator console UI.
 
 ## Not Implemented
 
-A6.0 does not implement:
+A6.1 does not implement:
 
-- `src/app`
-- copied Artifact 04 runtime code
-- operator approval inbox API
 - approve/reject API
 - operator UI
 - static HTML workbench
@@ -28,10 +25,16 @@ A6.0 does not implement:
 - workflow dispatch
 - labels or milestones
 
-## Evidence Limits
+## A6.1 Local/Demo Limits
 
-The runtime inventory is source-based and line-count based. It documents module
-shape and future integration candidates but does not prove a new operator API.
+- A6.1 uses `run_id` as `approval_id` for local/demo approval inbox rows until a
+  distinct durable approval identifier is introduced later.
+- A6.1 approval rows come from in-memory copied skill-run state.
+- A6.1 list/detail views are read-only and do not mutate graph or ledger state.
+- A6.1 does not provide durable operator inbox storage beyond the copied runtime
+  baseline.
+
+## Evidence Limits
 
 Artifact 05 evidence is referenced only as release-gate context. It is not a
 runtime baseline and does not add an operator console.

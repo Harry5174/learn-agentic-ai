@@ -18,11 +18,17 @@ The human operator approves high-risk actions.
 
 ## Current Status
 
-Current sprint: A6.0 - Architecture Baseline, Parent Index Cleanup, and
-Operator Scope Freeze.
+Current sprint: A6.1 - Approval Inbox API.
 
-A6.0 does not implement runtime behavior, API routes, approve/reject endpoints,
-UI, static HTML, Next.js, live GitHub execution, credentials, or `.env` access.
+A6.1 adds a backend/API-only, read-only operator approval inbox:
+
+```text
+GET /operator/approvals
+GET /operator/approvals/{approval_id}
+```
+
+A6.1 does not implement approve/reject actions, UI, static HTML, Next.js, live
+GitHub execution, credentials, or `.env` access.
 
 ## Runtime Baseline Decision
 
@@ -47,6 +53,24 @@ Artifact 05 proves and packages one controlled manual release-gate path around
 Artifact 04. It intentionally has no `src/app` package and must not be copied as
 the Artifact 06 runtime baseline.
 
+## A6.1 Runtime Baseline Copy
+
+A6.1 copies the tracked Artifact 04 runtime/test baseline into Artifact 06 so
+the operator API can run and test independently:
+
+- `pyproject.toml`
+- `uv.lock`
+- `.python-version`
+- `src/app/`
+- `tests/`
+
+A6.1 intentionally does not copy Artifact 04 `.env`, `.env.example`, `.venv`,
+cache directories, docs, or README.
+
+The copied runtime preserves fake/default behavior. Real mode remains disabled
+unless explicitly configured by trusted server-side code, and the A6.1 operator
+inbox does not use real mode.
+
 ## A6.0 Deliverables
 
 - parent artifact index cleanup
@@ -57,10 +81,13 @@ the Artifact 06 runtime baseline.
 - API-first UI strategy
 - safety requirements and future test plan
 
-## Future Direction
+## A6.1 Operator API
 
-A6.1 should implement an Approval Inbox API only after the A6.0 boundaries are
-accepted. Future implementation must preserve:
+A6.1 exposes pending approval rows derived from copied skill-run state. In
+local/demo A6.1, `run_id` is used as `approval_id` until a distinct durable
+approval identifier is introduced later.
+
+The API preserves:
 
 - server-derived identity
 - role/scope policy
@@ -70,6 +97,11 @@ accepted. Future implementation must preserve:
 - fake/default execution
 - no token required for default local/demo use
 - no live GitHub by default
+
+## Future Direction
+
+A6.2 should add approve/reject API behavior. A6.3 should add a minimal static
+HTML workbench. Next.js remains deferred.
 
 ## Documentation
 

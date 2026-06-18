@@ -20,8 +20,19 @@ Artifact 05 is evidence context only. It proves the release-gate process around
 the Artifact 04 path and packages redacted evidence. It is not runtime code for
 Artifact 06.
 
-The future operator workbench should start API-first. A static local HTML
-workbench can come later once the backend contracts are stable. Next.js is
-deferred.
+A6.1 starts API-first by adding a read-only approval inbox:
 
-A6.0 intentionally adds no runtime behavior.
+```text
+GET /operator/approvals
+GET /operator/approvals/{approval_id}
+```
+
+The inbox is deliberately read-only. It can list and inspect pending local/demo
+approval requests, but it cannot approve, reject, execute tools, call GitHub,
+load tokens, or read `.env`.
+
+A6.1 uses `run_id` as `approval_id` for local/demo approval rows until a
+distinct durable approval identifier is introduced later.
+
+A static local HTML workbench can come later once the backend contracts are
+stable. Next.js is deferred.
