@@ -101,8 +101,8 @@ def test_admin_rejection_audit_trail() -> None:
     assert AuditEventType.TASK_COMPLETED not in event_types
 
 
-def test_operator_cannot_approve_high_risk_task() -> None:
-    """Operator lacks approval:approve scope; tool must not execute."""
+def test_operator_can_approve_high_risk_task_with_a6_local_demo_scopes() -> None:
+    """Artifact 06 local/demo operator has approval:approve scope."""
     graph = build_harness_graph()
     task_id = "task-resume-invalid-operator-1"
     config = _config(task_id)
@@ -117,7 +117,7 @@ def test_operator_cannot_approve_high_risk_task() -> None:
         status=ApprovalStatus.APPROVED,
         decided_by=operator_identity.user_id,
         decider_role=Role.OPERATOR,
-        reason="Operator attempting to approve.",
+            reason="Operator approving with A6 local demo scope.",
     )
 
     result = graph.invoke(
@@ -130,12 +130,13 @@ def test_operator_cannot_approve_high_risk_task() -> None:
         config=config,
     )
 
-    assert result["status"] == TaskStatus.FAILED
-    assert result.get("tool_result") is None
-    assert "approval:approve" in result.get("resume_error", "")
+    assert result["status"] == TaskStatus.COMPLETED
+    assert result.get("resume_error") is None
 
     event_types = [event.event_type for event in result["audit_trail"]]
-    assert AuditEventType.TOOL_EXECUTED not in event_types
+    assert AuditEventType.APPROVAL_GRANTED in event_types
+    assert AuditEventType.TOOL_EXECUTED in event_types
+    assert AuditEventType.TASK_COMPLETED in event_types
 
 
 def test_viewer_cannot_approve_high_risk_task() -> None:

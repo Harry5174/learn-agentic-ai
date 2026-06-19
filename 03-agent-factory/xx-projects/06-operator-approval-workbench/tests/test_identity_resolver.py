@@ -31,6 +31,8 @@ def test_operator_key_resolves_correctly() -> None:
         "tools:inspect",
         "tools:draft",
         "approval:request",
+        "approval:approve",
+        "approval:reject",
     ]
 
 

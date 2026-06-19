@@ -20,7 +20,7 @@ included.
 
 ## A6.1 - Approval Inbox API
 
-Status: current / implemented.
+Status: complete.
 
 A6.1 scope:
 
@@ -34,28 +34,36 @@ A6.1 scope:
 - keep fake/default execution
 - adds focused API tests
 
-A6.1 does not implement operator approve/reject actions or UI. Inherited
+A6.1 did not implement operator approve/reject actions or UI. Inherited
 Artifact 04 task/skill approval routes may still exist because the runtime
 baseline was copied; those inherited routes are not the Artifact 06 operator
 workbench approve/reject surface.
 
 ## A6.2 - Approval Action API
 
-Recommended next sprint.
+Status: current / implemented.
 
-Potential scope:
+A6.2 scope:
 
 - approve endpoint
 - reject endpoint
 - stale id rejection
 - `args_hash` and `side_effect_id` mismatch rejection
-- durable audit recording
+- local/demo audit and actor evidence
+- strict request schemas that cannot claim actor, role, or scopes
+- server-derived operator/admin decision scopes
 - no token required
 - no live GitHub calls in tests
 
+A6.2 is backend/API-only. It does not add UI, static HTML, Next.js, live GitHub
+execution, token loading, or `.env` access.
+
+For Artifact 06 local/demo identity configuration, `OPERATOR_API_KEY` has
+`approval:approve` and `approval:reject` scopes.
+
 ## A6.3 - Minimal Static HTML Workbench
 
-Potential later sprint.
+Recommended next sprint.
 
 Potential scope:
 

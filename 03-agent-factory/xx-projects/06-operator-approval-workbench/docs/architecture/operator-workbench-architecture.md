@@ -42,7 +42,7 @@ A6.1 modules:
 - `src/app/api/operator_schemas.py`: request/response contracts
 - `src/app/operator/approval_views.py`: read-only inbox/detail views
 
-Future A6.2 modules may add:
+A6.2 adds:
 
 - `src/app/operator/approval_actions.py`: approve/reject service boundary
 
@@ -73,6 +73,23 @@ A6.1 does not implement:
 - `GET /operator/approvals/{approval_id}/audit`
 - `GET /operator/side-effects/{side_effect_id}`
 
+## A6.2 Endpoints
+
+A6.2 implements explicit operator workbench decision routes:
+
+- `POST /operator/approvals/{approval_id}/approve`
+- `POST /operator/approvals/{approval_id}/reject`
+
+These routes are separate from inherited Artifact 04 routes:
+
+- `POST /skill-runs/{run_id}/approve`
+- `POST /skill-runs/{run_id}/reject`
+- `POST /tasks/{task_id}/approve`
+- `POST /tasks/{task_id}/reject`
+
+The inherited routes still exist in the copied runtime. They are not the A6
+operator workbench route surface.
+
 ## A6.1 Read-Only Data Source
 
 A6.1 derives pending approval rows from copied `SkillGraphService` state. It
@@ -84,6 +101,16 @@ distinct durable approval identifier is introduced later.
 
 List/detail views do not resume the graph, approve, reject, execute tools, call
 GitHub, mutate ledgers, require token access, or read `.env`.
+
+A6.2 approve/reject actions still use `run_id` as `approval_id` for local/demo
+decisions. The action service re-reads the pending run, checks optional expected
+`side_effect_id` and `args_hash` values before mutation, enforces server-derived
+`approval:approve` or `approval:reject` scopes, and only then reuses the copied
+`SkillGraphService` approval/rejection behavior.
+
+For Artifact 06 local/demo identity configuration, `OPERATOR_API_KEY` has
+`approval:approve` and `approval:reject` scopes. This is demo configuration,
+not a production authorization model.
 
 ## Authority Boundary
 
@@ -103,6 +130,9 @@ but must not claim:
 A6.2 approval action service must re-read the approval binding and side-effect
 record before mutation. It must fail closed on stale ids, mismatched hashes,
 terminal states, missing records, or insufficient scopes.
+
+A6.2 remains backend/API-only. It adds no UI, static HTML, Next.js frontend,
+live GitHub execution, token loading, or `.env` access.
 
 ## UI Boundary
 

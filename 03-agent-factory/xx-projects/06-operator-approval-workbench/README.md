@@ -18,23 +18,29 @@ The human operator approves high-risk actions.
 
 ## Current Status
 
-Current sprint: A6.1 - Approval Inbox API.
+Current sprint: A6.2 - Approve / Reject API.
 
-A6.1 adds a backend/API-only, read-only operator approval inbox:
+A6.1 added a backend/API-only, read-only operator approval inbox:
 
 ```text
 GET /operator/approvals
 GET /operator/approvals/{approval_id}
 ```
 
-A6.1 does not implement operator approve/reject actions, UI, static HTML,
-Next.js, live GitHub execution, credentials, or `.env` access.
+A6.2 adds explicit backend/API-only operator decision routes:
 
-A6.1 added no operator approve/reject routes. The A6.1 operator endpoints are
-read-only. Inherited Artifact 04 task/skill approval routes may still exist
-because the runtime baseline was copied; those inherited routes are not the
-Artifact 06 operator workbench approve/reject surface. A6.2 will add the
-operator approve/reject API explicitly.
+```text
+POST /operator/approvals/{approval_id}/approve
+POST /operator/approvals/{approval_id}/reject
+```
+
+A6.2 does not implement UI, static HTML, Next.js, live GitHub execution,
+credentials, token loading, or `.env` access.
+
+Inherited Artifact 04 task/skill approval routes still exist because the
+runtime baseline was copied; those inherited routes are not the Artifact 06
+operator workbench approve/reject surface. The A6.2 operator workbench
+approve/reject routes are explicit A6 routes.
 
 ## Runtime Baseline Decision
 
@@ -104,10 +110,32 @@ The API preserves:
 - no token required for default local/demo use
 - no live GitHub by default
 
+## A6.2 Operator Decision API
+
+A6.2 lets a server-authorized operator or admin approve or reject a pending
+local/demo approval through the operator API.
+
+The API preserves:
+
+- server-derived actor identity
+- strict request bodies that cannot claim role, scopes, or actor identity
+- stale approval rejection
+- optional expected `side_effect_id` and `args_hash` checks
+- local/demo audit evidence for approval or rejection
+- fake/default execution behavior
+- no token required for default local/demo use
+- no live GitHub by default
+
+For Artifact 06 local/demo identity configuration, `OPERATOR_API_KEY` has
+`approval:approve` and `approval:reject` scopes. Viewer identity still cannot
+approve or reject.
+
+The A6.1 identifier limitation remains: in local/demo A6.2, `run_id` is used as
+`approval_id` until a distinct durable approval identifier is introduced later.
+
 ## Future Direction
 
-A6.2 should add approve/reject API behavior. A6.3 should add a minimal static
-HTML workbench. Next.js remains deferred.
+A6.3 should add a minimal static HTML workbench. Next.js remains deferred.
 
 ## Documentation
 

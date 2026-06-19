@@ -4,30 +4,37 @@
 
 **Title:** Operator Approval Console / Workbench
 
-**Current sprint:** A6.1 - Approval Inbox API
+**Current sprint:** A6.2 - Approve / Reject API
 
-**Status:** A6.1 read-only backend API implemented.
+**Status:** A6.2 backend decision API implemented.
 
 ## Current Claim
 
-Artifact 06 now has a self-contained runtime baseline copied from Artifact 04
-and a read-only operator approval inbox API.
+Artifact 06 now has a self-contained runtime baseline copied from Artifact 04,
+a read-only operator approval inbox API, and explicit backend operator
+approve/reject API routes.
 
-A6.1 implements:
+A6.1 implemented:
 
 ```text
 GET /operator/approvals
 GET /operator/approvals/{approval_id}
 ```
 
-A6.1 does not implement operator approve/reject endpoints, UI, static HTML,
-Next.js frontend, live GitHub execution, credential loading, or `.env` access.
+A6.2 implements:
 
-A6.1 added no operator approve/reject routes. A6.1 operator endpoints are
-read-only. Inherited Artifact 04 task/skill approval routes may still exist
-because the runtime baseline was copied. Those inherited routes are not the
-Artifact 06 operator workbench approve/reject surface. A6.2 will add the
-operator approve/reject API explicitly.
+```text
+POST /operator/approvals/{approval_id}/approve
+POST /operator/approvals/{approval_id}/reject
+```
+
+A6.2 does not implement UI, static HTML, Next.js frontend, live GitHub
+execution, credential loading, token loading, or `.env` access.
+
+Inherited Artifact 04 task/skill approval routes still exist because the
+runtime baseline was copied. Those inherited routes are not the Artifact 06
+operator workbench approve/reject surface. A6.2 operator workbench
+approve/reject routes are explicit A6 routes.
 
 ## A6.1 Runtime Copy
 
@@ -52,10 +59,16 @@ A6.1 intentionally did not copy:
 Artifact 04 docs/README
 ```
 
-## A6.1 Limitation
+## A6.2 Local/Demo Identity
 
-A6.1 uses `run_id` as `approval_id` for local/demo approval inbox rows until a
-distinct durable approval identifier is introduced later.
+For Artifact 06 local/demo identity configuration, `OPERATOR_API_KEY` has
+`approval:approve` and `approval:reject` scopes. Viewer identity still cannot
+approve or reject. Admin identity still has approval decision scopes.
+
+## A6.2 Limitation
+
+A6.1 and A6.2 use `run_id` as `approval_id` for local/demo approval rows until
+a distinct durable approval identifier is introduced later.
 
 ## Files Reviewed Before Implementation
 
@@ -103,5 +116,5 @@ evidence context only.
 ## Recommended Next Sprint
 
 ```text
-A6.2 - Approve / Reject API
+A6.3 - Local Operator Workbench UI
 ```

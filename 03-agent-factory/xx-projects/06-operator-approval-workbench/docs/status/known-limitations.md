@@ -1,12 +1,11 @@
 # Known Limitations
 
-A6.1 is not a working operator console UI.
+A6.2 is not a working operator console UI.
 
 ## Not Implemented
 
-A6.1 does not implement:
+A6.2 does not implement:
 
-- operator approve/reject API
 - operator UI
 - static HTML workbench
 - Next.js frontend
@@ -25,16 +24,21 @@ A6.1 does not implement:
 - workflow dispatch
 - labels or milestones
 
-## A6.1 Local/Demo Limits
+## A6.2 Local/Demo Limits
 
-- A6.1 uses `run_id` as `approval_id` for local/demo approval inbox rows until a
-  distinct durable approval identifier is introduced later.
-- A6.1 approval rows come from in-memory copied skill-run state.
-- A6.1 list/detail views are read-only and do not mutate graph or ledger state.
-- A6.1 added no operator approve/reject routes; inherited Artifact 04 task/skill
-  approval routes may still exist because the runtime baseline was copied.
-- A6.1 does not provide durable operator inbox storage beyond the copied runtime
+- A6.1 and A6.2 use `run_id` as `approval_id` for local/demo approval rows until
+  a distinct durable approval identifier is introduced later.
+- A6.2 approval rows come from in-memory copied skill-run state.
+- A6.2 list/detail views are read-only.
+- A6.2 approve/reject routes may resume the inherited fake/default graph path
+  after server-derived scope and stale/mismatch checks pass.
+- Inherited Artifact 04 task/skill approval routes still exist because the
+  runtime baseline was copied; those are not the A6 operator workbench routes.
+- A6.2 does not provide durable operator inbox storage beyond the copied runtime
   baseline.
+- For Artifact 06 local/demo identity configuration, `OPERATOR_API_KEY` has
+  `approval:approve` and `approval:reject` scopes. This is demo configuration,
+  not a production authorization model.
 
 ## Evidence Limits
 

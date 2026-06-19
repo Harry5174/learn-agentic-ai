@@ -1,8 +1,10 @@
 from datetime import datetime
+from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.identity.schemas import Role
 from app.tools.schemas import RiskLevel
 
 
@@ -34,6 +36,34 @@ class OperatorAuditEventReferenceResponse(BaseModel):
     event_type: str
     timestamp: datetime
     message: str
+
+
+class OperatorApprovalDecision(StrEnum):
+    """Operator decision values for explicit workbench actions."""
+
+    APPROVE = "approve"
+    REJECT = "reject"
+
+
+class OperatorApprovalDecisionRequest(BaseModel):
+    """Strict request body for operator approval decisions."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    decision_reason: str | None = None
+    expected_side_effect_id: str | None = None
+    expected_args_hash: str | None = None
+
+
+class OperatorApprovalActorResponse(BaseModel):
+    """Server-derived actor summary for operator decision responses."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    user_id: str
+    role: Role
+    scopes: list[str] = Field(default_factory=list)
+    server_derived: bool = True
 
 
 class OperatorApprovalSummaryResponse(BaseModel):
@@ -80,3 +110,24 @@ class OperatorApprovalDetailResponse(OperatorApprovalSummaryResponse):
     audit_events: list[OperatorAuditEventReferenceResponse] = Field(
         default_factory=list
     )
+
+
+class OperatorApprovalDecisionResponse(BaseModel):
+    """Operator approve/reject action response."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    approval_id: str
+    run_id: str
+    decision: OperatorApprovalDecision
+    status: str
+    approval_status: str
+    actor: OperatorApprovalActorResponse
+    decision_reason: str | None = None
+    side_effect_id: str | None = None
+    args_hash: str | None = None
+    audit_event_count: int = 0
+    execution_mode: OperatorExecutionModeResponse = Field(
+        default_factory=OperatorExecutionModeResponse
+    )
+    message: str

@@ -4,22 +4,27 @@
 
 A6.0 completed the architecture baseline and scope freeze.
 
-A6.1 adds the first backend operator API surface:
+A6.1 added the first backend operator API surface:
 
 ```text
 GET /operator/approvals
 GET /operator/approvals/{approval_id}
 ```
 
-A6.1 is backend/API-only. It does not implement operator approve/reject
-actions, UI, static HTML, Next.js, live GitHub execution, credentials, or
-`.env` access.
+A6.2 adds explicit backend/API-only operator approve/reject routes:
 
-A6.1 added no operator approve/reject routes. A6.1 operator endpoints are
-read-only. Inherited Artifact 04 task/skill approval routes may still exist
-because the runtime baseline was copied. Those inherited routes are not the
-Artifact 06 operator workbench approve/reject surface. A6.2 will add the
-operator approve/reject API explicitly.
+```text
+POST /operator/approvals/{approval_id}/approve
+POST /operator/approvals/{approval_id}/reject
+```
+
+A6.2 does not implement UI, static HTML, Next.js, live GitHub execution,
+credentials, token loading, or `.env` access.
+
+Inherited Artifact 04 task/skill approval routes still exist because the
+runtime baseline was copied. Those inherited routes are not the Artifact 06
+operator workbench approve/reject surface. A6.2 operator workbench
+approve/reject routes are explicit A6 routes.
 
 ## Sprint Goal
 
@@ -134,24 +139,50 @@ A6.1 implements:
 - `GET /operator/approvals`
 - `GET /operator/approvals/{approval_id}`
 
-Future A6.2 endpoints may include:
+A6.2 later adds:
 
 - `POST /operator/approvals/{approval_id}/approve`
 - `POST /operator/approvals/{approval_id}/reject`
+
+## A6.2 Operator API Boundary
+
+A6.2 uses:
+
+- `src/app/api/operator_routes.py`
+- `src/app/api/operator_schemas.py`
+- `src/app/operator/approval_actions.py`
+
+A6.2 implements:
+
+- `POST /operator/approvals/{approval_id}/approve`
+- `POST /operator/approvals/{approval_id}/reject`
+
+A6.2 request bodies are strict and may include only:
+
+- `decision_reason`
+- `expected_side_effect_id`
+- `expected_args_hash`
+
+Request bodies cannot claim actor identity, API key id, role, scopes,
+operator/admin status, or approval authority. Actor identity is derived from
+the server-side API-key resolver.
+
+For Artifact 06 local/demo identity configuration, `OPERATOR_API_KEY` has
+`approval:approve` and `approval:reject` scopes. Viewer identity still cannot
+approve or reject, and admin identity still has approval decision scopes.
 
 Future A6.x endpoints may include:
 
 - `GET /operator/approvals/{approval_id}/audit`
 - `GET /operator/side-effects/{side_effect_id}`
 
-## A6.1 Approval Identifier Limitation
+## Approval Identifier Limitation
 
-A6.1 uses `run_id` as `approval_id` for local/demo approval inbox rows until a
-distinct durable approval identifier is introduced later.
+A6.1 and A6.2 use `run_id` as `approval_id` for local/demo approval rows until
+a distinct durable approval identifier is introduced later.
 
-This is acceptable for the read-only local/demo inbox because the copied
-skill-run graph already stores pending approval state by run id. A6.2 should
-revisit this when implementing approve/reject behavior.
+This is acceptable for the local/demo operator API because the copied skill-run
+graph already stores pending approval state by run id.
 
 ## Future Operator API Invariants
 
@@ -205,7 +236,7 @@ A6.1 tests cover:
 - approval detail returns detail
 - unknown approval id returns safe 404
 - list/detail are read-only and do not execute tools
-- operator approve/reject routes do not exist
+- operator approve/reject routes exist and enforce authorization/safety
 - query-param identity/role/scope/actor spoofing is ignored
 - no token or `.env` is required
 - no live GitHub client is called

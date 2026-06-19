@@ -26,6 +26,8 @@ DEMO_API_KEY_IDENTITIES: dict[str, IdentityContext] = {
             "tools:inspect",
             "tools:draft",
             "approval:request",
+            "approval:approve",
+            "approval:reject",
         ],
     ),
     ADMIN_API_KEY: IdentityContext(

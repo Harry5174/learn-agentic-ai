@@ -63,7 +63,7 @@ def test_viewer_cannot_approve_paused_trigger_task() -> None:
     assert "tool_executed" not in event_types
 
 
-def test_operator_cannot_approve_paused_trigger_task() -> None:
+def test_operator_can_approve_paused_trigger_task_with_a6_local_demo_scopes() -> None:
     client = TestClient(create_app())
     paused = _create_paused_trigger_task(client)
 
@@ -77,9 +77,9 @@ def test_operator_cannot_approve_paused_trigger_task() -> None:
 
     body = response.json()
     assert body["task_id"] == paused["task_id"]
-    assert body["status"] == "failed"
+    assert body["status"] == "completed"
     assert body["requires_approval"] is False
-    assert "approval:approve" in body["error_message"]
+    assert body["final_report"]
 
 
 def test_approving_non_paused_task_returns_409() -> None:
