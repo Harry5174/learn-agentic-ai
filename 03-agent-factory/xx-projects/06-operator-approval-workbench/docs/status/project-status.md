@@ -20,8 +20,14 @@ GET /operator/approvals
 GET /operator/approvals/{approval_id}
 ```
 
-A6.1 does not implement approve/reject endpoints, UI, static HTML, Next.js
-frontend, live GitHub execution, credential loading, or `.env` access.
+A6.1 does not implement operator approve/reject endpoints, UI, static HTML,
+Next.js frontend, live GitHub execution, credential loading, or `.env` access.
+
+A6.1 added no operator approve/reject routes. A6.1 operator endpoints are
+read-only. Inherited Artifact 04 task/skill approval routes may still exist
+because the runtime baseline was copied. Those inherited routes are not the
+Artifact 06 operator workbench approve/reject surface. A6.2 will add the
+operator approve/reject API explicitly.
 
 ## A6.1 Runtime Copy
 

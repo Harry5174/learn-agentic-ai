@@ -28,8 +28,12 @@ GET /operator/approvals/{approval_id}
 ```
 
 The inbox is deliberately read-only. It can list and inspect pending local/demo
-approval requests, but it cannot approve, reject, execute tools, call GitHub,
-load tokens, or read `.env`.
+approval requests, but the A6.1 operator endpoints cannot approve, reject,
+execute tools, call GitHub, load tokens, or read `.env`.
+
+Inherited Artifact 04 task/skill approval routes may still exist because the
+runtime baseline was copied. Those inherited routes are not the Artifact 06
+operator workbench approve/reject surface.
 
 A6.1 uses `run_id` as `approval_id` for local/demo approval rows until a
 distinct durable approval identifier is introduced later.

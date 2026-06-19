@@ -34,7 +34,10 @@ A6.1 scope:
 - keep fake/default execution
 - adds focused API tests
 
-A6.1 does not implement approve/reject actions or UI.
+A6.1 does not implement operator approve/reject actions or UI. Inherited
+Artifact 04 task/skill approval routes may still exist because the runtime
+baseline was copied; those inherited routes are not the Artifact 06 operator
+workbench approve/reject surface.
 
 ## A6.2 - Approval Action API
 

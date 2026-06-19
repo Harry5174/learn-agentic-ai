@@ -6,7 +6,7 @@ A6.1 is not a working operator console UI.
 
 A6.1 does not implement:
 
-- approve/reject API
+- operator approve/reject API
 - operator UI
 - static HTML workbench
 - Next.js frontend
@@ -31,6 +31,8 @@ A6.1 does not implement:
   distinct durable approval identifier is introduced later.
 - A6.1 approval rows come from in-memory copied skill-run state.
 - A6.1 list/detail views are read-only and do not mutate graph or ledger state.
+- A6.1 added no operator approve/reject routes; inherited Artifact 04 task/skill
+  approval routes may still exist because the runtime baseline was copied.
 - A6.1 does not provide durable operator inbox storage beyond the copied runtime
   baseline.
 
