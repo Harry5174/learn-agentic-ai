@@ -1,15 +1,15 @@
 # Known Limitations
 
-A6.2 is not a working operator console UI.
+A6.3 is a minimal local static operator workbench, not a production operator
+console.
 
 ## Not Implemented
 
-A6.2 does not implement:
+A6.3 does not implement:
 
-- operator UI
-- static HTML workbench
 - Next.js frontend
 - OAuth/OIDC
+- sessions
 - MCP
 - deployment
 - live GitHub execution
@@ -24,7 +24,7 @@ A6.2 does not implement:
 - workflow dispatch
 - labels or milestones
 
-## A6.2 Local/Demo Limits
+## A6.3 Local/Demo Limits
 
 - A6.1 and A6.2 use `run_id` as `approval_id` for local/demo approval rows until
   a distinct durable approval identifier is introduced later.
@@ -39,11 +39,17 @@ A6.2 does not implement:
 - For Artifact 06 local/demo identity configuration, `OPERATOR_API_KEY` has
   `approval:approve` and `approval:reject` scopes. This is demo configuration,
   not a production authorization model.
+- A6.3 stores no browser session and has no login flow.
+- A6.3 requires the operator to paste a local demo API key into the page for
+  each browser page session.
+- A6.3 calls only A6 operator routes and does not call inherited Artifact 04
+  approval routes.
+- A6.3 provides a local review UI only; it is not a durable operator dashboard.
 
 ## Evidence Limits
 
 Artifact 05 evidence is referenced only as release-gate context. It is not a
-runtime baseline and does not add an operator console.
+runtime baseline and does not add this operator workbench.
 
 ## Future Risk Areas
 

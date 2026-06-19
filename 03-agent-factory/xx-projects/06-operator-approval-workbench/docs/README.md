@@ -29,7 +29,8 @@ A6.0 follows the process inherited from Artifact 04 and reinforced by Artifact
 
 ## Current Runtime Boundary
 
-A6.0 has no `src/app` package. Runtime code remains in Artifact 04.
+A6.3 has a copied Artifact 04 runtime baseline plus A6 operator API routes and
+a minimal local static workbench served by FastAPI.
 
-Artifact 06 will use Artifact 04 as the future runtime baseline and Artifact 05
-as release-gate evidence context only.
+Artifact 04 remains the runtime baseline lineage, and Artifact 05 remains
+release-gate evidence context only.

@@ -18,7 +18,7 @@ The human operator approves high-risk actions.
 
 ## Current Status
 
-Current sprint: A6.2 - Approve / Reject API.
+Current sprint: A6.3 - Local Operator Workbench UI.
 
 A6.1 added a backend/API-only, read-only operator approval inbox:
 
@@ -27,20 +27,38 @@ GET /operator/approvals
 GET /operator/approvals/{approval_id}
 ```
 
-A6.2 adds explicit backend/API-only operator decision routes:
+A6.2 added explicit backend/API-only operator decision routes:
 
 ```text
 POST /operator/approvals/{approval_id}/approve
 POST /operator/approvals/{approval_id}/reject
 ```
 
-A6.2 does not implement UI, static HTML, Next.js, live GitHub execution,
-credentials, token loading, or `.env` access.
+A6.3 adds a minimal FastAPI-served local static workbench:
+
+```text
+GET /operator/workbench
+```
+
+The A6.3 UI calls only the A6 operator API routes:
+
+```text
+GET /operator/approvals
+GET /operator/approvals/{approval_id}
+POST /operator/approvals/{approval_id}/approve
+POST /operator/approvals/{approval_id}/reject
+```
+
+A6.3 does not implement Next.js, a package-managed frontend, live GitHub
+execution, credentials, token loading, or `.env` access. The workbench asks the
+operator to paste a local demo API key for the browser page session, sends it
+only as `X-API-Key`, and does not store it in browser storage.
 
 Inherited Artifact 04 task/skill approval routes still exist because the
 runtime baseline was copied; those inherited routes are not the Artifact 06
 operator workbench approve/reject surface. The A6.2 operator workbench
-approve/reject routes are explicit A6 routes.
+approve/reject routes are explicit A6 routes. The A6.3 UI does not call the
+inherited routes.
 
 ## Runtime Baseline Decision
 
@@ -133,9 +151,27 @@ approve or reject.
 The A6.1 identifier limitation remains: in local/demo A6.2, `run_id` is used as
 `approval_id` until a distinct durable approval identifier is introduced later.
 
+## A6.3 Local Static Workbench
+
+A6.3 adds a minimal static local/demo workbench served by FastAPI. It lists
+approvals, loads approval detail, and sends approve/reject decisions only
+through the A6 operator routes.
+
+The page displays this local safety boundary:
+
+```text
+Local demo workbench. Fake/default execution only. No live GitHub execution. No GitHub token or .env required.
+```
+
+The workbench uses static HTML, CSS, and JavaScript only. It does not add
+Next.js, a frontend build step, OAuth/OIDC, sessions, broad CORS, external
+scripts, external CDNs, live GitHub calls, token loading, or `.env` access.
+Dynamic API data is rendered with DOM node creation and text assignment rather
+than HTML injection.
+
 ## Future Direction
 
-A6.3 should add a minimal static HTML workbench. Next.js remains deferred.
+A6.4 should add deeper operator audit/evidence views. Next.js remains deferred.
 
 ## Documentation
 

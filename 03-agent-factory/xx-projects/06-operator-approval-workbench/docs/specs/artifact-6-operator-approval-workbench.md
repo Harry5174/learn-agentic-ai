@@ -11,20 +11,36 @@ GET /operator/approvals
 GET /operator/approvals/{approval_id}
 ```
 
-A6.2 adds explicit backend/API-only operator approve/reject routes:
+A6.2 added explicit backend/API-only operator approve/reject routes:
 
 ```text
 POST /operator/approvals/{approval_id}/approve
 POST /operator/approvals/{approval_id}/reject
 ```
 
-A6.2 does not implement UI, static HTML, Next.js, live GitHub execution,
-credentials, token loading, or `.env` access.
+A6.3 adds a minimal local static workbench served by FastAPI:
+
+```text
+GET /operator/workbench
+```
+
+The A6.3 UI calls only:
+
+```text
+GET /operator/approvals
+GET /operator/approvals/{approval_id}
+POST /operator/approvals/{approval_id}/approve
+POST /operator/approvals/{approval_id}/reject
+```
+
+A6.3 does not implement Next.js, a package-managed frontend, live GitHub
+execution, credentials, token loading, or `.env` access.
 
 Inherited Artifact 04 task/skill approval routes still exist because the
 runtime baseline was copied. Those inherited routes are not the Artifact 06
 operator workbench approve/reject surface. A6.2 operator workbench
-approve/reject routes are explicit A6 routes.
+approve/reject routes are explicit A6 routes. The A6.3 UI does not call the
+inherited routes.
 
 ## Sprint Goal
 
@@ -176,6 +192,32 @@ Future A6.x endpoints may include:
 - `GET /operator/approvals/{approval_id}/audit`
 - `GET /operator/side-effects/{side_effect_id}`
 
+## A6.3 Local Static UI Boundary
+
+A6.3 uses:
+
+- `src/app/operator/static/workbench.html`
+- `src/app/operator/static/workbench.css`
+- `src/app/operator/static/workbench.js`
+- `src/app/api/operator_routes.py`
+
+A6.3 implements:
+
+- `GET /operator/workbench`
+
+The static assets:
+
+- display fake/default local/demo execution mode
+- ask the operator to paste a local demo API key for the page session
+- send the pasted key only as `X-API-Key`
+- avoid browser storage for the key
+- render API data through DOM node creation and text assignment
+- avoid external scripts, external CDNs, and frontend package tooling
+- call only A6 operator API routes
+
+A6.3 does not add OAuth/OIDC, sessions, broad CORS, live GitHub execution, token
+loading, `.env` access, Next.js, or inherited Artifact 04 approval-route calls.
+
 ## Approval Identifier Limitation
 
 A6.1 and A6.2 use `run_id` as `approval_id` for local/demo approval rows until
@@ -228,9 +270,9 @@ Future A6 implementation must preserve these requirements:
 - No token required for UI demo.
 - No real GitHub call in tests.
 
-## A6.1 Test Plan
+## A6.3 Test Plan
 
-A6.1 tests cover:
+Artifact 06 tests now cover:
 
 - approval list returns summaries
 - approval detail returns detail
@@ -242,9 +284,17 @@ A6.1 tests cover:
 - no live GitHub client is called
 - fake/default execution mode is visible
 - operator responses do not expose token-like values
+- workbench route returns static HTML
+- workbench displays the local/demo safety notice
+- workbench assets reference only A6 operator API routes
+- workbench assets do not reference inherited approval routes
+- no Next.js or package-managed frontend files are added
+- no external scripts or CDN URLs are used
+- no browser storage is used for the pasted local demo key
+- dynamic content uses DOM node creation and text assignment patterns
 
 ## Block Conditions
 
-Stop if the work requires runtime code copying, runtime refactor, API
-implementation, UI implementation, Next.js, `.env`, credentials, live GitHub,
-OAuth/OIDC, MCP, deployment, or broad GitHub automation.
+Stop if the work requires runtime code copying, runtime refactor, Next.js,
+`.env`, credentials, live GitHub, OAuth/OIDC, MCP, deployment, broad CORS, or
+broad GitHub automation.

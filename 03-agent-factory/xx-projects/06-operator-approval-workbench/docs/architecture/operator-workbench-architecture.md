@@ -46,6 +46,12 @@ A6.2 adds:
 
 - `src/app/operator/approval_actions.py`: approve/reject service boundary
 
+A6.3 adds:
+
+- `src/app/operator/static/workbench.html`: local static workbench shell
+- `src/app/operator/static/workbench.css`: local static workbench styling
+- `src/app/operator/static/workbench.js`: local static workbench behavior
+
 Future later modules may add:
 
 - `src/app/operator/audit_views.py`: audit and side-effect evidence views
@@ -90,6 +96,22 @@ These routes are separate from inherited Artifact 04 routes:
 The inherited routes still exist in the copied runtime. They are not the A6
 operator workbench route surface.
 
+## A6.3 Workbench Route
+
+A6.3 implements:
+
+- `GET /operator/workbench`
+
+The workbench uses narrow local asset responses under the existing operator
+router and does not add broad CORS or a frontend build stack. The UI calls only:
+
+- `GET /operator/approvals`
+- `GET /operator/approvals/{approval_id}`
+- `POST /operator/approvals/{approval_id}/approve`
+- `POST /operator/approvals/{approval_id}/reject`
+
+The UI does not call inherited Artifact 04 task or skill approval routes.
+
 ## A6.1 Read-Only Data Source
 
 A6.1 derives pending approval rows from copied `SkillGraphService` state. It
@@ -131,15 +153,18 @@ A6.2 approval action service must re-read the approval binding and side-effect
 record before mutation. It must fail closed on stale ids, mismatched hashes,
 terminal states, missing records, or insufficient scopes.
 
-A6.2 remains backend/API-only. It adds no UI, static HTML, Next.js frontend,
-live GitHub execution, token loading, or `.env` access.
+A6.2 remains backend/API-only. A6.3 adds only the local static workbench; it
+adds no Next.js frontend, live GitHub execution, token loading, or `.env`
+access.
 
 ## UI Boundary
 
-The UI is deferred until backend contracts exist.
+A6.3 is a local/demo review surface only. It consumes operator API responses,
+renders API-provided content with DOM node creation and text assignment, shows
+fake/default mode clearly, and avoids token or secret display.
 
-Future static HTML workbench should be a local/demo review surface only. It
-should consume operator API responses, escape comment bodies, show fake/default
-mode clearly, and avoid token or secret display.
+The pasted local demo API key is held only in page memory and sent only as the
+`X-API-Key` request header. The static assets do not store it in browser
+storage and do not embed any demo key values.
 
 Next.js remains deferred.

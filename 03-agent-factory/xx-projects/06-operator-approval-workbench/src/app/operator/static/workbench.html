@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Operator Approval Workbench</title>
+    <link rel="stylesheet" href="/operator/workbench.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Artifact 06</p>
+          <h1>Operator Approval Workbench</h1>
+        </div>
+        <p class="safety-notice">
+          Local demo workbench. Fake/default execution only. No live GitHub execution. No GitHub token or .env required.
+        </p>
+      </header>
+
+      <section class="credentials" aria-labelledby="credentials-title">
+        <div>
+          <h2 id="credentials-title">Local access</h2>
+          <p>Paste a local demo API key for this browser session.</p>
+        </div>
+        <form id="key-form" class="key-form">
+          <label for="api-key">API key</label>
+          <input id="api-key" name="api-key" type="password" autocomplete="off" spellcheck="false">
+          <button type="submit">Use key</button>
+        </form>
+      </section>
+
+      <section class="workspace" aria-live="polite">
+        <aside class="approval-list-panel" aria-labelledby="approval-list-title">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Pending review</p>
+              <h2 id="approval-list-title">Approvals</h2>
+            </div>
+            <button id="refresh-button" type="button">Refresh</button>
+          </div>
+          <ol id="approval-list" class="approval-list"></ol>
+        </aside>
+
+        <section class="approval-detail-panel" aria-labelledby="approval-detail-title">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Selected approval</p>
+              <h2 id="approval-detail-title">Detail</h2>
+            </div>
+            <span id="mode-badge" class="mode-badge">fake/default</span>
+          </div>
+          <div id="message" class="message" role="status"></div>
+          <div id="approval-detail" class="approval-detail empty-state">
+            Select an approval to review local/demo details.
+          </div>
+          <form id="decision-form" class="decision-form" hidden>
+            <label for="decision-reason">Decision reason</label>
+            <textarea id="decision-reason" name="decision-reason" rows="3"></textarea>
+            <div class="decision-actions">
+              <button id="approve-button" type="button" class="approve-button">Approve</button>
+              <button id="reject-button" type="button" class="reject-button">Reject</button>
+            </div>
+          </form>
+        </section>
+      </section>
+    </main>
+    <script src="/operator/workbench.js" defer></script>
+  </body>
+</html>

@@ -41,7 +41,7 @@ workbench approve/reject surface.
 
 ## A6.2 - Approval Action API
 
-Status: current / implemented.
+Status: complete.
 
 A6.2 scope:
 
@@ -63,14 +63,30 @@ For Artifact 06 local/demo identity configuration, `OPERATOR_API_KEY` has
 
 ## A6.3 - Minimal Static HTML Workbench
 
-Recommended next sprint.
+Status: current / implemented.
 
-Potential scope:
+A6.3 scope:
 
 - simple FastAPI-served static local workbench
 - approval list/detail
 - approve/reject actions through backend API
-- safe comment rendering
+- safe dynamic data rendering
 - fake/default mode visibility
+- local demo API key sent only as `X-API-Key`
+- no browser storage
+- no external scripts or CDN URLs
+- no inherited Artifact 04 approval-route calls
 
-Next.js remains deferred.
+A6.3 does not implement Next.js, OAuth/OIDC, sessions, live GitHub execution,
+token loading, `.env` access, or broad CORS. Next.js remains deferred.
+
+## A6.4 - Operator Audit / Evidence Views
+
+Recommended next sprint.
+
+Potential scope:
+
+- operator-facing audit trail view
+- side-effect evidence detail
+- clearer stale/mismatch evidence display
+- continued fake/default local demo boundary

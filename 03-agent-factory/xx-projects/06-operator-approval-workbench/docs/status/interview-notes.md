@@ -56,5 +56,27 @@ For Artifact 06 local/demo identity configuration, `OPERATOR_API_KEY` has
 `approval:approve` and `approval:reject` scopes. Viewer identity still cannot
 approve or reject.
 
-A static local HTML workbench can come later once the backend contracts are
-stable. Next.js is deferred.
+A6.3 adds a minimal static local workbench:
+
+```text
+GET /operator/workbench
+```
+
+The page lists approvals, loads approval detail, and sends approve/reject
+decisions only through the A6 operator routes. It does not call inherited
+Artifact 04 approval routes.
+
+The A6.3 workbench is deliberately local/demo only. It displays fake/default
+mode and this boundary:
+
+```text
+Local demo workbench. Fake/default execution only. No live GitHub execution. No GitHub token or .env required.
+```
+
+The operator pastes a local demo API key for the browser page session. The UI
+sends that value only as `X-API-Key`, does not store it in browser storage, and
+does not embed key values in the static assets. Dynamic response content is
+rendered with DOM node creation and text assignment instead of HTML injection.
+
+Next.js, OAuth/OIDC, sessions, broad CORS, live GitHub execution, token
+loading, and `.env` access remain out of scope.
