@@ -214,3 +214,37 @@ frontend build tooling, live GitHub calls, token loading, or `.env` access.
 
 A6.4 audit visibility remains local/demo process-state evidence. It is not a
 production-grade audit system.
+
+## A6.5 Packaging Layer
+
+A6.5 is a documentation and demo-evidence layer on top of the existing A6.1
+through A6.4 runtime surface. It does not introduce a new execution path or a
+new frontend stack.
+
+The packaged local/demo workflow is:
+
+```text
+operator inbox
+-> approval detail
+-> approve/reject
+-> status refresh
+-> audit timeline
+-> decision history
+-> side-effect/ledger visibility
+-> execution result visibility
+```
+
+The architecture boundary remains unchanged:
+
+- operator authority is derived from server-side identity resolution
+- request bodies cannot claim actor identity, role, scopes, repository policy,
+  real-mode enablement, tokens, `args_hash`, or `side_effect_id` authority
+- the static workbench calls only A6 operator routes
+- local/demo audit evidence remains process-state evidence
+- Artifact 06 does not require a GitHub token or `.env`
+- Artifact 06 does not perform live GitHub execution
+
+Screenshots are intentionally absent from the default A6.5 package. If future
+demo screenshots are approved, capture only redacted local/demo views with no
+token values, authorization headers, `.env` values, absolute local filesystem
+paths, or unsafe repository data.

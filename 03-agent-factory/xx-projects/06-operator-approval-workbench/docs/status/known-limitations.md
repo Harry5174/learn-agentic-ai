@@ -1,12 +1,12 @@
 # Known Limitations
 
-A6.4 is a local static operator workbench with read-only status, audit,
+A6.5 packages a local static operator workbench with read-only status, audit,
 side-effect/ledger, execution-result, and decision-history visibility. It is
 not a production operator console.
 
 ## Not Implemented
 
-A6.4 does not implement:
+A6.5 does not implement:
 
 - Next.js frontend
 - OAuth/OIDC
@@ -24,8 +24,10 @@ A6.4 does not implement:
 - repo file writes
 - workflow dispatch
 - labels or milestones
+- screenshots by default
+- production deployment evidence
 
-## A6.4 Local/Demo Limits
+## A6.5 Local/Demo Limits
 
 - A6.1 and A6.2 use `run_id` as `approval_id` for local/demo approval rows until
   a distinct durable approval identifier is introduced later.
@@ -55,6 +57,12 @@ A6.4 does not implement:
 - A6.4 calls only A6 operator routes and does not call inherited Artifact 04
   approval routes.
 - A6.4 provides a local review UI only; it is not a durable operator dashboard.
+- A6.5 changes only documentation and demo packaging. It does not change
+  runtime behavior, approval semantics, UI behavior, GitHub execution, token
+  handling, or `.env` handling.
+- A6.5 includes no screenshots. Future screenshots should be redacted and
+  checked for secrets, authorization headers, `.env` values, absolute local
+  filesystem paths, and unsafe repository data before publication.
 
 ## Evidence Limits
 

@@ -14,7 +14,7 @@ This directory contains the numbered artifact sequence for the Agent Factory tra
 | 3 | [03-durable-side-effect-ledger](03-durable-side-effect-ledger) | Durable Side-Effect Ledger and Approval Binding | Complete as local/demo durable fake-client safety artifact |
 | 4 | [04-approval-gated-real-github-comment-adapter](04-approval-gated-real-github-comment-adapter) | Approval-Gated Real GitHub Comment Adapter | Complete as local/demo real-comment adapter (A4.5) |
 | 5 | [05-real-mode-smoke-evidence-release-gate](05-real-mode-smoke-evidence-release-gate) | Real-Mode Smoke Evidence and Release Gate | Complete / published / tagged evidence artifact |
-| 6 | [06-operator-approval-workbench](06-operator-approval-workbench) | Operator Approval Console / Workbench | Planned / current next artifact |
+| 6 | [06-operator-approval-workbench](06-operator-approval-workbench) | Operator Approval Console / Workbench | Current local/demo workbench artifact (A6.5) |
 
 Numbering convention:
 
@@ -129,18 +129,28 @@ operator console, or claim production readiness.
 ## Artifact 6 - Operator Approval Console / Workbench
 
 **Path:** `06-operator-approval-workbench`
-**Status:** Planned / current next artifact
+**Status:** Current local/demo workbench artifact (A6.5)
 
-**A6.0 goal:** Establish the architecture baseline, runtime/module inventory,
-operator API boundaries, and UI strategy before implementing any operator
-approval APIs or workbench UI.
+**A6.5 claim:** Artifact 6 turns the approval-gated harness lineage into a
+local operator workbench. A proposed action appears in the approval inbox, the
+operator inspects risk/scopes/context/execution mode, the operator approves or
+rejects through server-controlled A6 routes, and the operator can then inspect
+status, decision history, local/demo audit timeline, side-effect/ledger
+visibility, and execution result evidence.
 
-**Baseline rule:** Artifact 6 derives its future runtime baseline from Artifact
-4. Artifact 5 is referenced as release-gate evidence context only.
+**Baseline rule:** Artifact 6 derives its runtime baseline from Artifact 4.
+Artifact 5 is referenced as release-gate evidence context only.
 
-**Current boundary:** A6.0 is documentation/scaffold only. No `src/app` runtime,
-operator routes, approve/reject endpoints, static HTML, Next.js frontend, live
-GitHub execution, credentials, or `.env` access are included.
+**Current boundary:** Local/demo and fake/default execution only. No live
+GitHub execution, GitHub token, `.env`, OAuth/OIDC, sessions, deployment,
+Next.js frontend, `package.json`, or `node_modules` are required or included
+for the Artifact 6 demo.
+
+**Read first:**
+
+- [Artifact 6 README](06-operator-approval-workbench/README.md)
+- [Operator workbench demo](06-operator-approval-workbench/docs/demos/operator-workbench-demo.md)
+- [A6.5 demo evidence](06-operator-approval-workbench/docs/evidence/a6.5-operator-workbench-demo/README.md)
 
 ## What Is Not Here Yet
 
@@ -148,7 +158,7 @@ Artifacts 00 through 05 are complete as local/demo safety and evidence
 artifacts. None claims production readiness, universal exactly-once execution,
 or arbitrary repository support.
 
-Artifact 06 is the current planned next artifact. A6.0 freezes the operator
-scope before implementation. It does not implement general GitHub automation,
-OAuth/OIDC, MCP, frontend, deployment, operator approval APIs, or an operator
-workbench UI.
+Artifact 06 is the current local/demo operator workbench artifact. It does not
+implement general GitHub automation, OAuth/OIDC, MCP, deployment, production
+authentication, live GitHub execution, or production-grade operator console
+claims.

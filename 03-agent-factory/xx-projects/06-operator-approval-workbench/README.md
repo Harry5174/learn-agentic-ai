@@ -18,7 +18,7 @@ The human operator approves high-risk actions.
 
 ## Current Status
 
-Current sprint: A6.4 - Status, Ledger, and Audit Visibility.
+Current sprint: A6.5 - Demo Packaging and Portfolio Story.
 
 A6.1 added a backend/API-only, read-only operator approval inbox:
 
@@ -198,9 +198,35 @@ as the A6.1 inbox, but viewer identities still cannot approve or reject.
 Audit and side-effect visibility is limited to available local/demo process
 state and does not claim production-grade audit or production readiness.
 
+A6.5 packages the local/demo workbench demo and portfolio story. It adds a
+runbook, interview narrative, and demo evidence docs for the end-to-end local
+operator workflow:
+
+```text
+AI proposes -> operator reviews -> operator approves/rejects -> harness executes safely -> status/audit/ledger evidence is visible
+```
+
+A6.5 does not change runtime behavior, approval semantics, static UI behavior,
+GitHub execution, token handling, `.env` handling, or frontend tooling. It does
+not add Next.js, `package.json`, `node_modules`, screenshots, live GitHub
+operations, or production deployment claims.
+
+## Demo Package
+
+Read these docs for the A6.5 local/demo package:
+
+- [Operator workbench demo runbook](docs/demos/operator-workbench-demo.md)
+- [Portfolio story](docs/demos/portfolio-story.md)
+- [A6.5 demo evidence](docs/evidence/a6.5-operator-workbench-demo/README.md)
+
+The demo remains fake/default and local/demo. No GitHub token, `.env`, or live
+GitHub call is required for Artifact 06.
+
 ## Future Direction
 
-A6.5 should package the demo and portfolio story. Next.js remains deferred.
+Future work may introduce a distinct durable approval identifier, richer
+operator storage, production authentication, or a package-managed frontend only
+after separate Product Owner approval. Next.js remains deferred.
 
 ## Documentation
 

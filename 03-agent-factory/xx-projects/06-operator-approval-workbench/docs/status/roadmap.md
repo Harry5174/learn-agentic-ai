@@ -82,7 +82,7 @@ token loading, `.env` access, or broad CORS. Next.js remains deferred.
 
 ## A6.4 - Status, Ledger, and Audit Visibility
 
-Status: current / implemented.
+Status: complete.
 
 A6.4 scope:
 
@@ -100,11 +100,27 @@ A6.4 scope:
 
 ## A6.5 - Demo Packaging and Portfolio Story
 
-Recommended next sprint.
+Status: current / implemented.
 
-Potential scope:
+A6.5 scope:
 
 - package the local/demo operator workbench story
 - document the demo flow and safety boundaries
-- prepare portfolio-facing screenshots or scripts
+- prepare portfolio-facing narrative and evidence docs
 - keep live GitHub and production claims out of the default demo
+- avoid screenshots by default unless separately approved and redacted
+- preserve runtime behavior, approval semantics, fake/default execution, and
+  no-token/no-`.env` local demo operation
+
+## Future Work
+
+Potential future scope:
+
+- distinct durable approval identifiers beyond local/demo `run_id`
+- richer durable operator inbox storage
+- production authentication and sessions, if approved
+- package-managed frontend or Next.js, if approved
+- deployment planning, if approved
+
+Future work must keep live GitHub, credentials, `.env`, deployment, OAuth/OIDC,
+and broad frontend stack changes behind explicit Product Owner approval.

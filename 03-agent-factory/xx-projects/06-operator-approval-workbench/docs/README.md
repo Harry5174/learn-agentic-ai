@@ -12,6 +12,9 @@ Artifact 06 is the Operator Approval Console / Workbench artifact.
 - [Known limitations](status/known-limitations.md)
 - [Roadmap](status/roadmap.md)
 - [Interview notes](status/interview-notes.md)
+- [Operator workbench demo](demos/operator-workbench-demo.md)
+- [Portfolio story](demos/portfolio-story.md)
+- [A6.5 demo evidence](evidence/a6.5-operator-workbench-demo/README.md)
 - [Artifact 4 vs Artifact 6](comparisons/artifact-4-vs-artifact-6.md)
 - [Artifact 5 vs Artifact 6](comparisons/artifact-5-vs-artifact-6.md)
 
@@ -29,9 +32,10 @@ A6.0 follows the process inherited from Artifact 04 and reinforced by Artifact
 
 ## Current Runtime Boundary
 
-A6.4 has a copied Artifact 04 runtime baseline plus A6 operator API routes,
-a minimal local static workbench served by FastAPI, and read-only status,
-audit, side-effect/ledger, execution-result, and decision-history visibility.
+A6.5 has a copied Artifact 04 runtime baseline plus A6 operator API routes,
+a minimal local static workbench served by FastAPI, read-only status, audit,
+side-effect/ledger, execution-result, and decision-history visibility, and a
+local/demo package explaining how to run and discuss the workflow.
 
 Artifact 04 remains the runtime baseline lineage, and Artifact 05 remains
 release-gate evidence context only.

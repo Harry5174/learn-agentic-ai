@@ -24,7 +24,7 @@ A6.3 adds a minimal local static workbench served by FastAPI:
 GET /operator/workbench
 ```
 
-A6.4 adds read-only status, audit, side-effect/ledger, execution-result, and
+A6.4 added read-only status, audit, side-effect/ledger, execution-result, and
 decision-history visibility:
 
 ```text
@@ -45,8 +45,10 @@ POST /operator/approvals/{approval_id}/approve
 POST /operator/approvals/{approval_id}/reject
 ```
 
-A6.4 does not implement Next.js, a package-managed frontend, live GitHub
-execution, credentials, token loading, or `.env` access.
+A6.5 packages the local/demo operator workbench demo, portfolio narrative, and
+evidence docs. It does not implement Next.js, a package-managed frontend, live
+GitHub execution, credentials, token loading, `.env` access, new product
+features, or runtime behavior changes.
 
 Inherited Artifact 04 task/skill approval routes still exist because the
 runtime baseline was copied. Those inherited routes are not the Artifact 06
@@ -239,6 +241,32 @@ as A6.1 list/detail. Viewer identities still cannot approve or reject.
 
 A6.4 audit evidence remains local/demo process-state evidence and is not a
 production-grade audit log.
+
+## A6.5 Demo Packaging Boundary
+
+A6.5 packages the approved A6.1-A6.4 behavior for local demo and interview use.
+The demo story is:
+
+```text
+Artifact 06 turns the approval-gated agent harness into a local operator workbench.
+
+A proposed agent action appears in the approval inbox.
+The operator inspects the proposed action, risk, scopes, repo/issue context, and execution mode.
+The operator approves or rejects through server-controlled routes.
+The backend uses server-derived identity, not request-body claims.
+After decision, the operator can inspect status, audit timeline, decision history, and side-effect/ledger state.
+Everything remains fake/default and local/demo. No GitHub token or live GitHub is required.
+```
+
+A6.5 may add documentation, demo runbooks, portfolio notes, evidence summaries,
+status updates, roadmap updates, comparison updates, and a narrow parent index
+refresh. It must not change `src/app` behavior, approval semantics, static UI
+behavior, token handling, `.env` handling, or GitHub execution behavior.
+
+Screenshots are not included by default. Future screenshots should be captured
+only after confirming the page contains no secrets, no `.env` values, no
+authorization headers, no absolute local filesystem paths, and no unsafe
+repository data.
 
 ## A6.3 Local Static UI Boundary
 

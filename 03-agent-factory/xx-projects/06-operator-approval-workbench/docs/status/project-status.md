@@ -4,18 +4,17 @@
 
 **Title:** Operator Approval Console / Workbench
 
-**Current sprint:** A6.4 - Status, Ledger, and Audit Visibility
+**Current sprint:** A6.5 - Demo Packaging and Portfolio Story
 
-**Status:** A6.4 status, ledger, audit, execution-result, and decision-history
-visibility implemented.
+**Status:** A6.5 local/demo demo package and portfolio story implemented.
 
 ## Current Claim
 
 Artifact 06 now has a self-contained runtime baseline copied from Artifact 04,
 a read-only operator approval inbox API, explicit backend operator
-approve/reject API routes, a minimal local static operator workbench, and
-read-only operator visibility for status, audit, side-effect/ledger evidence,
-execution results, and decision history.
+approve/reject API routes, a minimal local static operator workbench, read-only
+operator visibility for status, audit, side-effect/ledger evidence, execution
+results, and decision history, plus A6.5 demo and portfolio packaging.
 
 A6.1 implemented:
 
@@ -45,6 +44,20 @@ GET /operator/approvals/{approval_id}/audit
 GET /operator/side-effects/{side_effect_id}
 ```
 
+A6.5 adds documentation and demo evidence only:
+
+```text
+docs/demos/operator-workbench-demo.md
+docs/demos/portfolio-story.md
+docs/evidence/a6.5-operator-workbench-demo/
+```
+
+A6.5 makes the local/demo story easier to run and explain:
+
+```text
+AI proposes -> operator reviews -> operator approves/rejects -> harness executes safely -> status/audit/ledger evidence is visible
+```
+
 The A6.4 UI calls only:
 
 ```text
@@ -57,8 +70,9 @@ POST /operator/approvals/{approval_id}/approve
 POST /operator/approvals/{approval_id}/reject
 ```
 
-A6.4 does not implement Next.js frontend, live GitHub execution, credential
-loading, token loading, or `.env` access.
+A6.5 does not implement Next.js frontend, live GitHub execution, credential
+loading, token loading, `.env` access, package-managed frontend files, runtime
+behavior changes, approval semantic changes, or new product features.
 
 Inherited Artifact 04 task/skill approval routes still exist because the
 runtime baseline was copied. Those inherited routes are not the Artifact 06
@@ -139,51 +153,58 @@ records.
 Audit visibility remains local/demo process-state evidence and does not claim
 production-grade audit or production readiness.
 
+## A6.5 Demo Package
+
+The A6.5 package explains the end-to-end local operator workflow without
+requiring screenshots, secrets, real tokens, `.env`, authorization headers,
+absolute local filesystem paths, or live GitHub calls.
+
+The default demo should be described as local/demo, fake/default execution,
+operator-facing, approval-gated, server-derived identity, no GitHub token
+required, no `.env` required, not deployed, and not production-ready.
+
 ## Files Reviewed Before Implementation
 
-Parent index:
+Parent index and Artifact 06 package docs:
 
 ```text
 README.md
-```
-
-Artifact 04 runtime baseline:
-
-```text
-04-approval-gated-real-github-comment-adapter/README.md
-04-approval-gated-real-github-comment-adapter/docs/README.md
-04-approval-gated-real-github-comment-adapter/docs/specs/artifact-4-real-github-comment-adapter.md
-04-approval-gated-real-github-comment-adapter/docs/architecture/architecture.md
-04-approval-gated-real-github-comment-adapter/docs/architecture/remote-idempotency-reconciliation.md
-04-approval-gated-real-github-comment-adapter/docs/process/development-rules.md
-04-approval-gated-real-github-comment-adapter/docs/specs/constitution/mission.md
-04-approval-gated-real-github-comment-adapter/docs/specs/constitution/roadmap.md
-04-approval-gated-real-github-comment-adapter/docs/specs/constitution/tech-stack.md
-04-approval-gated-real-github-comment-adapter/src/app
-04-approval-gated-real-github-comment-adapter/tests
-```
-
-Artifact 05 evidence/reference context:
-
-```text
-05-real-mode-smoke-evidence-release-gate/README.md
-05-real-mode-smoke-evidence-release-gate/docs/README.md
-05-real-mode-smoke-evidence-release-gate/docs/specs/artifact-5-real-mode-smoke-evidence-release-gate.md
-05-real-mode-smoke-evidence-release-gate/docs/status/project-status.md
-05-real-mode-smoke-evidence-release-gate/docs/status/roadmap.md
-05-real-mode-smoke-evidence-release-gate/docs/status/known-limitations.md
-05-real-mode-smoke-evidence-release-gate/docs/evidence/a5.4-final-release-gate-report/README.md
-05-real-mode-smoke-evidence-release-gate/docs/evidence/a5.4-final-release-gate-report/artifact-5-release-gate-summary.md
-05-real-mode-smoke-evidence-release-gate/docs/evidence/a5.4-final-release-gate-report/portfolio-summary.md
+06-operator-approval-workbench/README.md
+06-operator-approval-workbench/docs/README.md
+06-operator-approval-workbench/docs/specs/artifact-6-operator-approval-workbench.md
+06-operator-approval-workbench/docs/architecture/operator-workbench-architecture.md
+06-operator-approval-workbench/docs/architecture/runtime-baseline-inventory.md
+06-operator-approval-workbench/docs/process/development-rules.md
+06-operator-approval-workbench/docs/status/project-status.md
+06-operator-approval-workbench/docs/status/known-limitations.md
+06-operator-approval-workbench/docs/status/roadmap.md
+06-operator-approval-workbench/docs/status/interview-notes.md
+06-operator-approval-workbench/docs/comparisons/artifact-4-vs-artifact-6.md
+06-operator-approval-workbench/docs/comparisons/artifact-5-vs-artifact-6.md
+06-operator-approval-workbench/src/app/api/operator_routes.py
+06-operator-approval-workbench/src/app/api/operator_schemas.py
+06-operator-approval-workbench/src/app/operator/approval_views.py
+06-operator-approval-workbench/src/app/operator/approval_actions.py
+06-operator-approval-workbench/src/app/operator/status_views.py
+06-operator-approval-workbench/src/app/operator/audit_views.py
+06-operator-approval-workbench/src/app/operator/side_effect_views.py
+06-operator-approval-workbench/src/app/operator/static/workbench.html
+06-operator-approval-workbench/src/app/operator/static/workbench.css
+06-operator-approval-workbench/src/app/operator/static/workbench.js
+06-operator-approval-workbench/tests/test_api_operator_approvals.py
+06-operator-approval-workbench/tests/test_operator_workbench_ui.py
+06-operator-approval-workbench/tests/test_api_audit.py
+06-operator-approval-workbench/tests/test_durable_side_effect_ledger.py
+06-operator-approval-workbench/tests/test_side_effect_ledger.py
 ```
 
 ## Runtime Baseline
 
-Artifact 04 is the future runtime baseline. Artifact 05 is release-gate
+Artifact 04 is the runtime baseline lineage. Artifact 05 is release-gate
 evidence context only.
 
 ## Recommended Next Sprint
 
 ```text
-A6.5 - Demo Packaging and Portfolio Story
+A6.6 - Distinct Durable Approval Identifiers or Production Auth Planning
 ```

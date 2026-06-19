@@ -108,8 +108,27 @@ limitation instead of an invented record.
 Audit visibility remains local/demo process-state evidence. It is not a
 production-grade audit log and does not imply production readiness.
 
-Recommended next sprint:
+Current sprint:
 
 ```text
 A6.5 - Demo Packaging and Portfolio Story
 ```
+
+A6.5 packages the story so it is easy to say aloud:
+
+```text
+Artifact 06 turns the approval-gated agent harness into a local operator workbench.
+
+A proposed agent action appears in the approval inbox.
+The operator inspects the proposed action, risk, scopes, repo/issue context, and execution mode.
+The operator approves or rejects through server-controlled routes.
+The backend uses server-derived identity, not request-body claims.
+After decision, the operator can inspect status, audit timeline, decision history, and side-effect/ledger state.
+Everything remains fake/default and local/demo. No GitHub token or live GitHub is required.
+```
+
+The portfolio framing should stay restrained: operator-facing workbench,
+approval-gated harness, server-derived identity, local/demo audit evidence, and
+fake/default execution. Do not describe Artifact 06 as production-ready,
+deployed, enterprise-grade, OAuth/session-authenticated, or performing live
+GitHub execution.
