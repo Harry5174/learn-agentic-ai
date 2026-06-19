@@ -29,8 +29,9 @@ A6.0 follows the process inherited from Artifact 04 and reinforced by Artifact
 
 ## Current Runtime Boundary
 
-A6.3 has a copied Artifact 04 runtime baseline plus A6 operator API routes and
-a minimal local static workbench served by FastAPI.
+A6.4 has a copied Artifact 04 runtime baseline plus A6 operator API routes,
+a minimal local static workbench served by FastAPI, and read-only status,
+audit, side-effect/ledger, execution-result, and decision-history visibility.
 
 Artifact 04 remains the runtime baseline lineage, and Artifact 05 remains
 release-gate evidence context only.

@@ -63,7 +63,7 @@ For Artifact 06 local/demo identity configuration, `OPERATOR_API_KEY` has
 
 ## A6.3 - Minimal Static HTML Workbench
 
-Status: current / implemented.
+Status: complete.
 
 A6.3 scope:
 
@@ -80,13 +80,31 @@ A6.3 scope:
 A6.3 does not implement Next.js, OAuth/OIDC, sessions, live GitHub execution,
 token loading, `.env` access, or broad CORS. Next.js remains deferred.
 
-## A6.4 - Operator Audit / Evidence Views
+## A6.4 - Status, Ledger, and Audit Visibility
+
+Status: current / implemented.
+
+A6.4 scope:
+
+- read-only current status endpoint
+- read-only local/demo audit endpoint
+- read-only side-effect/ledger visibility endpoint
+- workbench panels for Current Status, Decision History, Audit Timeline,
+  Side-Effect / Ledger, Execution Result, and Known Local/Demo Limitations
+- safe redaction for metadata, decision reasons, execution results, errors,
+  and side-effect summaries
+- visibility reads that do not mutate run, audit, or ledger state
+- continued fake/default local demo boundary
+- no live GitHub, token loading, `.env` reading, Next.js, React, or frontend
+  build tooling
+
+## A6.5 - Demo Packaging and Portfolio Story
 
 Recommended next sprint.
 
 Potential scope:
 
-- operator-facing audit trail view
-- side-effect evidence detail
-- clearer stale/mismatch evidence display
-- continued fake/default local demo boundary
+- package the local/demo operator workbench story
+- document the demo flow and safety boundaries
+- prepare portfolio-facing screenshots or scripts
+- keep live GitHub and production claims out of the default demo

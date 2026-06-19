@@ -9,10 +9,13 @@ from app.api.dependencies import (
     get_current_identity,
 )
 from app.api.operator_schemas import (
+    OperatorApprovalAuditResponse,
     OperatorApprovalDecisionRequest,
     OperatorApprovalDecisionResponse,
     OperatorApprovalDetailResponse,
     OperatorApprovalListResponse,
+    OperatorApprovalStatusResponse,
+    OperatorSideEffectLedgerResponse,
 )
 from app.api.skill_routes import get_skill_run_service
 from app.identity.schemas import IdentityContext
@@ -25,6 +28,18 @@ from app.operator.approval_actions import (
 from app.operator.approval_views import (
     ApprovalInboxView,
     ApprovalViewNotFoundError,
+)
+from app.operator.audit_views import (
+    OperatorAuditView,
+    OperatorAuditViewNotFoundError,
+)
+from app.operator.side_effect_views import (
+    OperatorSideEffectView,
+    OperatorSideEffectViewNotFoundError,
+)
+from app.operator.status_views import (
+    OperatorStatusView,
+    OperatorStatusViewNotFoundError,
 )
 
 router = APIRouter(prefix="/operator", tags=["operator"])
@@ -91,6 +106,71 @@ def get_operator_approval(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Approval not found.",
+        ) from exc
+
+
+@router.get(
+    "/approvals/{approval_id}/status",
+    response_model=OperatorApprovalStatusResponse,
+)
+def get_operator_approval_status(
+    approval_id: str,
+    identity: Annotated[IdentityContext, Depends(get_current_identity)],
+) -> OperatorApprovalStatusResponse:
+    """Return read-only local/demo approval and run status visibility."""
+
+    view = OperatorStatusView(get_skill_run_service())
+
+    try:
+        return view.get_status(approval_id=approval_id, identity=identity)
+    except OperatorStatusViewNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Approval not found.",
+        ) from exc
+
+
+@router.get(
+    "/approvals/{approval_id}/audit",
+    response_model=OperatorApprovalAuditResponse,
+)
+def get_operator_approval_audit(
+    approval_id: str,
+    identity: Annotated[IdentityContext, Depends(get_current_identity)],
+) -> OperatorApprovalAuditResponse:
+    """Return read-only local/demo audit evidence for an approval/run."""
+
+    del identity
+    view = OperatorAuditView(get_skill_run_service())
+
+    try:
+        return view.get_audit(approval_id)
+    except OperatorAuditViewNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Approval not found.",
+        ) from exc
+
+
+@router.get(
+    "/side-effects/{side_effect_id}",
+    response_model=OperatorSideEffectLedgerResponse,
+)
+def get_operator_side_effect(
+    side_effect_id: str,
+    identity: Annotated[IdentityContext, Depends(get_current_identity)],
+) -> OperatorSideEffectLedgerResponse:
+    """Return read-only local/demo side-effect and ledger visibility."""
+
+    del identity
+    view = OperatorSideEffectView(get_skill_run_service())
+
+    try:
+        return view.get_side_effect(side_effect_id)
+    except OperatorSideEffectViewNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Side effect not found.",
         ) from exc
 
 

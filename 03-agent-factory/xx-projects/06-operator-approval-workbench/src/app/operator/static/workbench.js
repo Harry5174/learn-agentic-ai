@@ -3,6 +3,9 @@
 
   const APPROVALS_ROUTE = "/operator/approvals";
   const DETAIL_ROUTE_TEMPLATE = "/operator/approvals/{approval_id}";
+  const STATUS_ROUTE_TEMPLATE = "/operator/approvals/{approval_id}/status";
+  const AUDIT_ROUTE_TEMPLATE = "/operator/approvals/{approval_id}/audit";
+  const SIDE_EFFECT_ROUTE_TEMPLATE = "/operator/side-effects/{side_effect_id}";
   const APPROVE_ROUTE_TEMPLATE = "/operator/approvals/{approval_id}/approve";
   const REJECT_ROUTE_TEMPLATE = "/operator/approvals/{approval_id}/reject";
 
@@ -22,6 +25,13 @@
 
   function routeFromTemplate(template, approvalId) {
     return template.replace("{approval_id}", encodeURIComponent(approvalId));
+  }
+
+  function sideEffectRoute(sideEffectId) {
+    return SIDE_EFFECT_ROUTE_TEMPLATE.replace(
+      "{side_effect_id}",
+      encodeURIComponent(sideEffectId),
+    );
   }
 
   function setMessage(text, isError) {
@@ -91,7 +101,7 @@
     parent.appendChild(row);
   }
 
-  function appendJsonSection(parent, title, value) {
+  function appendSection(parent, title) {
     const section = document.createElement("section");
     section.className = "detail-section";
 
@@ -99,11 +109,61 @@
     heading.textContent = title;
     section.appendChild(heading);
 
+    parent.appendChild(section);
+    return section;
+  }
+
+  function appendJsonSection(parent, title, value) {
+    const section = appendSection(parent, title);
+
     const pre = document.createElement("pre");
     pre.textContent = JSON.stringify(value, null, 2);
     section.appendChild(pre);
 
     parent.appendChild(section);
+  }
+
+  function appendTimeline(parent, events) {
+    if (!events || !events.length) {
+      appendText(parent, "No local/demo audit events are available.");
+      return;
+    }
+
+    const list = document.createElement("ol");
+    list.className = "timeline-list";
+
+    events.forEach((event) => {
+      const item = document.createElement("li");
+      const title = document.createElement("strong");
+      title.textContent = `${event.sequence}. ${event.event_type}`;
+      item.appendChild(title);
+      appendField(item, "Actor", event.actor_id);
+      appendField(item, "Timestamp", event.timestamp);
+      appendField(item, "Tool", event.tool_name);
+      appendField(item, "Message", event.message);
+      appendJsonSection(item, "Metadata", event.metadata);
+      list.appendChild(item);
+    });
+
+    parent.appendChild(list);
+  }
+
+  function appendDecisionHistory(parent, decisions) {
+    if (!decisions || !decisions.length) {
+      appendText(parent, "No operator decision has been recorded.");
+      return;
+    }
+
+    decisions.forEach((decision) => {
+      const item = document.createElement("div");
+      item.className = "decision-history-item";
+      appendField(item, "Decision", decision.decision);
+      appendField(item, "Actor", decision.actor_id);
+      appendField(item, "Role", decision.actor_role);
+      appendField(item, "Reason", decision.reason);
+      appendField(item, "Timestamp", decision.timestamp);
+      parent.appendChild(item);
+    });
   }
 
   function renderEmptyList(text) {
@@ -157,40 +217,93 @@
     });
   }
 
-  function renderDetail(approval) {
-    selectedApprovalId = approval.approval_id;
+  function renderDetail(approval, status, audit, sideEffect) {
+    const base = approval || status;
+    selectedApprovalId = base.approval_id;
     clearNode(approvalDetail);
     approvalDetail.classList.remove("empty-state");
-    decisionForm.hidden = false;
+    const canDecide = Boolean(status.can_approve || status.can_reject);
+    decisionForm.hidden = !canDecide;
+    approveButton.disabled = !status.can_approve;
+    rejectButton.disabled = !status.can_reject;
 
-    const summary = document.createElement("section");
-    summary.className = "detail-section";
-    const heading = document.createElement("h3");
-    heading.textContent = approval.task || "Approval request";
-    summary.appendChild(heading);
-    appendField(summary, "Approval ID", approval.approval_id);
-    appendField(summary, "Run ID", approval.run_id);
-    appendField(summary, "Status", approval.status);
-    appendField(summary, "Approval status", approval.approval_status);
-    appendField(summary, "Risk", approval.risk_level);
-    appendField(summary, "Policy", approval.policy_status);
-    appendField(summary, "Tool", approval.tool_name);
-    appendField(summary, "Target", approval.target);
-    appendField(summary, "Requested by", approval.requested_by);
-    appendField(summary, "Side effect ID", approval.side_effect_id);
-    appendField(summary, "Args hash", approval.args_hash);
-    approvalDetail.appendChild(summary);
+    const currentStatus = appendSection(approvalDetail, "Current Status");
+    appendField(currentStatus, "Approval ID", base.approval_id);
+    appendField(currentStatus, "Run ID", base.run_id);
+    appendField(currentStatus, "Status", status.status);
+    appendField(currentStatus, "Approval status", status.approval_status);
+    appendField(currentStatus, "Decision state", status.decision_state);
+    appendField(currentStatus, "Task", status.task || base.task);
+    appendField(currentStatus, "Risk", approval ? approval.risk_level : null);
+    appendField(currentStatus, "Policy", approval ? approval.policy_status : null);
+    appendField(currentStatus, "Tool", status.tool_name || base.tool_name);
+    appendField(currentStatus, "Target", status.target || base.target);
+    appendField(currentStatus, "Side effect ID", status.side_effect_id);
+    appendField(currentStatus, "Args hash", status.args_hash);
+    appendField(currentStatus, "Can approve", status.can_approve);
+    appendField(currentStatus, "Can reject", status.can_reject);
+    appendField(
+      currentStatus,
+      "Action unavailable",
+      status.action_unavailable_reason,
+    );
+    appendField(currentStatus, "Updated", status.updated_at);
 
-    appendJsonSection(approvalDetail, "Execution mode", approval.execution_mode);
-    appendJsonSection(approvalDetail, "Required scopes", approval.required_scopes);
-    appendJsonSection(approvalDetail, "Proposal", approval.proposal);
-    appendJsonSection(approvalDetail, "Policy decisions", approval.policy_decisions);
+    const decisionHistory = appendSection(approvalDetail, "Decision History");
+    appendDecisionHistory(decisionHistory, status.decision_history);
+
+    const auditTimeline = appendSection(approvalDetail, "Audit Timeline");
+    appendField(auditTimeline, "Scope", audit.audit_scope);
+    appendField(auditTimeline, "Limitations", audit.audit_limitations);
+    appendTimeline(auditTimeline, audit.events);
+
+    const ledger = appendSection(approvalDetail, "Side-Effect / Ledger");
+    if (sideEffect) {
+      appendField(ledger, "Side effect ID", sideEffect.side_effect_id);
+      appendField(ledger, "Ledger status", sideEffect.ledger_status);
+      appendField(ledger, "Status", sideEffect.status);
+      appendField(ledger, "Record available", sideEffect.record_available);
+      appendField(ledger, "Source", sideEffect.source);
+      appendField(ledger, "Repository", sideEffect.repository);
+      appendField(ledger, "Issue", sideEffect.issue_number);
+      appendField(ledger, "Duplicate status", sideEffect.duplicate_status);
+      appendField(ledger, "Message", sideEffect.message);
+      appendJsonSection(
+        ledger,
+        "External result summary",
+        sideEffect.external_result_summary,
+      );
+      appendJsonSection(ledger, "Error summary", sideEffect.error_summary);
+    } else {
+      appendText(ledger, "No side-effect id is available for this local/demo run.");
+    }
+
     appendJsonSection(
       approvalDetail,
-      "Validated arguments",
-      approval.validated_arguments,
+      "Execution Result",
+      status.execution_result,
     );
-    appendJsonSection(approvalDetail, "Audit events", approval.audit_events);
+    appendJsonSection(approvalDetail, "Execution mode", status.execution_mode);
+
+    if (approval) {
+      appendJsonSection(approvalDetail, "Proposal", approval.proposal);
+      appendJsonSection(
+        approvalDetail,
+        "Policy decisions",
+        approval.policy_decisions,
+      );
+      appendJsonSection(
+        approvalDetail,
+        "Validated arguments",
+        approval.validated_arguments,
+      );
+    }
+
+    const limits = appendSection(approvalDetail, "Known Local/Demo Limitations");
+    appendText(
+      limits,
+      "Local/demo audit and ledger visibility is limited to current process state. Fake/default execution only. No live GitHub execution. No GitHub token or .env required.",
+    );
   }
 
   async function loadApprovals() {
@@ -219,10 +332,30 @@
     setMessage("Loading approval detail.", false);
 
     try {
-      const approval = await fetchJson(routeFromTemplate(DETAIL_ROUTE_TEMPLATE, approvalId), {
+      const status = await fetchJson(routeFromTemplate(STATUS_ROUTE_TEMPLATE, approvalId), {
         method: "GET",
       });
-      renderDetail(approval);
+      const audit = await fetchJson(routeFromTemplate(AUDIT_ROUTE_TEMPLATE, approvalId), {
+        method: "GET",
+      });
+      let approval = null;
+      let sideEffect = null;
+
+      try {
+        approval = await fetchJson(routeFromTemplate(DETAIL_ROUTE_TEMPLATE, approvalId), {
+          method: "GET",
+        });
+      } catch (_error) {
+        approval = null;
+      }
+
+      if (status.side_effect_id) {
+        sideEffect = await fetchJson(sideEffectRoute(status.side_effect_id), {
+          method: "GET",
+        });
+      }
+
+      renderDetail(approval, status, audit, sideEffect);
       await loadApprovals();
       setMessage("Approval detail loaded.", false);
     } catch (error) {
@@ -245,18 +378,14 @@
     setMessage("Sending decision.", false);
 
     try {
-      const result = await fetchJson(routeFromTemplate(template, selectedApprovalId), {
+      const decidedApprovalId = selectedApprovalId;
+      const result = await fetchJson(routeFromTemplate(template, decidedApprovalId), {
         method: "POST",
         body: JSON.stringify(payload),
       });
       setMessage(`Decision recorded: ${result.decision}.`, false);
       decisionReason.value = "";
-      decisionForm.hidden = true;
-      selectedApprovalId = "";
-      clearNode(approvalDetail);
-      approvalDetail.className = "approval-detail empty-state";
-      approvalDetail.textContent = "Select an approval to review local/demo details.";
-      await loadApprovals();
+      await loadDetail(decidedApprovalId);
     } catch (error) {
       setMessage(error.message, true);
     }

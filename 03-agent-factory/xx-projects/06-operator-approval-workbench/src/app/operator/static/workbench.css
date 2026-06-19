@@ -282,6 +282,19 @@ h3 {
   overflow-wrap: anywhere;
 }
 
+.timeline-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0.65rem 0 0;
+  padding-left: 1.25rem;
+}
+
+.timeline-list li,
+.decision-history-item {
+  display: grid;
+  gap: 0.35rem;
+}
+
 .decision-form {
   display: grid;
   gap: 0.65rem;

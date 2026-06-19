@@ -24,16 +24,28 @@ A6.3 adds a minimal local static workbench served by FastAPI:
 GET /operator/workbench
 ```
 
-The A6.3 UI calls only:
+A6.4 adds read-only status, audit, side-effect/ledger, execution-result, and
+decision-history visibility:
+
+```text
+GET /operator/approvals/{approval_id}/status
+GET /operator/approvals/{approval_id}/audit
+GET /operator/side-effects/{side_effect_id}
+```
+
+The A6.4 UI calls only:
 
 ```text
 GET /operator/approvals
 GET /operator/approvals/{approval_id}
+GET /operator/approvals/{approval_id}/status
+GET /operator/approvals/{approval_id}/audit
+GET /operator/side-effects/{side_effect_id}
 POST /operator/approvals/{approval_id}/approve
 POST /operator/approvals/{approval_id}/reject
 ```
 
-A6.3 does not implement Next.js, a package-managed frontend, live GitHub
+A6.4 does not implement Next.js, a package-managed frontend, live GitHub
 execution, credentials, token loading, or `.env` access.
 
 Inherited Artifact 04 task/skill approval routes still exist because the
@@ -187,10 +199,46 @@ For Artifact 06 local/demo identity configuration, `OPERATOR_API_KEY` has
 `approval:approve` and `approval:reject` scopes. Viewer identity still cannot
 approve or reject, and admin identity still has approval decision scopes.
 
-Future A6.x endpoints may include:
+Later A6.x endpoints may add richer durable-console views beyond A6.4:
 
+- distinct durable approval identifiers
+- production authorization/session integration
+- richer durable audit filtering
+
+## A6.4 Visibility Boundary
+
+A6.4 uses:
+
+- `src/app/operator/status_views.py`
+- `src/app/operator/audit_views.py`
+- `src/app/operator/side_effect_views.py`
+- `src/app/api/operator_routes.py`
+- `src/app/api/operator_schemas.py`
+- `src/app/operator/static/workbench.html`
+- `src/app/operator/static/workbench.css`
+- `src/app/operator/static/workbench.js`
+
+A6.4 implements:
+
+- `GET /operator/approvals/{approval_id}/status`
 - `GET /operator/approvals/{approval_id}/audit`
 - `GET /operator/side-effects/{side_effect_id}`
+
+These endpoints are read-only local/demo projections. They do not resume graph
+execution, approve, reject, mutate ledgers, create side effects, write audit
+events, call live GitHub, load credentials, or read `.env`.
+
+Visibility responses expose only safe local/demo summaries of status, audit
+events, decision history, execution results, and side-effect/ledger evidence
+when available. Unknown ids return safe 404 responses. Known side-effect ids
+without available ledger records return an explicit local/demo limitation
+message rather than inventing a record.
+
+Viewer identities may read visibility through the same local/demo read policy
+as A6.1 list/detail. Viewer identities still cannot approve or reject.
+
+A6.4 audit evidence remains local/demo process-state evidence and is not a
+production-grade audit log.
 
 ## A6.3 Local Static UI Boundary
 
@@ -217,6 +265,11 @@ The static assets:
 
 A6.3 does not add OAuth/OIDC, sessions, broad CORS, live GitHub execution, token
 loading, `.env` access, Next.js, or inherited Artifact 04 approval-route calls.
+
+A6.4 extends the same static workbench with panels for Current Status, Decision
+History, Audit Timeline, Side-Effect / Ledger, Execution Result, and Known
+Local/Demo Limitations. It still uses DOM node creation and text assignment for
+dynamic content, avoids browser storage, and calls only A6 operator routes.
 
 ## Approval Identifier Limitation
 
@@ -270,7 +323,7 @@ Future A6 implementation must preserve these requirements:
 - No token required for UI demo.
 - No real GitHub call in tests.
 
-## A6.3 Test Plan
+## A6.4 Test Plan
 
 Artifact 06 tests now cover:
 
@@ -287,6 +340,15 @@ Artifact 06 tests now cover:
 - workbench route returns static HTML
 - workbench displays the local/demo safety notice
 - workbench assets reference only A6 operator API routes
+- status endpoint returns current status
+- audit endpoint returns local/demo audit evidence
+- side-effect endpoint returns local/demo ledger evidence when available
+- visibility endpoints are read-only and do not mutate approval/run state
+- approval followed by status read shows updated status
+- rejection followed by audit/status read shows rejection evidence
+- workbench includes status, decision-history, audit-timeline,
+  side-effect/ledger, execution-result, and local/demo limitation panels
+- workbench assets call A6 visibility endpoints
 - workbench assets do not reference inherited approval routes
 - no Next.js or package-managed frontend files are added
 - no external scripts or CDN URLs are used

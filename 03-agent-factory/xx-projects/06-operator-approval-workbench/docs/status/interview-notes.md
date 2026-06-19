@@ -80,3 +80,36 @@ rendered with DOM node creation and text assignment instead of HTML injection.
 
 Next.js, OAuth/OIDC, sessions, broad CORS, live GitHub execution, token
 loading, and `.env` access remain out of scope.
+
+A6.4 makes the local workbench useful after a decision is recorded. It adds:
+
+```text
+GET /operator/approvals/{approval_id}/status
+GET /operator/approvals/{approval_id}/audit
+GET /operator/side-effects/{side_effect_id}
+```
+
+The operator can now inspect current status, decision history, local/demo audit
+timeline evidence, side-effect/ledger evidence when available, execution
+result summaries, and local/demo limitations.
+
+The A6.4 visibility endpoints are strictly read-only. They do not resume graph
+execution, approve, reject, mutate ledger state, create side effects, write
+audit events, call live GitHub, load tokens, or read `.env`.
+
+Viewer identities may read visibility through the same local/demo read policy
+as the A6.1 inbox, but viewers still cannot approve or reject. Operator/admin
+decision behavior remains the A6.2 behavior.
+
+Side-effect visibility is intentionally honest: unknown ids return 404, and
+known ids without an available local ledger record return a local/demo
+limitation instead of an invented record.
+
+Audit visibility remains local/demo process-state evidence. It is not a
+production-grade audit log and does not imply production readiness.
+
+Recommended next sprint:
+
+```text
+A6.5 - Demo Packaging and Portfolio Story
+```

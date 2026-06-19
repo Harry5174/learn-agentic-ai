@@ -53,6 +53,9 @@ def test_operator_workbench_references_only_a6_operator_api_routes() -> None:
 
     assert '"/operator/approvals"' in asset_text
     assert '"/operator/approvals/{approval_id}"' in asset_text
+    assert '"/operator/approvals/{approval_id}/status"' in asset_text
+    assert '"/operator/approvals/{approval_id}/audit"' in asset_text
+    assert '"/operator/side-effects/{side_effect_id}"' in asset_text
     assert '"/operator/approvals/{approval_id}/approve"' in asset_text
     assert '"/operator/approvals/{approval_id}/reject"' in asset_text
 
@@ -128,6 +131,44 @@ def test_operator_workbench_uses_safe_dom_rendering_patterns() -> None:
     assert "textContent" in js_text
     assert dangerous_img not in js_text
     assert dangerous_script not in js_text
+
+
+def test_operator_workbench_includes_a6_4_visibility_panels() -> None:
+    asset_text = _asset_text()
+
+    expected_panels = [
+        "Current Status",
+        "Decision History",
+        "Audit Timeline",
+        "Side-Effect / Ledger",
+        "Execution Result",
+        "Known Local/Demo Limitations",
+    ]
+
+    for panel in expected_panels:
+        assert panel in asset_text
+
+
+def test_operator_workbench_calls_a6_visibility_endpoints() -> None:
+    js_text = WORKBENCH_JS.read_text(encoding="utf-8")
+
+    assert '"/operator/approvals/{approval_id}/status"' in js_text
+    assert '"/operator/approvals/{approval_id}/audit"' in js_text
+    assert '"/operator/side-effects/{side_effect_id}"' in js_text
+    assert "STATUS_ROUTE_TEMPLATE" in js_text
+    assert "AUDIT_ROUTE_TEMPLATE" in js_text
+    assert "SIDE_EFFECT_ROUTE_TEMPLATE" in js_text
+
+
+def test_operator_workbench_safe_rendering_covers_visibility_content() -> None:
+    js_text = WORKBENCH_JS.read_text(encoding="utf-8")
+    dangerous_fixture = "<img src=x onerror=alert(1)><script>alert(1)</script>"
+
+    assert dangerous_fixture not in js_text
+    assert "appendTimeline" in js_text
+    assert "appendDecisionHistory" in js_text
+    assert "pre.textContent = JSON.stringify(value, null, 2)" in js_text
+    assert "appendText(ledger" in js_text
 
 
 def test_operator_workbench_decision_flows_target_a6_operator_routes() -> None:

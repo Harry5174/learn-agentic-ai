@@ -52,9 +52,11 @@ A6.3 adds:
 - `src/app/operator/static/workbench.css`: local static workbench styling
 - `src/app/operator/static/workbench.js`: local static workbench behavior
 
-Future later modules may add:
+A6.4 adds:
 
-- `src/app/operator/audit_views.py`: audit and side-effect evidence views
+- `src/app/operator/status_views.py`: read-only approval/run status views
+- `src/app/operator/audit_views.py`: read-only local/demo audit views
+- `src/app/operator/side_effect_views.py`: read-only side-effect/ledger evidence views
 
 Do not put operator inbox logic into:
 
@@ -112,6 +114,27 @@ router and does not add broad CORS or a frontend build stack. The UI calls only:
 
 The UI does not call inherited Artifact 04 task or skill approval routes.
 
+## A6.4 Visibility Endpoints
+
+A6.4 implements read-only visibility routes:
+
+- `GET /operator/approvals/{approval_id}/status`
+- `GET /operator/approvals/{approval_id}/audit`
+- `GET /operator/side-effects/{side_effect_id}`
+
+These routes are thin HTTP projections over operator visibility service
+modules. They read already-known local/demo skill-run state and audit evidence.
+They do not resume the graph, approve, reject, mutate ledgers, create
+side-effects, write audit events, call GitHub, load tokens, or read `.env`.
+
+Viewer identities may read these visibility routes through the same local/demo
+read policy as the A6.1 inbox. Operator/admin decision authority remains
+restricted to the A6.2 approve/reject routes.
+
+Side-effect visibility is fail-safe. Unknown side-effect ids return 404. Known
+side-effect ids without available local ledger records return an explicit
+local/demo limitation instead of inventing records.
+
 ## A6.1 Read-Only Data Source
 
 A6.1 derives pending approval rows from copied `SkillGraphService` state. It
@@ -168,3 +191,26 @@ The pasted local demo API key is held only in page memory and sent only as the
 storage and do not embed any demo key values.
 
 Next.js remains deferred.
+
+## A6.4 UI Visibility Boundary
+
+A6.4 extends the static workbench with panels for Current Status, Decision
+History, Audit Timeline, Side-Effect / Ledger, Execution Result, and Known
+Local/Demo Limitations.
+
+The UI calls only A6 operator routes:
+
+- `GET /operator/approvals`
+- `GET /operator/approvals/{approval_id}`
+- `GET /operator/approvals/{approval_id}/status`
+- `GET /operator/approvals/{approval_id}/audit`
+- `GET /operator/side-effects/{side_effect_id}`
+- `POST /operator/approvals/{approval_id}/approve`
+- `POST /operator/approvals/{approval_id}/reject`
+
+It still uses DOM node creation and text assignment for dynamic content. It
+does not add external scripts, browser storage, Next.js, React, package files,
+frontend build tooling, live GitHub calls, token loading, or `.env` access.
+
+A6.4 audit visibility remains local/demo process-state evidence. It is not a
+production-grade audit system.

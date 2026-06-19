@@ -618,5 +618,368 @@ def test_github_comment_approval_returns_side_effect_identity_without_live_githu
         "token_required": False,
     }
     assert "AGENT_FACTORY_GITHUB_TOKEN" not in response.text
+
+
+def test_operator_approval_status_returns_current_status(monkeypatch) -> None:
+    service = _high_risk_service()
+    monkeypatch.setattr(skill_routes, "_skill_run_service", service)
+    client = TestClient(create_app())
+    paused = _create_paused_approval(client)
+
+    response = client.get(
+        f"/operator/approvals/{paused['run_id']}/status",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+    )
+
+    assert response.status_code == 200
+
+    body = response.json()
+    assert body["approval_id"] == paused["run_id"]
+    assert body["run_id"] == paused["run_id"]
+    assert body["status"] == "paused_for_approval"
+    assert body["approval_status"] == "pending"
+    assert body["decision_state"] == "pending"
+    assert body["can_approve"] is True
+    assert body["can_reject"] is True
+    assert body["action_unavailable_reason"] is None
+    assert body["execution_mode"] == {
+        "mode": "fake_default",
+        "real_github_enabled": False,
+        "token_required": False,
+    }
+
+
+def test_viewer_can_read_visibility_but_cannot_decide(monkeypatch) -> None:
+    service = _high_risk_service()
+    monkeypatch.setattr(skill_routes, "_skill_run_service", service)
+    client = TestClient(create_app())
+    paused = _create_paused_approval(client)
+
+    status_response = client.get(
+        (
+            f"/operator/approvals/{paused['run_id']}/status"
+            "?role=admin&scopes=approval:approve&actor=demo_admin"
+        ),
+        headers={"X-API-Key": VIEWER_API_KEY},
+    )
+    audit_response = client.get(
+        f"/operator/approvals/{paused['run_id']}/audit",
+        headers={"X-API-Key": VIEWER_API_KEY},
+    )
+
+    assert status_response.status_code == 200
+    assert audit_response.status_code == 200
+    assert status_response.json()["can_approve"] is False
+    assert status_response.json()["can_reject"] is False
+    assert status_response.json()["action_unavailable_reason"] == (
+        "Current identity cannot approve or reject this approval."
+    )
+
+
+def test_operator_approval_audit_returns_local_demo_evidence(monkeypatch) -> None:
+    monkeypatch.setattr(skill_routes, "_skill_run_service", _high_risk_service())
+    client = TestClient(create_app())
+    paused = _create_paused_approval(client)
+
+    response = client.get(
+        f"/operator/approvals/{paused['run_id']}/audit",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+    )
+
+    assert response.status_code == 200
+
+    body = response.json()
+    assert body["approval_id"] == paused["run_id"]
+    assert body["run_id"] == paused["run_id"]
+    assert body["audit_scope"] == "local_demo"
+    assert "production-grade" in body["audit_limitations"]
+
+    event_types = [event["event_type"] for event in body["events"]]
+    assert event_types[:3] == [
+        "task_created",
+        "tool_selected",
+        "permission_checked",
+    ]
+    assert event_types[-1] == "approval_requested"
+    assert body["events"][0]["sequence"] == 1
+
+
+def test_visibility_unknown_ids_return_safe_404(monkeypatch) -> None:
+    monkeypatch.setattr(skill_routes, "_skill_run_service", _high_risk_service())
+    client = TestClient(create_app())
+
+    status_response = client.get(
+        "/operator/approvals/not-a-real-approval/status",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+    )
+    audit_response = client.get(
+        "/operator/approvals/not-a-real-approval/audit",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+    )
+    side_effect_response = client.get(
+        "/operator/side-effects/not-a-real-side-effect",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+    )
+
+    assert status_response.status_code == 404
+    assert status_response.json()["detail"] == "Approval not found."
+    assert audit_response.status_code == 404
+    assert audit_response.json()["detail"] == "Approval not found."
+    assert side_effect_response.status_code == 404
+    assert side_effect_response.json()["detail"] == "Side effect not found."
+
+
+def test_visibility_endpoints_are_read_only_and_do_not_mutate_run_state(
+    monkeypatch,
+) -> None:
+    service = _high_risk_service()
+    monkeypatch.setattr(skill_routes, "_skill_run_service", service)
+    client = TestClient(create_app())
+    paused = _create_paused_approval(client)
+    run_id = paused["run_id"]
+    before = service.get_run(run_id)
+
+    status_response = client.get(
+        f"/operator/approvals/{run_id}/status",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+    )
+    audit_response = client.get(
+        f"/operator/approvals/{run_id}/audit",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+    )
+    after = service.get_run(run_id)
+
+    assert status_response.status_code == 200
+    assert audit_response.status_code == 200
+    assert after["status"] == before["status"]
+    assert after.get("approval_decision") == before.get("approval_decision")
+    assert after.get("tool_results") == before.get("tool_results")
+    assert len(after.get("audit_trail", [])) == len(before.get("audit_trail", []))
+
+
+def test_visibility_endpoints_require_no_token_or_env(monkeypatch) -> None:
+    monkeypatch.delenv("AGENT_FACTORY_GITHUB_TOKEN", raising=False)
+    monkeypatch.setattr(skill_routes, "_skill_run_service", _github_comment_service())
+    client = TestClient(create_app())
+    paused = _create_paused_approval(client)
+
+    status_response = client.get(
+        f"/operator/approvals/{paused['run_id']}/status",
+        headers={"X-API-Key": VIEWER_API_KEY},
+    )
+    audit_response = client.get(
+        f"/operator/approvals/{paused['run_id']}/audit",
+        headers={"X-API-Key": VIEWER_API_KEY},
+    )
+    side_effect_id = status_response.json()["side_effect_id"]
+    side_effect_response = client.get(
+        f"/operator/side-effects/{side_effect_id}",
+        headers={"X-API-Key": VIEWER_API_KEY},
+    )
+
+    assert status_response.status_code == 200
+    assert audit_response.status_code == 200
+    assert side_effect_response.status_code == 200
+    assert "AGENT_FACTORY_GITHUB_TOKEN" not in status_response.text
+    assert "AGENT_FACTORY_GITHUB_TOKEN" not in audit_response.text
+    assert "AGENT_FACTORY_GITHUB_TOKEN" not in side_effect_response.text
+
+
+def test_approval_followed_by_status_read_shows_updated_status(
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(skill_routes, "_skill_run_service", _high_risk_service())
+    client = TestClient(create_app())
+    paused = _create_paused_approval(client)
+
+    approve_response = client.post(
+        f"/operator/approvals/{paused['run_id']}/approve",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+        json={"decision_reason": "Approved before status visibility."},
+    )
+    status_response = client.get(
+        f"/operator/approvals/{paused['run_id']}/status",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+    )
+
+    assert approve_response.status_code == 200
+    assert status_response.status_code == 200
+
+    body = status_response.json()
+    assert body["status"] == "completed"
+    assert body["approval_status"] == "approved"
+    assert body["can_approve"] is False
+    assert body["can_reject"] is False
+    assert body["action_unavailable_reason"] == "Approval is not pending."
+    assert body["decision_history"][0]["reason"] == (
+        "Approved before status visibility."
+    )
+    assert body["execution_result"]["attempted_step_count"] == 1
+    assert body["execution_result"]["completed_step_count"] == 1
+
+
+def test_rejection_followed_by_audit_and_status_read_shows_evidence(
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(skill_routes, "_skill_run_service", _high_risk_service())
+    client = TestClient(create_app())
+    paused = _create_paused_approval(client)
+
+    reject_response = client.post(
+        f"/operator/approvals/{paused['run_id']}/reject",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+        json={"decision_reason": "Rejected before audit visibility."},
+    )
+    status_response = client.get(
+        f"/operator/approvals/{paused['run_id']}/status",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+    )
+    audit_response = client.get(
+        f"/operator/approvals/{paused['run_id']}/audit",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+    )
+
+    assert reject_response.status_code == 200
+    assert status_response.status_code == 200
+    assert audit_response.status_code == 200
+    assert status_response.json()["approval_status"] == "rejected"
+
+    event_types = [event["event_type"] for event in audit_response.json()["events"]]
+    assert "approval_rejected" in event_types
+    assert "tool_executed" not in event_types
+    assert audit_response.json()["decision_history"][0]["reason"] == (
+        "Rejected before audit visibility."
+    )
+
+
+def test_side_effect_endpoint_returns_local_demo_ledger_evidence_when_available(
+    monkeypatch,
+) -> None:
+    monkeypatch.delenv("AGENT_FACTORY_GITHUB_TOKEN", raising=False)
+    monkeypatch.setattr(skill_routes, "_skill_run_service", _github_comment_service())
+    client = TestClient(create_app())
+    paused = _create_paused_approval(client)
+
+    approve_response = client.post(
+        f"/operator/approvals/{paused['run_id']}/approve",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+        json={"decision_reason": "Approved for fake side-effect visibility."},
+    )
+    side_effect_id = approve_response.json()["side_effect_id"]
+    response = client.get(
+        f"/operator/side-effects/{side_effect_id}",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+    )
+
+    assert approve_response.status_code == 200
+    assert response.status_code == 200
+
+    body = response.json()
+    assert body["side_effect_id"] == side_effect_id
+    assert body["run_id"] == paused["run_id"]
+    assert body["tool_name"] == "post_github_issue_comment"
+    assert body["repository"] == "Harry5174/learn-agentic-ai"
+    assert body["issue_number"] == 1
+    assert body["args_hash"]
+    assert body["status"] == "succeeded"
+    assert body["ledger_status"] == "succeeded"
+    assert body["record_available"] is True
+    assert body["external_result_summary"]["client_called"] is True
+    assert body["execution_mode"]["real_github_enabled"] is False
+    assert "AGENT_FACTORY_GITHUB_TOKEN" not in response.text
+
+
+def test_side_effect_endpoint_returns_limitation_for_known_unexecuted_side_effect(
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(skill_routes, "_skill_run_service", _github_comment_service())
+    client = TestClient(create_app())
+    paused = _create_paused_approval(client)
+
+    status_response = client.get(
+        f"/operator/approvals/{paused['run_id']}/status",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+    )
+    side_effect_id = status_response.json()["side_effect_id"]
+    side_effect_response = client.get(
+        f"/operator/side-effects/{side_effect_id}",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+    )
+
+    assert status_response.status_code == 200
+    assert side_effect_response.status_code == 200
+    assert side_effect_response.json()["record_available"] is False
+    assert side_effect_response.json()["ledger_status"] == "not_available"
+    assert "no ledger record is available" in side_effect_response.json()["message"]
+
+
+def test_visibility_responses_do_not_expose_token_like_values(
+    monkeypatch,
+) -> None:
+    dangerous_task = (
+        "Review <img src=x onerror=alert(1)> <script>alert(1)</script> "
+        "with ghp_fake_secret and Authorization: Bearer fake-token."
+    )
+    monkeypatch.setattr(skill_routes, "_skill_run_service", _high_risk_service())
+    client = TestClient(create_app())
+
+    create_response = client.post(
+        "/skill-runs",
+        headers={"X-API-Key": ADMIN_API_KEY},
+        json={"task": dangerous_task},
+    )
+    run_id = create_response.json()["run_id"]
+
+    status_response = client.get(
+        f"/operator/approvals/{run_id}/status",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+    )
+    audit_response = client.get(
+        f"/operator/approvals/{run_id}/audit",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+    )
+
+    assert status_response.status_code == 200
+    assert audit_response.status_code == 200
+    assert "[redacted]" in status_response.text
+    assert "[redacted]" in audit_response.text
+
+    forbidden_fragments = [
+        "ghp_fake_secret",
+        "Authorization",
+        "Bearer",
+        "fake-token",
+    ]
+    for fragment in forbidden_fragments:
+        assert fragment not in status_response.text
+        assert fragment not in audit_response.text
+
+
+def test_side_effect_visibility_read_does_not_mutate_terminal_run(
+    monkeypatch,
+) -> None:
+    service = _github_comment_service()
+    monkeypatch.setattr(skill_routes, "_skill_run_service", service)
+    client = TestClient(create_app())
+    paused = _create_paused_approval(client)
+
+    approve_response = client.post(
+        f"/operator/approvals/{paused['run_id']}/approve",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+        json={"decision_reason": "Approved before side-effect read."},
+    )
+    side_effect_id = approve_response.json()["side_effect_id"]
+    before = service.get_run(paused["run_id"])
+    response = client.get(
+        f"/operator/side-effects/{side_effect_id}",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+    )
+    after = service.get_run(paused["run_id"])
+
+    assert response.status_code == 200
+    assert after["status"] == before["status"]
+    assert after.get("approval_decision") == before.get("approval_decision")
+    assert after.get("tool_results") == before.get("tool_results")
+    assert len(after.get("audit_trail", [])) == len(before.get("audit_trail", []))
     assert "github_pat_" not in response.text
     assert "ghp_" not in response.text

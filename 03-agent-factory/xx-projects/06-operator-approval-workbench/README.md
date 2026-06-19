@@ -18,7 +18,7 @@ The human operator approves high-risk actions.
 
 ## Current Status
 
-Current sprint: A6.3 - Local Operator Workbench UI.
+Current sprint: A6.4 - Status, Ledger, and Audit Visibility.
 
 A6.1 added a backend/API-only, read-only operator approval inbox:
 
@@ -40,16 +40,27 @@ A6.3 adds a minimal FastAPI-served local static workbench:
 GET /operator/workbench
 ```
 
-The A6.3 UI calls only the A6 operator API routes:
+A6.4 adds read-only operator visibility endpoints:
+
+```text
+GET /operator/approvals/{approval_id}/status
+GET /operator/approvals/{approval_id}/audit
+GET /operator/side-effects/{side_effect_id}
+```
+
+The A6.4 UI calls only the A6 operator API routes:
 
 ```text
 GET /operator/approvals
 GET /operator/approvals/{approval_id}
+GET /operator/approvals/{approval_id}/status
+GET /operator/approvals/{approval_id}/audit
+GET /operator/side-effects/{side_effect_id}
 POST /operator/approvals/{approval_id}/approve
 POST /operator/approvals/{approval_id}/reject
 ```
 
-A6.3 does not implement Next.js, a package-managed frontend, live GitHub
+A6.4 does not implement Next.js, a package-managed frontend, live GitHub
 execution, credentials, token loading, or `.env` access. The workbench asks the
 operator to paste a local demo API key for the browser page session, sends it
 only as `X-API-Key`, and does not store it in browser storage.
@@ -57,7 +68,7 @@ only as `X-API-Key`, and does not store it in browser storage.
 Inherited Artifact 04 task/skill approval routes still exist because the
 runtime baseline was copied; those inherited routes are not the Artifact 06
 operator workbench approve/reject surface. The A6.2 operator workbench
-approve/reject routes are explicit A6 routes. The A6.3 UI does not call the
+approve/reject routes are explicit A6 routes. The A6.4 UI does not call the
 inherited routes.
 
 ## Runtime Baseline Decision
@@ -169,9 +180,27 @@ scripts, external CDNs, live GitHub calls, token loading, or `.env` access.
 Dynamic API data is rendered with DOM node creation and text assignment rather
 than HTML injection.
 
+## A6.4 Status, Ledger, and Audit Visibility
+
+A6.4 adds read-only visibility for the local operator workbench. The operator
+can inspect current approval/run status, decision history, local/demo audit
+timeline evidence, side-effect/ledger evidence when available, execution
+results, and known local/demo limitations after approve or reject.
+
+A6.4 preserves A6.2 decision semantics. The visibility endpoints do not
+approve, reject, resume graph execution, mutate ledger state, create
+side-effects, write audit events, call live GitHub, load credentials, or read
+`.env`.
+
+Viewer identities may read visibility through the same local/demo read policy
+as the A6.1 inbox, but viewer identities still cannot approve or reject.
+
+Audit and side-effect visibility is limited to available local/demo process
+state and does not claim production-grade audit or production readiness.
+
 ## Future Direction
 
-A6.4 should add deeper operator audit/evidence views. Next.js remains deferred.
+A6.5 should package the demo and portfolio story. Next.js remains deferred.
 
 ## Documentation
 
