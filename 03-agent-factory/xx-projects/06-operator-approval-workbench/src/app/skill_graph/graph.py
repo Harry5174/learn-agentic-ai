@@ -1,6 +1,5 @@
 from typing import Any
 
-from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import interrupt
 
@@ -36,6 +35,7 @@ from app.skills.schemas import (
     SkillRunStatus,
 )
 from app.skills.validator import ProposalValidator
+from app.skill_graph.checkpointing import build_skill_graph_checkpointer
 from app.skill_graph.metadata import (
     create_proposal_event,
     create_validation_event,
@@ -630,7 +630,7 @@ def build_skill_execution_graph(
     builder.add_edge("finalize_rejection", END)
     builder.add_edge("finalize_failure", END)
 
-    return builder.compile(checkpointer=InMemorySaver())
+    return builder.compile(checkpointer=build_skill_graph_checkpointer())
 
 
 def _audit_trail(state: SkillGraphState) -> list[AuditEvent]:

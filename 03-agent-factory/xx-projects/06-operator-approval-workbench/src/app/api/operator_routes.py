@@ -236,7 +236,7 @@ def reject_operator_approval(
         or not request.decision_reason.strip()
     ):
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="decision_reason is required for rejection.",
         )
 
