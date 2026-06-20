@@ -25,6 +25,10 @@ from app.api.skill_schemas import (
 from app.approval.schemas import ApprovalStatus
 from app.audit.schemas import AuditEvent
 from app.identity.schemas import IdentityContext
+from app.proposer.fake import (
+    UnknownFakeRequestedSkillError,
+    fake_scenario_for_requested_skill,
+)
 from app.skill_graph.service import (
     SkillGraphService,
     SkillRunNotFoundError,
@@ -75,9 +79,22 @@ def create_skill_run(
             detail="LLM proposer mode is not enabled for this API.",
         )
 
+    if request.requested_skill_id is not None:
+        try:
+            fake_scenario_for_requested_skill(request.requested_skill_id)
+        except UnknownFakeRequestedSkillError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=(
+                    "Unsupported requested_skill_id for fake demo mode: "
+                    f"{request.requested_skill_id}"
+                ),
+            ) from exc
+
     state = _skill_run_service.start_run(
         task=request.task,
         identity=identity,
+        requested_skill_id=request.requested_skill_id,
     )
 
     return skill_run_summary_from_state(

@@ -2,6 +2,46 @@
 
 ## Completed Commands
 
+### A6.5.1 Demo Flow Fix
+
+Run from the Artifact 06 root:
+
+```bash
+uv run pytest tests/test_api_skill_runs.py
+uv run pytest tests/test_api_operator_approvals.py
+uv run pytest tests/test_operator_workbench_ui.py
+uv run pytest
+uv run ruff check .
+git diff --check
+```
+
+Results:
+
+```text
+uv run pytest tests/test_api_skill_runs.py
+50 passed in 2.92s
+
+uv run pytest tests/test_api_operator_approvals.py
+60 passed, 1 warning in 5.89s
+
+uv run pytest tests/test_operator_workbench_ui.py
+14 passed in 0.97s
+
+uv run pytest
+779 passed, 1 warning in 17.36s
+
+uv run ruff check .
+All checks passed!
+
+git diff --check
+no output
+```
+
+The warning is the existing FastAPI/AnyIO deprecation warning for
+`HTTP_422_UNPROCESSABLE_ENTITY` in the rejection-route test path.
+
+### A6.5 Demo Packaging
+
 Run from the Artifact 06 root:
 
 ```bash

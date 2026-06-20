@@ -153,6 +153,88 @@ def test_post_skill_runs_starts_low_risk_run_through_http() -> None:
     }
 
 
+def test_post_skill_runs_requested_github_comment_creates_pending_approval(
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(skill_routes, "_skill_run_service", SkillGraphService())
+    client = TestClient(create_app())
+
+    response = client.post(
+        "/skill-runs",
+        headers={"X-API-Key": ADMIN_API_KEY},
+        json={
+            "task": (
+                "Create a local demo approval request for posting a safe "
+                "GitHub issue comment."
+            ),
+            "proposer_mode": "fake",
+            "requested_skill_id": "post_github_issue_comment",
+        },
+    )
+
+    assert response.status_code == 202
+
+    body = response.json()
+    assert body["status"] == "paused_for_approval"
+    assert body["selected_skill_id"] == "post_github_issue_comment"
+    assert body["risk_level"] == "high"
+    assert body["approval_required"] is True
+    assert body["approval_status"] == "pending"
+    assert body["proposal"]["proposed_tool_names"] == ["post_github_issue_comment"]
+    assert body["execution"] == {
+        "attempted_step_count": 0,
+        "completed_step_count": 0,
+        "tool_names": [],
+        "dry_run": True,
+    }
+
+
+def test_post_skill_runs_unknown_requested_skill_fails_closed(
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(skill_routes, "_skill_run_service", SkillGraphService())
+    client = TestClient(create_app())
+
+    response = client.post(
+        "/skill-runs",
+        headers={"X-API-Key": ADMIN_API_KEY},
+        json={
+            "task": "Try to force an unknown skill.",
+            "proposer_mode": "fake",
+            "requested_skill_id": "not_a_registered_demo_skill",
+        },
+    )
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == (
+        "Unsupported requested_skill_id for fake demo mode: "
+        "not_a_registered_demo_skill"
+    )
+    assert "inspect_sandbox_health" not in response.text
+
+
+def test_post_skill_runs_without_requested_skill_preserves_low_risk_default(
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(skill_routes, "_skill_run_service", SkillGraphService())
+    client = TestClient(create_app())
+
+    response = client.post(
+        "/skill-runs",
+        headers={"X-API-Key": VIEWER_API_KEY},
+        json={"task": "Inspect sandbox health.", "proposer_mode": "fake"},
+    )
+
+    assert response.status_code == 202
+
+    body = response.json()
+    assert body["status"] == "completed"
+    assert body["selected_skill_id"] == "inspect_sandbox_health"
+    assert body["risk_level"] == "low"
+    assert body["approval_required"] is False
+    assert body["approval_status"] == "not_required"
+
+
 def test_post_skill_runs_uses_server_derived_identity() -> None:
     client = TestClient(create_app())
 

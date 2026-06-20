@@ -89,6 +89,112 @@ GET /operator/approvals/{approval_id}/audit
 GET /operator/side-effects/{side_effect_id}
 ```
 
+## Fresh Terminal Demo: Empty Inbox to Approved Run
+
+Terminal 1 starts the local FastAPI server:
+
+```bash
+uv run app
+```
+
+Terminal 2 drives the demo with local demo keys:
+
+```bash
+BASE=http://127.0.0.1:8000
+VIEWER_KEY=viewer-dev-key
+OPERATOR_KEY=operator-dev-key
+ADMIN_KEY=admin-dev-key
+```
+
+Verify identities:
+
+```bash
+curl -sS -H "X-API-Key: $VIEWER_KEY" "$BASE/identity/me"
+curl -sS -H "X-API-Key: $OPERATOR_KEY" "$BASE/identity/me"
+curl -sS -H "X-API-Key: $ADMIN_KEY" "$BASE/identity/me"
+```
+
+Verify the workbench assets:
+
+```bash
+curl -i -sS "$BASE/operator/workbench" | head
+curl -i -sS "$BASE/operator/workbench.css" | head
+curl -i -sS "$BASE/operator/workbench.js" | head
+```
+
+Create a pending local/demo GitHub comment approval:
+
+```bash
+CREATE_RESPONSE=$(curl -sS -X POST "$BASE/skill-runs" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: $ADMIN_KEY" \
+  -d '{
+    "task": "Create a local demo approval request for posting a safe GitHub issue comment. Use fake/default execution only. Do not use live GitHub.",
+    "proposer_mode": "fake",
+    "requested_skill_id": "post_github_issue_comment"
+  }')
+printf '%s\n' "$CREATE_RESPONSE"
+APPROVAL_ID=$(printf '%s' "$CREATE_RESPONSE" | uv run python -c 'import json, sys; print(json.load(sys.stdin)["run_id"])')
+printf 'APPROVAL_ID=%s\n' "$APPROVAL_ID"
+```
+
+List approvals and inspect the selected approval:
+
+```bash
+curl -sS -H "X-API-Key: $OPERATOR_KEY" "$BASE/operator/approvals"
+curl -sS -H "X-API-Key: $OPERATOR_KEY" "$BASE/operator/approvals/$APPROVAL_ID"
+```
+
+View status and audit before approval:
+
+```bash
+curl -sS -H "X-API-Key: $OPERATOR_KEY" "$BASE/operator/approvals/$APPROVAL_ID/status"
+curl -sS -H "X-API-Key: $OPERATOR_KEY" "$BASE/operator/approvals/$APPROVAL_ID/audit"
+```
+
+Prove viewer cannot approve:
+
+```bash
+curl -i -sS -X POST "$BASE/operator/approvals/$APPROVAL_ID/approve" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: $VIEWER_KEY" \
+  -d '{"decision_reason": "Viewer should not be allowed to approve."}'
+```
+
+Approve as operator:
+
+```bash
+APPROVE_RESPONSE=$(curl -sS -X POST "$BASE/operator/approvals/$APPROVAL_ID/approve" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: $OPERATOR_KEY" \
+  -d '{"decision_reason": "Approved for the local demo."}')
+printf '%s\n' "$APPROVE_RESPONSE"
+SIDE_EFFECT_ID=$(printf '%s' "$APPROVE_RESPONSE" | uv run python -c 'import json, sys; print(json.load(sys.stdin).get("side_effect_id") or "")')
+printf 'SIDE_EFFECT_ID=%s\n' "$SIDE_EFFECT_ID"
+```
+
+View status, audit, and side-effect/ledger visibility after approval:
+
+```bash
+curl -sS -H "X-API-Key: $OPERATOR_KEY" "$BASE/operator/approvals/$APPROVAL_ID/status"
+curl -sS -H "X-API-Key: $OPERATOR_KEY" "$BASE/operator/approvals/$APPROVAL_ID/audit"
+curl -sS -H "X-API-Key: $OPERATOR_KEY" "$BASE/operator/side-effects/$SIDE_EFFECT_ID"
+```
+
+Open the browser workbench:
+
+```text
+http://127.0.0.1:8000/operator/workbench
+```
+
+Paste `operator-dev-key`, refresh approvals, and select the run. After approval,
+the inbox no longer lists the run as pending; use the status, audit, and
+side-effect commands above to inspect terminal evidence.
+
+`POST /skill-runs` is limited to 5 creates per 60 seconds per
+identity/route group. If a local demo returns `429`, wait for the
+`Retry-After` value or restart the local dev server.
+
 ## Route Boundary
 
 The workbench calls only A6 operator routes:

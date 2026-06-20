@@ -28,7 +28,7 @@ from app.proposer.base import SkillProposer
 from app.side_effects.approval_binding import DurableApprovalBindingStore
 from app.side_effects.durable_ledger import DurableSideEffectLedger
 from app.side_effects.ledger import InMemorySideEffectLedger, SideEffectLedger
-from app.proposer.fake import FakeProposer
+from app.proposer.fake import FakeProposer, fake_scenario_for_requested_skill
 from app.skills.registry import SkillRegistry, build_default_skill_registry
 from app.skills.schemas import (
     ProposalValidationStatus,
@@ -114,7 +114,12 @@ def build_skill_execution_graph(
                 ),
             )
 
-        proposal = active_proposer.propose(task=task, identity=identity)
+        requested_skill_id = state.get("requested_skill_id")
+        if requested_skill_id is None:
+            proposal = active_proposer.propose(task=task, identity=identity)
+        else:
+            scenario = fake_scenario_for_requested_skill(requested_skill_id)
+            proposal = FakeProposer(scenario).propose(task=task, identity=identity)
         audit_trail = append_audit_event(
             audit_trail,
             create_proposal_event(

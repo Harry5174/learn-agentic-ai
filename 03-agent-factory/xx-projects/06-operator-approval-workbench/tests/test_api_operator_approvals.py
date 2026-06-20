@@ -620,6 +620,111 @@ def test_github_comment_approval_returns_side_effect_identity_without_live_githu
     assert "AGENT_FACTORY_GITHUB_TOKEN" not in response.text
 
 
+def test_public_requested_github_comment_flow_reaches_operator_workbench(
+    monkeypatch,
+) -> None:
+    monkeypatch.delenv("AGENT_FACTORY_GITHUB_TOKEN", raising=False)
+    monkeypatch.setattr(skill_routes, "_skill_run_service", SkillGraphService())
+    client = TestClient(create_app())
+
+    create_response = client.post(
+        "/skill-runs",
+        headers={"X-API-Key": ADMIN_API_KEY},
+        json={
+            "task": (
+                "Create a local demo approval request for posting a safe "
+                "GitHub issue comment."
+            ),
+            "proposer_mode": "fake",
+            "requested_skill_id": "post_github_issue_comment",
+        },
+    )
+
+    assert create_response.status_code == 202
+    paused = create_response.json()
+    run_id = paused["run_id"]
+    assert paused["status"] == "paused_for_approval"
+    assert paused["selected_skill_id"] == "post_github_issue_comment"
+
+    inbox_response = client.get(
+        "/operator/approvals",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+    )
+    status_before = client.get(
+        f"/operator/approvals/{run_id}/status",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+    )
+    audit_before = client.get(
+        f"/operator/approvals/{run_id}/audit",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+    )
+    viewer_approve = client.post(
+        f"/operator/approvals/{run_id}/approve",
+        headers={"X-API-Key": VIEWER_API_KEY},
+        json={"decision_reason": "Viewer should not be allowed."},
+    )
+
+    assert inbox_response.status_code == 200
+    assert any(
+        approval["approval_id"] == run_id
+        and approval["tool_name"] == "post_github_issue_comment"
+        for approval in inbox_response.json()["approvals"]
+    )
+    assert status_before.status_code == 200
+    assert status_before.json()["approval_status"] == "pending"
+    assert status_before.json()["can_approve"] is True
+    assert audit_before.status_code == 200
+    assert "approval_requested" in [
+        event["event_type"] for event in audit_before.json()["events"]
+    ]
+    assert viewer_approve.status_code == 403
+
+    approve_response = client.post(
+        f"/operator/approvals/{run_id}/approve",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+        json={"decision_reason": "Approved for the fresh terminal demo."},
+    )
+    status_after = client.get(
+        f"/operator/approvals/{run_id}/status",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+    )
+    audit_after = client.get(
+        f"/operator/approvals/{run_id}/audit",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+    )
+
+    assert approve_response.status_code == 200
+    approved = approve_response.json()
+    assert approved["status"] == "completed"
+    assert approved["approval_status"] == "approved"
+    assert approved["side_effect_id"]
+    assert approved["args_hash"]
+    assert status_after.status_code == 200
+    assert status_after.json()["status"] == "completed"
+    assert status_after.json()["approval_status"] == "approved"
+    assert status_after.json()["execution_result"]["tool_names"] == [
+        "post_github_issue_comment"
+    ]
+    assert audit_after.status_code == 200
+    event_types = [event["event_type"] for event in audit_after.json()["events"]]
+    assert "approval_granted" in event_types
+    assert "tool_executed" in event_types
+
+    side_effect_response = client.get(
+        f"/operator/side-effects/{approved['side_effect_id']}",
+        headers={"X-API-Key": OPERATOR_API_KEY},
+    )
+
+    assert side_effect_response.status_code == 200
+    side_effect = side_effect_response.json()
+    assert side_effect["side_effect_id"] == approved["side_effect_id"]
+    assert side_effect["tool_name"] == "post_github_issue_comment"
+    assert side_effect["ledger_status"] == "succeeded"
+    assert side_effect["record_available"] is True
+    assert side_effect["execution_mode"]["real_github_enabled"] is False
+    assert "AGENT_FACTORY_GITHUB_TOKEN" not in side_effect_response.text
+
+
 def test_operator_approval_status_returns_current_status(monkeypatch) -> None:
     service = _high_risk_service()
     monkeypatch.setattr(skill_routes, "_skill_run_service", service)

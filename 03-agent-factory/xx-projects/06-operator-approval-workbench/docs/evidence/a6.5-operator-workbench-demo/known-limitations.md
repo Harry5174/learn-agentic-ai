@@ -26,6 +26,18 @@ The workbench uses local/demo process state and copied runtime behavior. It is
 useful for explaining the approval workflow, but it is not a deployed operator
 console.
 
+A6.5.1 adds a narrow fake-mode seeding path for the manual demo:
+`POST /skill-runs` may request a server-known fake demo skill such as
+`post_github_issue_comment`. The request still cannot provide identity, role,
+scopes, approval status, risk level, repository policy, side-effect status,
+audit data, execution results, token values, or `.env` behavior. Unknown
+`requested_skill_id` values fail closed instead of falling back to a low-risk
+run.
+
+`POST /skill-runs` is limited to 5 creates per 60 seconds per
+identity/route group. During repeated local demos, a `429` means the operator
+should wait for `Retry-After` or restart the local dev server.
+
 Side-effect/ledger visibility is limited to local state already available
 through the run, audit trail, and execution result. Known side-effect ids
 without available ledger records return an explicit local/demo limitation

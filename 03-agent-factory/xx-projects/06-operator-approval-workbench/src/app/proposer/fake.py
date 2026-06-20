@@ -7,6 +7,10 @@ from app.skills.schemas import SkillProposal, SkillProposalStep, SkillStep
 from app.tools.github_comment import GITHUB_COMMENT_SKILL_ID, GITHUB_COMMENT_STEP_ID
 
 
+class UnknownFakeRequestedSkillError(ValueError):
+    """Raised when an API request names no supported fake demo skill."""
+
+
 class FakeProposalScenario(StrEnum):
     """Deterministic fake proposer scenarios for tests and local demos."""
 
@@ -15,6 +19,24 @@ class FakeProposalScenario(StrEnum):
     VALID_GITHUB_COMMENT = "valid_github_comment"
     INVALID_PROPOSAL = "invalid_proposal"
     UNKNOWN_SKILL = "unknown_skill"
+
+
+FAKE_REQUESTED_SKILL_SCENARIOS: dict[str, FakeProposalScenario] = {
+    "inspect_sandbox_health": FakeProposalScenario.VALID_LOW_RISK,
+    "simulate_sandbox_workflow": FakeProposalScenario.VALID_HIGH_RISK,
+    GITHUB_COMMENT_SKILL_ID: FakeProposalScenario.VALID_GITHUB_COMMENT,
+}
+
+
+def fake_scenario_for_requested_skill(skill_id: str) -> FakeProposalScenario:
+    """Return the server-owned fake scenario for a requested demo skill."""
+
+    try:
+        return FAKE_REQUESTED_SKILL_SCENARIOS[skill_id]
+    except KeyError as exc:
+        raise UnknownFakeRequestedSkillError(
+            f"Unsupported fake requested_skill_id: {skill_id}"
+        ) from exc
 
 
 class FakeProposer(SkillProposer):

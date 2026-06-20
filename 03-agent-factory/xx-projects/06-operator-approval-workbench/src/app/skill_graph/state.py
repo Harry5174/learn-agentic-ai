@@ -20,6 +20,7 @@ class SkillGraphState(TypedDict, total=False):
 
     run_id: str
     task: str
+    requested_skill_id: str | None
     identity: IdentityContext
     status: TaskStatus
 

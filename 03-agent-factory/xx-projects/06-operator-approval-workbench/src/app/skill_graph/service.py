@@ -66,13 +66,19 @@ class SkillGraphService:
     def _values_to_state(values: dict) -> SkillGraphState:
         return SkillGraphState(**values)
 
-    def start_run(self, task: str, identity: IdentityContext) -> SkillGraphState:
+    def start_run(
+        self,
+        task: str,
+        identity: IdentityContext,
+        requested_skill_id: str | None = None,
+    ) -> SkillGraphState:
         """Start a new proposed skill run and return its current graph state."""
 
         run_id = str(uuid4())
         initial_state: SkillGraphState = {
             "run_id": run_id,
             "task": task,
+            "requested_skill_id": requested_skill_id,
             "identity": identity,
             "status": TaskStatus.CREATED,
             "policy_decisions": [],
