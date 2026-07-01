@@ -1,21 +1,26 @@
 # Project Status
 
-**Last updated:** AFDF.0
+**Last updated:** AFDF.1
 
 ---
 
 ## Framework Status
 
-AFDF.0 creates the initial framework scaffold and operating model.
+| Sprint | Description | Status |
+|--------|-------------|--------|
+| AFDF.0 | Framework Scaffold and Operating Model | ✅ Complete |
+| AFDF.1 | Core Bootstrap Templates Hardening | ✅ Current |
 
 | Fact | Status |
 |------|--------|
 | AFDF is a living Markdown framework | ✅ |
 | AFDF is advisory/process infrastructure | ✅ |
+| AFDF core templates are hardened with anti-drift, safety, and evidence blocks | ✅ (AFDF.1) |
 | AFDF does not run agents | Correct — no runtime |
 | AFDF does not enforce workflow automatically | Correct — manual process |
 | AFDF does not modify artifact runtime behavior | Correct — no code changes |
 | AFDF does not replace human review | Correct — advisory only |
+| AFDF has no CLI, schema enforcement, database, or automation | Correct |
 
 ---
 
@@ -37,6 +42,6 @@ AFDF.0 creates the initial framework scaffold and operating model.
 
 ## Current Direction
 
-After the AFDF foundation is established, the next vertical artifact is:
-
-**Artifact 07 — GitHub Repo Steward Agent** (candidate, not yet started)
+- AFDF.1 hardens core templates for immediate usability
+- After AFDF foundation, the next vertical artifact is **Artifact 07 — GitHub Repo Steward Agent** (candidate, not yet started)
+- See [Artifact 07 Bootstrap Readiness Draft](../examples/artifact-07-bootstrap-readiness-draft.md) for design session preparation

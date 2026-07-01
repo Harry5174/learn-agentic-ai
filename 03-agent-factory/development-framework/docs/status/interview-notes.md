@@ -2,6 +2,8 @@
 
 How to describe the Agent Factory Development Framework in professional contexts.
 
+**Last updated:** AFDF.1
+
 ---
 
 ## Framing
@@ -17,6 +19,7 @@ How to describe the Agent Factory Development Framework in professional contexts
 - A Markdown-first process framework for managing the lifecycle of AI agent development artifacts
 - Provides session bootstraps, sprint protocols, evidence standards, safety boundary inheritance, and living project memory
 - Designed to prevent context drift when work spans multiple sessions with LLM-based IDE agents
+- Templates are hardened with anti-drift guards, approval tracking, safety blocks, and evidence contracts
 
 ### Why It Exists
 
@@ -31,6 +34,7 @@ How to describe the Agent Factory Development Framework in professional contexts
 - Understanding of LLM context limitations and how to mitigate them
 - Structured approach to evidence-based software delivery
 - Safety-first design philosophy (fake-default, approval-gated, evidence-required)
+- Template engineering with anti-drift guards and approval clarity
 
 ### What It Is Not
 
@@ -41,11 +45,19 @@ How to describe the Agent Factory Development Framework in professional contexts
 
 ---
 
-## Sample Interview Question and Answer
+## Sample Interview Questions and Answers
 
 **Q:** How do you manage context across multiple AI-assisted development sessions?
 
 **A:** I built a lightweight Markdown framework that provides session bootstraps, sprint lifecycle protocols, and living project memory. Each new session receives a bootstrap document that carries forward project state, approved decisions, and safety invariants. At the end of each sprint, a completion report with evidence feeds into a green-gate review, and the project memory is updated. This means the next session starts from current truth rather than recreating context from scratch.
+
+**Q:** How do you prevent AI coding assistants from drifting off scope?
+
+**A:** Every template includes an anti-drift guard section that explicitly states what the session must not assume, what must be verified from the repository, what decisions are already settled versus still open, and what would count as scope drift. Combined with explicit block conditions — when to stop and ask rather than guess — this keeps sessions focused on the approved scope.
+
+**Q:** How do you handle safety when AI agents interact with external services?
+
+**A:** The framework inherits a layered safety model from the artifact sequence. Fake/default mode is always the default. Real execution requires explicit Product Owner approval and is release-gated with evidence. Every template includes a safety block that reminds the session about secrets handling, approval gates, and the principle that the LLM proposes but the harness decides and the operator approves.
 
 ---
 
@@ -55,3 +67,4 @@ How to describe the Agent Factory Development Framework in professional contexts
 - Templates are manually filled, not auto-generated
 - It has been used within a single project (Agent Factory) so far
 - It is Markdown-only with no database, CLI, or validation tooling
+- Templates have been hardened (AFDF.1) but not yet validated through a full artifact lifecycle
