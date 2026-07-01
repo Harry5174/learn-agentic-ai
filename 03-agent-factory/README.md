@@ -22,10 +22,13 @@ The `xx-projects/` directory contains the core artifact sequence:
 
 | Artifact | Name | Status |
 |----------|------|--------|
-| 1 | [Identity-Aware Stateful Agent Harness](xx-projects/00-identity-aware-agent-harness) | Complete / preserved |
-| 2 / 2.2 | [LLM-Proposed, Harness-Controlled Skill Runner](xx-projects/01-llm-proposed-skill-runner) | Complete / tagged `artifact-2.2` |
-| 3 | [Approval-Gated GitHub Tool Harness](xx-projects/02-approval-gated-github-tool-harness) | Complete as local/demo fake-client artifact |
-| 4 | [Durable Side-Effect Ledger and Approval Binding](xx-projects/03-durable-side-effect-ledger) | Complete as local/demo durable fake-client safety artifact |
+| 0 | [Identity-Aware Stateful Agent Harness](xx-projects/00-identity-aware-agent-harness) | Complete / preserved |
+| 1 | [LLM-Proposed, Harness-Controlled Skill Runner](xx-projects/01-llm-proposed-skill-runner) | Complete / tagged `artifact-2.2` |
+| 2 | [Approval-Gated GitHub Tool Harness](xx-projects/02-approval-gated-github-tool-harness) | Complete as local/demo fake-client artifact |
+| 3 | [Durable Side-Effect Ledger and Approval Binding](xx-projects/03-durable-side-effect-ledger) | Complete as local/demo durable fake-client safety artifact |
+| 4 | [Approval-Gated Real GitHub Comment Adapter](xx-projects/04-approval-gated-real-github-comment-adapter) | Complete as local/demo real-comment adapter (A4.5) |
+| 5 | [Real-Mode Smoke Evidence and Release Gate](xx-projects/05-real-mode-smoke-evidence-release-gate) | Complete / published / tagged evidence artifact |
+| 6 | [Operator Approval Console / Workbench](xx-projects/06-operator-approval-workbench) | Current local/demo workbench artifact (A6.5) |
 
 Each artifact builds on the previous:
 
@@ -47,20 +50,32 @@ See [xx-projects/README.md](xx-projects/README.md) for the detailed artifact ind
 ├── 02-how-to-think-ai-era/         # Thinking checklists and methodologies
 ├── 03-agentic-coding-crash-course/ # Core workflows, persistent sandboxes, routines
 ├── 04-build-ai-agents/             # Architecture patterns, MCP, orchestration SDKs
+├── development-framework/          # Reusable development framework (AFDF)
 └── xx-projects/                    # Numbered artifact sequence
     ├── 00-identity-aware-agent-harness
     ├── 01-llm-proposed-skill-runner
     ├── 02-approval-gated-github-tool-harness
-    └── 03-durable-side-effect-ledger
+    ├── 03-durable-side-effect-ledger
+    ├── 04-approval-gated-real-github-comment-adapter
+    ├── 05-real-mode-smoke-evidence-release-gate
+    └── 06-operator-approval-workbench
 ```
 
 ---
 
 ## Current Leading Artifact
 
-Artifact 4 is complete as a local/demo durable fake-client safety artifact. It implements SQLite persistence for side-effect records, approval bindings, and audit events, proving restart/replay duplicate suppression without executing a real GitHub client.
+Artifact 06 (Operator Approval Console / Workbench) is the current leading artifact at sprint A6.5. It turns the approval-gated harness lineage into a local operator workbench where proposed actions appear in an approval inbox, the operator inspects risk/scopes/context, and approves or rejects through server-controlled routes.
 
-Artifact 4 does not implement real GitHub execution, GitHub token loading, OAuth/OIDC, MCP, frontend, deployment, or production hardening.
+Artifact 06 does not implement live GitHub execution, OAuth/OIDC, MCP, deployment, or production hardening.
+
+---
+
+## Development Framework
+
+The [Agent Factory Development Framework](development-framework/) (AFDF) provides reusable session bootstraps, sprint lifecycle protocols, evidence review standards, safety boundary inheritance, and living project memory templates. It supports all future artifacts and sessions.
+
+AFDF is advisory/process infrastructure only. It does not run agents or modify artifact runtime behavior.
 
 ---
 
@@ -82,6 +97,6 @@ The current artifact sequence remains local/demo. It does not implement:
 
 ## Recommended Next Work
 
-Review and approve A4.0 before starting any A4.1 implementation.
+Verify Artifact 06 closeout state (publish/tag) before claiming Phase 02 complete.
 
-The next likely work is a narrow durable-state contract sprint, not real GitHub execution.
+The next likely artifact is Artifact 07 — GitHub Repo Steward Agent, the first vertical agent leveraging the full harness safety stack.
