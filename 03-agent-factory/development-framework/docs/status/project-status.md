@@ -9,13 +9,15 @@
 | Sprint | Description | Status |
 |--------|-------------|--------|
 | AFDF.0 | Framework Scaffold and Operating Model | ✅ Complete |
-| AFDF.1 | Core Bootstrap Templates Hardening | ✅ Current |
+| AFDF.1 | Core Bootstrap Templates Hardening | ✅ Complete |
+| AFDF.2 | Project Memory, Decision Log, and Evidence Protocols | ✅ Current |
 
 | Fact | Status |
 |------|--------|
 | AFDF is a living Markdown framework | ✅ |
 | AFDF is advisory/process infrastructure | ✅ |
 | AFDF core templates are hardened with anti-drift, safety, and evidence blocks | ✅ (AFDF.1) |
+| AFDF living memory instantiated for Agent Factory | ✅ (AFDF.2) |
 | AFDF does not run agents | Correct — no runtime |
 | AFDF does not enforce workflow automatically | Correct — manual process |
 | AFDF does not modify artifact runtime behavior | Correct — no code changes |
@@ -42,6 +44,7 @@
 
 ## Current Direction
 
-- AFDF.1 hardens core templates for immediate usability
+- AFDF.2 created the living project memory and evidence protocols
+- Next framework sprint is **AFDF.3 — Agent Factory Bootstrap Example**
 - After AFDF foundation, the next vertical artifact is **Artifact 07 — GitHub Repo Steward Agent** (candidate, not yet started)
-- See [Artifact 07 Bootstrap Readiness Draft](../examples/artifact-07-bootstrap-readiness-draft.md) for design session preparation
+- See [Artifact 07 Bootstrap Readiness Draft](../examples/artifact-07-bootstrap-readiness-draft.md) and [Next Artifact Readiness](../../project-memory/agent-factory/next-artifact-readiness.md) for design session preparation

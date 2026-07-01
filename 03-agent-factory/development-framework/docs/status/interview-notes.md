@@ -2,7 +2,7 @@
 
 How to describe the Agent Factory Development Framework in professional contexts.
 
-**Last updated:** AFDF.1
+**Last updated:** AFDF.2
 
 ---
 
@@ -67,4 +67,4 @@ How to describe the Agent Factory Development Framework in professional contexts
 - Templates are manually filled, not auto-generated
 - It has been used within a single project (Agent Factory) so far
 - It is Markdown-only with no database, CLI, or validation tooling
-- Templates have been hardened (AFDF.1) but not yet validated through a full artifact lifecycle
+- Templates have been hardened and living project memory instantiated (AFDF.1/AFDF.2) but not yet validated through a full artifact lifecycle

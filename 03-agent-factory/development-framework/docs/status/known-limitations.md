@@ -2,7 +2,7 @@
 
 Current limitations of the Agent Factory Development Framework (AFDF).
 
-**Last updated:** AFDF.1
+**Last updated:** AFDF.2
 
 ---
 
@@ -11,7 +11,7 @@ Current limitations of the Agent Factory Development Framework (AFDF).
 | Limitation | Impact | Mitigation |
 |------------|--------|------------|
 | Markdown-only framework | No automated enforcement of protocols or templates | Manual discipline; templates are advisory |
-| Manual updates required | Project memory, decision logs, and status docs must be updated by hand | Include memory updates in every sprint's completion checklist |
+| AFDF memory updates are manual | AFDF | Memory can drift if a sprint forgets to update it | Make memory updates a required checklist item in the completion report |
 | No CLI | No command-line tooling to validate templates or generate prompts | Use standard editor/IDE features for now |
 | No validation automation | No automated checks that a completion report meets template requirements | Reviewer manually checks against template and quality checklist |
 | No schema enforcement | Templates are free-form Markdown, not validated against a schema | Keep templates simple, use consistent placeholder syntax |

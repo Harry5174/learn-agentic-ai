@@ -8,7 +8,7 @@
 |--------|------|--------|-------------|
 | AFDF.0 | Framework Scaffold and Operating Model | ✅ Complete | Initial directory structure, protocols, templates, memory templates, examples, status docs |
 | AFDF.1 | Core Bootstrap Templates Hardening | ✅ Complete | Anti-drift guards, approval clarity, safety blocks, repo verification, evidence contracts, templates README, quality checklist |
-| AFDF.2 | Project Memory, Decision Log, and Evidence Protocols | 🔲 Planned | Instantiate living project memory and decision log from real artifact history |
+| AFDF.2 | Project Memory, Decision Log, and Evidence Protocols | ✅ Complete | Instantiate living project memory and decision log from real artifact history |
 | AFDF.3 | Agent Factory Bootstrap Example | 🔲 Planned | Create a production-quality bootstrap for the first vertical agent artifact |
 | AFDF.4 | Next-Session Prompt Generation Protocol | 🔲 Planned | Define how to assemble session prompts from templates and memory |
 
