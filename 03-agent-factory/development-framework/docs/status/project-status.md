@@ -1,6 +1,6 @@
 # Project Status
 
-**Last updated:** AFDF.1
+**Last updated:** AFDF.1R
 
 ---
 
@@ -10,7 +10,8 @@
 |--------|-------------|--------|
 | AFDF.0 | Framework Scaffold and Operating Model | ✅ Complete |
 | AFDF.1 | Core Bootstrap Templates Hardening | ✅ Complete |
-| AFDF.2 | Project Memory, Decision Log, and Evidence Protocols | ✅ Current |
+| AFDF.1R | Repair Empty Core Bootstrap Templates | ✅ Current |
+| AFDF.2 | Project Memory, Decision Log, and Evidence Protocols | ✅ Complete |
 
 | Fact | Status |
 |------|--------|

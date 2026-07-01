@@ -8,6 +8,7 @@
 |--------|------|--------|-------------|
 | AFDF.0 | Framework Scaffold and Operating Model | ✅ Complete | Initial directory structure, protocols, templates, memory templates, examples, status docs |
 | AFDF.1 | Core Bootstrap Templates Hardening | ✅ Complete | Anti-drift guards, approval clarity, safety blocks, repo verification, evidence contracts, templates README, quality checklist |
+| AFDF.1R | Repair Empty Core Bootstrap Templates | ✅ Complete | Repaired empty core bootstrap templates discovered after remote inspection |
 | AFDF.2 | Project Memory, Decision Log, and Evidence Protocols | ✅ Complete | Instantiate living project memory and decision log from real artifact history |
 | AFDF.3 | Agent Factory Bootstrap Example | 🔲 Planned | Create a production-quality bootstrap for the first vertical agent artifact |
 | AFDF.4 | Next-Session Prompt Generation Protocol | 🔲 Planned | Define how to assemble session prompts from templates and memory |
@@ -20,7 +21,7 @@ After the initial AFDF foundation, continue to:
 
 | Artifact | Name | Status |
 |----------|------|--------|
-| 07 | GitHub Repo Steward Agent | 🔲 Not started (candidate) |
+| 07 | GitHub Repo Steward Agent | 🔲 Blocked until template repair is green-gated |
 
 Artifact 07 will be the first vertical agent that leverages the full harness safety stack (Artifacts 00–06) and uses AFDF for its design, implementation, and review lifecycle.
 
