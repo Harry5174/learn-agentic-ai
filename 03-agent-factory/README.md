@@ -97,6 +97,4 @@ The current artifact sequence remains local/demo. It does not implement:
 
 ## Recommended Next Work
 
-Verify Artifact 06 closeout state (publish/tag) before claiming Phase 02 complete.
-
-The next likely artifact is Artifact 07 — GitHub Repo Steward Agent, the first vertical agent leveraging the full harness safety stack.
+The next step is the design kickoff for **Artifact 07 — GitHub Repo Steward Agent**, using the newly created `artifact-07-github-repo-steward` AFDF bootstrap package. Artifact 07 will be the first vertical agent leveraging the full harness safety stack.

@@ -2,7 +2,7 @@
 
 Current limitations of the Agent Factory Development Framework (AFDF).
 
-**Last updated:** AFDF.2
+**Last updated:** AFDF.3
 
 ---
 
@@ -17,8 +17,8 @@ Current limitations of the Agent Factory Development Framework (AFDF).
 | No schema enforcement | Templates are free-form Markdown, not validated against a schema | Keep templates simple, use consistent placeholder syntax |
 | No database | No persistent storage beyond Markdown files in the repository | Git provides version history |
 | No multi-project synchronization | Framework is designed for the Agent Factory project only | Adapt templates if applied to other projects |
-| No prompt generation | Templates are manually filled, not auto-assembled from memory | AFDF.4 may address this |
-| Templates not yet validated through real artifact usage | Hardened in AFDF.1 but not yet tested against a real Artifact 07 sprint | Refine through first real use |
+| No prompt generation | Templates are manually filled to create static bootstrap packages | AFDF.4 may address dynamic assembly |
+| Templates not yet validated through real artifact usage | Used to create A07 bootstrap package in AFDF.3, but A07 has not executed yet | Refine through A07 kickoff |
 
 ---
 

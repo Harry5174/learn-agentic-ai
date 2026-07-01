@@ -1,0 +1,79 @@
+Checking development-framework/docs/templates/completion-report-template.md
+3:## Purpose
+12:- Evidence packages
+32:## Repository Inspection Requirements
+57:## Anti-Drift Guard
+89:## Safety Invariants
+92:- Do not run live external side effects without explicit Product Owner approval.
+132:## Evidence Expectations
+135:## Block Conditions
+141:## Handoff Expectations
+Checking development-framework/docs/templates/design-supervisor-bootstrap-template.md
+3:## Purpose
+40:## Repository Inspection Requirements
+64:## Product Owner Approval
+71:## Anti-Drift Guard
+103:## Safety Invariants
+106:- Do not run live external side effects without explicit Product Owner approval.
+127:## Evidence Expectations
+130:## Block Conditions
+133:- Repository is in a dirty or divergent state unexpectedly.
+134:- Required Product Owner approval is missing.
+136:## Handoff Expectations
+137:Produce a clear `Next Session Handoff` detailing the approved design, the resolved open decisions, and the remaining questions for the Implementation Supervisor.
+Checking development-framework/docs/templates/green-gate-review-template.md
+3:## Purpose
+31:## Repository Inspection Requirements
+56:## Product Owner Approval
+63:## Anti-Drift Guard
+95:## Safety Invariants
+98:- Do not run live external side effects without explicit Product Owner approval.
+122:3. Evidence assessment
+127:8. Evidence quality classification (Strong / Acceptable / Weak / Missing)
+133:## Evidence Expectations
+136:## Block Conditions
+143:## Handoff Expectations
+Checking development-framework/docs/templates/ide-agent-bootstrap-template.md
+3:## Purpose
+11:- Repository constraints and safety invariants
+32:## Repository Inspection Requirements
+56:## Anti-Drift Guard
+88:## Safety Invariants
+91:- Do not run live external side effects without explicit Product Owner approval.
+112:## Evidence Expectations
+113:Execute tests/scans, collect raw outputs (redacting tokens), and compile them into an Evidence Package prior to writing the Completion Report.
+115:## Block Conditions
+118:## Handoff Expectations
+Checking development-framework/docs/templates/implementation-supervisor-bootstrap-template.md
+3:## Purpose
+20:6. Product Owner approvals needed
+39:## Repository Inspection Requirements
+63:## Product Owner Approval
+70:## Anti-Drift Guard
+102:## Safety Invariants
+105:- Do not run live external side effects without explicit Product Owner approval.
+126:## Evidence Expectations
+129:## Block Conditions
+134:## Handoff Expectations
+Checking development-framework/docs/templates/next-session-handoff-template.md
+1:# Next Session Handoff Template
+3:## Purpose
+14:A Next Session Handoff document.
+31:## Repository Inspection Requirements
+55:## Anti-Drift Guard
+87:## Safety Invariants
+90:- Do not run live external side effects without explicit Product Owner approval.
+111:## Handoff Sections
+124:## Evidence Expectations
+127:## Block Conditions
+128:Do not issue handoff if there is unclarity on what the next step should be; consult Product Owner instead.
+Checking development-framework/docs/templates/sprint-prompt-template.md
+3:## Purpose
+31:## Repository Inspection Requirements
+55:## Product Owner Approval
+62:## Anti-Drift Guard
+94:## Safety Invariants
+97:- Do not run live external side effects without explicit Product Owner approval.
+125:## Evidence Expectations
+131:## Block Conditions
+136:## Handoff Expectations

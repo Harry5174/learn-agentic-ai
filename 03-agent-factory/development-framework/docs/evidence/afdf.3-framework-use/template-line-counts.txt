@@ -1,0 +1,8 @@
+  148 development-framework/docs/templates/completion-report-template.md
+  143 development-framework/docs/templates/design-supervisor-bootstrap-template.md
+  150 development-framework/docs/templates/green-gate-review-template.md
+  125 development-framework/docs/templates/ide-agent-bootstrap-template.md
+  141 development-framework/docs/templates/implementation-supervisor-bootstrap-template.md
+  134 development-framework/docs/templates/next-session-handoff-template.md
+  143 development-framework/docs/templates/sprint-prompt-template.md
+  984 total

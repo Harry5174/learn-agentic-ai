@@ -1,6 +1,6 @@
 # Project Status
 
-**Last updated:** AFDF.1R
+**Last updated:** AFDF.3
 
 ---
 
@@ -10,8 +10,9 @@
 |--------|-------------|--------|
 | AFDF.0 | Framework Scaffold and Operating Model | ✅ Complete |
 | AFDF.1 | Core Bootstrap Templates Hardening | ✅ Complete |
-| AFDF.1R | Repair Empty Core Bootstrap Templates | ✅ Current |
+| AFDF.1R | Repair Empty Core Bootstrap Templates | ✅ Complete |
 | AFDF.2 | Project Memory, Decision Log, and Evidence Protocols | ✅ Complete |
+| AFDF.3 | Agent Factory Bootstrap Example | ✅ Current |
 
 | Fact | Status |
 |------|--------|
@@ -46,6 +47,7 @@
 ## Current Direction
 
 - AFDF.2 created the living project memory and evidence protocols
-- Next framework sprint is **AFDF.3 — Agent Factory Bootstrap Example**
-- After AFDF foundation, the next vertical artifact is **Artifact 07 — GitHub Repo Steward Agent** (candidate, not yet started)
-- See [Artifact 07 Bootstrap Readiness Draft](../examples/artifact-07-bootstrap-readiness-draft.md) and [Next Artifact Readiness](../../project-memory/agent-factory/next-artifact-readiness.md) for design session preparation
+- AFDF.3 created the first real bootstrap package for Artifact 07.
+- Artifact 07 still has not started.
+- AFDF remains Markdown-only. No CLI/database/schema automation exists.
+- Next recommended step after AFDF.3 is **Artifact 07 design kickoff**.

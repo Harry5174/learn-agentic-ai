@@ -38,3 +38,8 @@ Reusable lessons from past work on the Agent Factory.
 - **Where learned:** Foundation design.
 - **Why it matters:** Mixing LLM API calls with business logic makes testing hard and violates the "LLM proposes" safety rule.
 - **How to apply later:** Isolate LLM calls behind a strict interface; treat their output as untrusted user input.
+
+## 8. Repair validation must check structure, not just presence
+- **Where learned:** AFDF.1R template repair.
+- **Why it matters:** A file can exist but be empty, causing silent failures in workflows relying on it.
+- **How to apply later:** Repair validation must include line-count and required-section checks for key templates before relying on them.
