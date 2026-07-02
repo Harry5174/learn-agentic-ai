@@ -136,9 +136,37 @@ should be required for the default demo.
 - Tests placeholder and future test plan.
 - Root artifact index updates where applicable.
 
-## 12. Non-Goals
+## 12. Sprint 7.1 Fixture Snapshot and Normalizer
+
+Sprint 7.1 adds the first local runtime slice:
+
+```text
+Local JSON fixture snapshot
+        ↓
+Fixture loader
+        ↓
+Normalizer
+        ↓
+Typed internal records
+```
+
+This slice loads a committed fake GitHub-like repository snapshot from disk and
+normalizes repository identity, labels, issues, pull requests, comments, and
+CI/status summaries into dataclass records.
+
+The fixture uses fixed timestamps and explicit `stale_days` values so tests are
+deterministic and do not depend on the current date. The loader and normalizer
+use only the Python standard library and do not read environment variables,
+`.env`, network resources, GitHub APIs, or LLM providers.
+
+The normalizer prepares future analyzer work by creating a stable typed input
+shape. It does not analyze the repository, infer stewardship actions, generate
+proposals, route approvals, write ledger records, or execute anything.
+
+## 13. Non-Goals
 
 - Full GitHub Repo Steward runtime.
+- Real GitHub reads.
 - Real GitHub writes.
 - Real issue comments.
 - Label mutation.
@@ -150,9 +178,8 @@ should be required for the default demo.
 - Background automation.
 - Production deployment.
 
-## 13. Future Sprint Candidates
+## 14. Future Sprint Candidates
 
-- A7.1 fixture repo snapshot and normalizer.
 - A7.2 deterministic analyzer and fake proposal provider.
 - A7.3 policy guard and rejection evidence.
 - A7.4 approval inbox and decision binding.

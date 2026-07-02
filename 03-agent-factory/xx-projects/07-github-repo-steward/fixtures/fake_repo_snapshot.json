@@ -1,0 +1,147 @@
+{
+  "repository": {
+    "owner": "fixture-owner",
+    "name": "fixture-repo",
+    "default_branch": "main",
+    "snapshot_generated_at": "2026-06-30T12:00:00Z"
+  },
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something is not working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "needs-info",
+      "description": "Additional reproduction details are needed",
+      "color": "fef2c0"
+    },
+    {
+      "name": "stale",
+      "description": "No recent maintainer activity",
+      "color": "ededed"
+    },
+    {
+      "name": "enhancement",
+      "description": "New capability or improvement",
+      "color": "a2eeef"
+    }
+  ],
+  "issues": [
+    {
+      "id": 1001,
+      "number": 11,
+      "title": "Crash when importing project archive",
+      "body": "Importing a project archive fails, but the report does not include reproduction steps yet.",
+      "state": "open",
+      "labels": ["bug", "needs-info"],
+      "author": "alice-fixture",
+      "created_at": "2026-06-05T09:15:00Z",
+      "updated_at": "2026-06-08T10:30:00Z",
+      "comments_count": 1,
+      "stale_days": 22
+    },
+    {
+      "id": 1002,
+      "number": 12,
+      "title": "Document repository bootstrap expectations",
+      "body": "The setup guide should explain which bootstrap files must be reviewed before a sprint.",
+      "state": "open",
+      "labels": ["enhancement", "stale"],
+      "author": "bob-fixture",
+      "created_at": "2026-05-01T08:00:00Z",
+      "updated_at": "2026-05-10T08:45:00Z",
+      "comments_count": 0,
+      "stale_days": 51
+    },
+    {
+      "id": 1003,
+      "number": 13,
+      "title": "Typo in safety boundary document",
+      "body": "The typo has been corrected in the documentation.",
+      "state": "closed",
+      "labels": ["bug"],
+      "author": "carol-fixture",
+      "created_at": "2026-04-15T14:20:00Z",
+      "updated_at": "2026-04-16T16:00:00Z",
+      "comments_count": 1,
+      "stale_days": 75
+    }
+  ],
+  "pull_requests": [
+    {
+      "id": 2001,
+      "number": 21,
+      "title": "Add archive importer validation",
+      "body": "Adds local validation before archive import.",
+      "state": "open",
+      "labels": ["bug"],
+      "author": "dana-fixture",
+      "created_at": "2026-06-12T11:00:00Z",
+      "updated_at": "2026-06-28T12:10:00Z",
+      "branch": "fix/archive-import-validation",
+      "base_branch": "main",
+      "review_status": "approved",
+      "ci_status": "failing",
+      "stale_days": 2
+    },
+    {
+      "id": 2002,
+      "number": 22,
+      "title": "Refresh setup guide",
+      "body": "Clarifies local fixture setup and bootstrap reading order.",
+      "state": "open",
+      "labels": ["enhancement"],
+      "author": "erin-fixture",
+      "created_at": "2026-06-20T15:30:00Z",
+      "updated_at": "2026-06-25T16:05:00Z",
+      "branch": "docs/setup-guide-refresh",
+      "base_branch": "main",
+      "review_status": "waiting_for_review",
+      "ci_status": "passing",
+      "stale_days": 5
+    }
+  ],
+  "comments": [
+    {
+      "id": 3001,
+      "target_type": "issue",
+      "target_number": 11,
+      "author": "maintainer-fixture",
+      "body": "Please add exact reproduction steps and the archive shape.",
+      "created_at": "2026-06-08T10:30:00Z"
+    },
+    {
+      "id": 3002,
+      "target_type": "pull_request",
+      "target_number": 21,
+      "author": "ci-fixture",
+      "body": "The local validation test is failing on the malformed archive case.",
+      "created_at": "2026-06-28T12:10:00Z"
+    },
+    {
+      "id": 3003,
+      "target_type": "issue",
+      "target_number": 13,
+      "author": "maintainer-fixture",
+      "body": "Fixed by the documentation cleanup commit.",
+      "created_at": "2026-04-16T16:00:00Z"
+    }
+  ],
+  "ci_statuses": [
+    {
+      "target_type": "pull_request",
+      "target_number": 21,
+      "status": "completed",
+      "conclusion": "failure",
+      "updated_at": "2026-06-28T12:10:00Z"
+    },
+    {
+      "target_type": "pull_request",
+      "target_number": 22,
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-06-25T16:05:00Z"
+    }
+  ]
+}

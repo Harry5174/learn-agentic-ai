@@ -15,7 +15,7 @@ This directory contains the numbered artifact sequence for the Agent Factory tra
 | 4 | [04-approval-gated-real-github-comment-adapter](04-approval-gated-real-github-comment-adapter) | Approval-Gated Real GitHub Comment Adapter | Complete as local/demo real-comment adapter (A4.5) |
 | 5 | [05-real-mode-smoke-evidence-release-gate](05-real-mode-smoke-evidence-release-gate) | Real-Mode Smoke Evidence and Release Gate | Complete / published / tagged evidence artifact |
 | 6 | [06-operator-approval-workbench](06-operator-approval-workbench) | Operator Approval Console / Workbench | Current local/demo workbench artifact (A6.5) |
-| 7 | [07-github-repo-steward](07-github-repo-steward) | GitHub Repo Steward | Documentation-first scaffold; fake/local/dry-run by default |
+| 7 | [07-github-repo-steward](07-github-repo-steward) | GitHub Repo Steward | Local fixture snapshot and normalizer; fake/local/dry-run by default |
 
 Numbering convention:
 
@@ -159,7 +159,7 @@ for the Artifact 6 demo.
 ## Artifact 7 - GitHub Repo Steward
 
 **Path:** `07-github-repo-steward`
-**Status:** Documentation-first scaffold; fake/local/dry-run by default
+**Status:** Local fixture snapshot and normalizer; fake/local/dry-run by default
 
 **Sprint 7.0 claim:** Artifact 07 is a GitHub Repo Steward vertical agent
 scaffold. Sprint 7.0 defines the design scaffold, safety contract, evidence
@@ -167,10 +167,16 @@ expectations, and future test plan for a repository stewardship agent without
 adding runtime GitHub clients, real GitHub writes, real LLM routing, or
 mandatory provider credentials.
 
-**Current boundary:** Documentation scaffold only. No runtime source code, real
-GitHub issue comments, label mutation, issue closing, PR mutation, branch or
-commit creation, workflow dispatch, required real LLM calls, `.env` reads, token
-reads, background automation, or autonomous external side effects are included.
+**Sprint 7.1 claim:** Artifact 07 can load a committed local fake GitHub-like
+fixture snapshot and normalize repository identity, labels, issues, pull
+requests, comments, and CI/status summaries into typed internal records.
+
+**Current boundary:** Local fixture intake and normalization only. No real
+GitHub reads or writes, GitHub API calls, GitHub SDKs, real GitHub issue
+comments, label mutation, issue closing, PR mutation, branch or commit creation,
+workflow dispatch, required real LLM calls, proposal generation, approval inbox
+runtime, ledger runtime, executor runtime, `.env` reads, token reads, background
+automation, or autonomous external side effects are included.
 
 **Read first:**
 
@@ -178,6 +184,7 @@ reads, background automation, or autonomous external side effects are included.
 - [Artifact 7 design scaffold](07-github-repo-steward/docs/design.md)
 - [Artifact 7 safety boundaries](07-github-repo-steward/docs/safety-boundaries.md)
 - [Artifact 7.0 validation summary](07-github-repo-steward/docs/evidence/artifact-7.0-validation-summary.md)
+- [Artifact 7.1 validation summary](07-github-repo-steward/docs/evidence/artifact-7.1-validation-summary.md)
 
 ## What Is Not Here Yet
 
@@ -190,6 +197,8 @@ implement general GitHub automation, OAuth/OIDC, MCP, deployment, production
 authentication, live GitHub execution, or production-grade operator console
 claims.
 
-Artifact 07 is a documentation-first scaffold for a future approval-gated
-repository stewardship vertical agent. It does not yet implement the steward
-runtime, real GitHub writes, or a real LLM provider requirement.
+Artifact 07 currently implements only local fixture snapshot loading and
+normalization for a future approval-gated repository stewardship vertical
+agent. It does not yet implement the steward analyzer, proposal runtime, approval
+runtime, ledger runtime, executor runtime, real GitHub access, or a real LLM
+provider requirement.
