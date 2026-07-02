@@ -15,6 +15,7 @@ This directory contains the numbered artifact sequence for the Agent Factory tra
 | 4 | [04-approval-gated-real-github-comment-adapter](04-approval-gated-real-github-comment-adapter) | Approval-Gated Real GitHub Comment Adapter | Complete as local/demo real-comment adapter (A4.5) |
 | 5 | [05-real-mode-smoke-evidence-release-gate](05-real-mode-smoke-evidence-release-gate) | Real-Mode Smoke Evidence and Release Gate | Complete / published / tagged evidence artifact |
 | 6 | [06-operator-approval-workbench](06-operator-approval-workbench) | Operator Approval Console / Workbench | Current local/demo workbench artifact (A6.5) |
+| 7 | [07-github-repo-steward](07-github-repo-steward) | GitHub Repo Steward | Documentation-first scaffold; fake/local/dry-run by default |
 
 Numbering convention:
 
@@ -25,6 +26,7 @@ Numbering convention:
 - `04` = Artifact 04
 - `05` = Artifact 05
 - `06` = Artifact 06
+- `07` = Artifact 07
 
 ---
 
@@ -152,6 +154,31 @@ for the Artifact 6 demo.
 - [Operator workbench demo](06-operator-approval-workbench/docs/demos/operator-workbench-demo.md)
 - [A6.5 demo evidence](06-operator-approval-workbench/docs/evidence/a6.5-operator-workbench-demo/README.md)
 
+---
+
+## Artifact 7 - GitHub Repo Steward
+
+**Path:** `07-github-repo-steward`
+**Status:** Documentation-first scaffold; fake/local/dry-run by default
+
+**Sprint 7.0 claim:** Artifact 07 is a GitHub Repo Steward vertical agent
+scaffold. Sprint 7.0 defines the design scaffold, safety contract, evidence
+expectations, and future test plan for a repository stewardship agent without
+adding runtime GitHub clients, real GitHub writes, real LLM routing, or
+mandatory provider credentials.
+
+**Current boundary:** Documentation scaffold only. No runtime source code, real
+GitHub issue comments, label mutation, issue closing, PR mutation, branch or
+commit creation, workflow dispatch, required real LLM calls, `.env` reads, token
+reads, background automation, or autonomous external side effects are included.
+
+**Read first:**
+
+- [Artifact 7 README](07-github-repo-steward/README.md)
+- [Artifact 7 design scaffold](07-github-repo-steward/docs/design.md)
+- [Artifact 7 safety boundaries](07-github-repo-steward/docs/safety-boundaries.md)
+- [Artifact 7.0 validation summary](07-github-repo-steward/docs/evidence/artifact-7.0-validation-summary.md)
+
 ## What Is Not Here Yet
 
 Artifacts 00 through 05 are complete as local/demo safety and evidence
@@ -162,3 +189,7 @@ Artifact 06 is the current local/demo operator workbench artifact. It does not
 implement general GitHub automation, OAuth/OIDC, MCP, deployment, production
 authentication, live GitHub execution, or production-grade operator console
 claims.
+
+Artifact 07 is a documentation-first scaffold for a future approval-gated
+repository stewardship vertical agent. It does not yet implement the steward
+runtime, real GitHub writes, or a real LLM provider requirement.

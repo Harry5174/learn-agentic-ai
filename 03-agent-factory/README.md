@@ -29,6 +29,7 @@ The `xx-projects/` directory contains the core artifact sequence:
 | 4 | [Approval-Gated Real GitHub Comment Adapter](xx-projects/04-approval-gated-real-github-comment-adapter) | Complete as local/demo real-comment adapter (A4.5) |
 | 5 | [Real-Mode Smoke Evidence and Release Gate](xx-projects/05-real-mode-smoke-evidence-release-gate) | Complete / published / tagged evidence artifact |
 | 6 | [Operator Approval Console / Workbench](xx-projects/06-operator-approval-workbench) | Current local/demo workbench artifact (A6.5) |
+| 7 | [GitHub Repo Steward](xx-projects/07-github-repo-steward) | Documentation-first scaffold; fake/local/dry-run by default |
 
 Each artifact builds on the previous:
 
@@ -58,16 +59,17 @@ See [xx-projects/README.md](xx-projects/README.md) for the detailed artifact ind
     ├── 03-durable-side-effect-ledger
     ├── 04-approval-gated-real-github-comment-adapter
     ├── 05-real-mode-smoke-evidence-release-gate
-    └── 06-operator-approval-workbench
+    ├── 06-operator-approval-workbench
+    └── 07-github-repo-steward
 ```
 
 ---
 
 ## Current Leading Artifact
 
-Artifact 06 (Operator Approval Console / Workbench) is the current leading artifact at sprint A6.5. It turns the approval-gated harness lineage into a local operator workbench where proposed actions appear in an approval inbox, the operator inspects risk/scopes/context, and approves or rejects through server-controlled routes.
+Artifact 07 (GitHub Repo Steward) is the current scaffold artifact at Sprint 7.0. It is a documentation-first scaffold for a future approval-gated repository stewardship vertical agent. Default mode is fake/local/dry-run; no real GitHub writes or real LLM provider are required in Sprint 7.0.
 
-Artifact 06 does not implement live GitHub execution, OAuth/OIDC, MCP, deployment, or production hardening.
+Artifact 07 does not implement a runtime GitHub Repo Steward, live GitHub execution, real LLM routing, OAuth/OIDC, MCP, deployment, or production hardening.
 
 ---
 
@@ -97,4 +99,4 @@ The current artifact sequence remains local/demo. It does not implement:
 
 ## Recommended Next Work
 
-The next step is the design kickoff for **Artifact 07 — GitHub Repo Steward Agent**, using the newly created `artifact-07-github-repo-steward` AFDF bootstrap package. Artifact 07 will be the first vertical agent leveraging the full harness safety stack.
+The next step is a future Artifact 07 implementation sprint that starts from the Sprint 7.0 design scaffold and safety contract without bypassing the fake/local/dry-run default.
