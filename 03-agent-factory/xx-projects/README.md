@@ -15,7 +15,7 @@ This directory contains the numbered artifact sequence for the Agent Factory tra
 | 4 | [04-approval-gated-real-github-comment-adapter](04-approval-gated-real-github-comment-adapter) | Approval-Gated Real GitHub Comment Adapter | Complete as local/demo real-comment adapter (A4.5) |
 | 5 | [05-real-mode-smoke-evidence-release-gate](05-real-mode-smoke-evidence-release-gate) | Real-Mode Smoke Evidence and Release Gate | Complete / published / tagged evidence artifact |
 | 6 | [06-operator-approval-workbench](06-operator-approval-workbench) | Operator Approval Console / Workbench | Current local/demo workbench artifact (A6.5) |
-| 7 | [07-github-repo-steward](07-github-repo-steward) | GitHub Repo Steward | Local fixture snapshot, normalizer, and deterministic findings; fake/local/dry-run by default |
+| 7 | [07-github-repo-steward](07-github-repo-steward) | GitHub Repo Steward | Local fixture snapshot, normalizer, deterministic findings, and fake proposal drafts; fake/local/dry-run by default |
 
 Numbering convention:
 
@@ -159,8 +159,8 @@ for the Artifact 6 demo.
 ## Artifact 7 - GitHub Repo Steward
 
 **Path:** `07-github-repo-steward`
-**Status:** Local fixture snapshot, normalizer, and deterministic findings;
-fake/local/dry-run by default
+**Status:** Local fixture snapshot, normalizer, deterministic findings, and
+non-executing fake proposal drafts; fake/local/dry-run by default
 
 **Sprint 7.0 claim:** Artifact 07 is a GitHub Repo Steward vertical agent
 scaffold. Sprint 7.0 defines the design scaffold, safety contract, evidence
@@ -175,13 +175,16 @@ requests, comments, and CI/status summaries into typed internal records.
 **Sprint 7.2 claim:** Artifact 07 can convert normalized local fixture data into
 structured deterministic repository stewardship findings.
 
-**Current boundary:** Local fixture intake, normalization, and deterministic
-findings only. No real GitHub reads or writes, GitHub API calls, GitHub SDKs,
-real GitHub issue comments, label mutation, issue closing, PR mutation, branch
-or commit creation, workflow dispatch, required real LLM calls, proposal
-generation, approval inbox runtime, ledger runtime, executor runtime, `.env`
-reads, token reads, background automation, or autonomous external side effects
-are included.
+**Sprint 7.3 claim:** Artifact 07 can convert deterministic analyzer findings
+into non-executing fake proposal drafts.
+
+**Current boundary:** Local fixture intake, normalization, deterministic
+findings, and non-executing fake proposal drafts only. No real GitHub reads or
+writes, GitHub API calls, GitHub SDKs, real GitHub issue comments, label
+mutation, issue closing, PR mutation, branch or commit creation, workflow
+dispatch, required real LLM calls, real LLM proposal generation, approval inbox
+runtime, ledger runtime, executor runtime, `.env` reads, token reads, background
+automation, or autonomous external side effects are included.
 
 **Read first:**
 
@@ -191,6 +194,7 @@ are included.
 - [Artifact 7.0 validation summary](07-github-repo-steward/docs/evidence/artifact-7.0-validation-summary.md)
 - [Artifact 7.1 validation summary](07-github-repo-steward/docs/evidence/artifact-7.1-validation-summary.md)
 - [Artifact 7.2 validation summary](07-github-repo-steward/docs/evidence/artifact-7.2-validation-summary.md)
+- [Artifact 7.3 validation summary](07-github-repo-steward/docs/evidence/artifact-7.3-validation-summary.md)
 
 ## What Is Not Here Yet
 
@@ -203,8 +207,8 @@ implement general GitHub automation, OAuth/OIDC, MCP, deployment, production
 authentication, live GitHub execution, or production-grade operator console
 claims.
 
-Artifact 07 currently implements only local fixture snapshot loading and
-normalization plus deterministic findings for a future approval-gated
-repository stewardship vertical agent. It does not yet implement proposal
-runtime, approval runtime, ledger runtime, executor runtime, real GitHub access,
-or a real LLM provider requirement.
+Artifact 07 currently implements only local fixture snapshot loading,
+normalization, deterministic findings, and non-executing fake proposal drafts
+for a future approval-gated repository stewardship vertical agent. It does not
+yet implement policy guard runtime, approval runtime, ledger runtime, executor
+runtime, real GitHub access, or a real LLM provider requirement.

@@ -7,6 +7,8 @@ normalization.
 
 Sprint 7.2 adds local runtime tests for deterministic analyzer findings.
 
+Sprint 7.3 adds local runtime tests for non-executing fake proposal drafts.
+
 Current tests cover:
 
 - fixture repo loading
@@ -32,10 +34,16 @@ Current tests cover:
 - analyzer behavior with an empty normalized snapshot
 - analyzer no-mutation behavior
 - analyzer operation without network sockets
+- proposal model shape
+- proposal validation helper behavior
+- fake proposal draft generation from analyzer findings
+- deterministic proposal IDs
+- deterministic proposal order
+- fake provider no-mutation behavior
+- fake provider operation without network sockets
 
 Current tests do not cover:
 
-- fake proposal provider
 - policy guard rejection
 - approval inbox behavior
 - ledger/audit recording
@@ -48,7 +56,7 @@ Run the Sprint 7.2 tests from this artifact directory with:
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src PYTEST_ADDOPTS="-p no:cacheprovider" python -m pytest tests
 ```
 
-Do not treat the fixture loader, normalizer, or analyzer tests as evidence that
-future proposal, approval, ledger, executor, live GitHub, or real LLM behavior
-exists. Each future behavior needs implementation plus focused tests in the
-sprint that adds it.
+Do not treat the fixture loader, normalizer, analyzer, or fake proposal draft
+tests as evidence that future policy, approval, ledger, executor, live GitHub,
+or real LLM behavior exists. Each future behavior needs implementation plus
+focused tests in the sprint that adds it.

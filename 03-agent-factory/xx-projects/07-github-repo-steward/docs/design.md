@@ -201,7 +201,50 @@ future layer structured local observations to consume. Future proposals must be
 implemented in a separate sprint and treated as untrusted input until policy,
 approval, ledger, and execution boundaries exist.
 
-## 14. Non-Goals
+## 14. Sprint 7.3 Proposal Model and Fake Provider Boundary
+
+Sprint 7.3 adds the next local-only runtime slice:
+
+```text
+Local JSON fixture snapshot
+        ↓
+Fixture loader
+        ↓
+Normalizer
+        ↓
+Deterministic analyzer
+        ↓
+Structured findings
+        ↓
+Fake proposal provider
+        ↓
+Non-executing fake proposal drafts
+```
+
+Findings are observations about local fixture state. Fake proposal drafts are
+structured, non-executing proposal objects derived from those findings. A draft
+may contain a suggested comment body and rationale, but it does not represent a
+posted comment, a policy decision, an approval decision, a ledger record, or an
+executor command.
+
+The Sprint 7.3 fake provider is deterministic and local. It uses template text
+and standard-library code only; it does not call a real LLM provider, GitHub
+API, network resource, environment variable, or `.env` file. It is a stand-in
+for a future provider implementation behind the same proposal boundary, not
+evidence that real LLM proposal generation exists.
+
+Every Sprint 7.3 proposal object is a draft, has `requires_approval=True`, and
+has `execution_status="draft_only"`. This means a future policy and approval
+path would be required before any future execution path could exist. It does
+not mean any approval inbox, approval decision, ledger entry, or executor is
+implemented in this sprint.
+
+Sprint 7.3 prepares future policy guard work by giving that future layer a
+small structured proposal shape to validate. It prepares future approval inbox
+work by explicitly marking every draft as requiring future approval. It does
+not implement either layer.
+
+## 15. Non-Goals
 
 - Full GitHub Repo Steward runtime.
 - Real GitHub reads.
@@ -213,12 +256,15 @@ approval, ledger, and execution boundaries exist.
 - Branch or commit creation.
 - Workflow dispatch.
 - Required real LLM calls.
+- Policy guard runtime.
+- Approval inbox runtime.
+- Ledger/audit runtime.
+- Executor or dry-run executor runtime.
 - Background automation.
 - Production deployment.
 
-## 15. Future Sprint Candidates
+## 16. Future Sprint Candidates
 
-- A7.3 proposal model and fake proposal provider boundary.
 - A7.4 policy guard and rejection evidence.
 - A7.5 approval inbox and decision binding.
 - A7.6 local ledger/audit evidence and dry-run executor.

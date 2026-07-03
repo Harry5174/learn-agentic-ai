@@ -9,6 +9,10 @@ class RepoSnapshotValidationError(ValueError):
     """Raised when a local fixture snapshot is missing required data."""
 
 
+class RepoProposalValidationError(ValueError):
+    """Raised when a fake proposal draft violates local shape invariants."""
+
+
 @dataclass(frozen=True)
 class RepositoryIdentity:
     owner: str
@@ -86,6 +90,21 @@ class RepoFinding:
     title: str
     summary: str
     evidence: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class RepoProposal:
+    proposal_id: str
+    source_finding_id: str
+    proposal_type: str
+    target_type: str
+    target_number: int
+    title: str
+    draft_body: str
+    rationale: str
+    risk_level: str
+    requires_approval: bool
+    execution_status: str
 
 
 @dataclass(frozen=True)

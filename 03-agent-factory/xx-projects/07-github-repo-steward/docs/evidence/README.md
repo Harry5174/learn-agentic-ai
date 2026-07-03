@@ -36,7 +36,20 @@ For Sprint 7.2, evidence is limited to deterministic analyzer validation:
 - explicit statements about what local deterministic findings do and do not
   prove
 
-Future runtime sprints may add fake proposal results, approval records,
+For Sprint 7.3, evidence is limited to fake proposal draft validation:
+
+- file inventory
+- proposal model coverage
+- fake provider mapping coverage
+- deterministic proposal ID and order checks
+- no-mutation checks
+- no-secret and no-network checks
+- pytest results
+- compile checks
+- hygiene command results
+- explicit statements about what fake proposal drafts do and do not prove
+
+Future runtime sprints may add policy guard outcomes, approval records,
 ledger/audit summaries, or dry-run executor evidence.
 
 ## How Sprint 7.0 Evidence Should Be Interpreted
@@ -57,12 +70,19 @@ Sprint 7.2 evidence proves only that normalized local fixture data can be
 converted into deterministic structured findings. It is local offline test
 evidence, not live GitHub evidence and not proposal-provider evidence.
 
+## How Sprint 7.3 Evidence Should Be Interpreted
+
+Sprint 7.3 evidence proves only that analyzer findings can be converted into
+deterministic non-executing fake proposal drafts. It is local offline test
+evidence, not live GitHub evidence, not real LLM evidence, and not evidence of
+approval or execution capability.
+
 ## What This Evidence Does Not Prove
 
-Sprint 7.0, Sprint 7.1, and Sprint 7.2 evidence do not prove:
+Sprint 7.0, Sprint 7.1, Sprint 7.2, and Sprint 7.3 evidence do not prove:
 
 - an operational GitHub Repo Steward runtime exists
-- proposal generation works
+- real LLM proposal generation works
 - policy enforcement works at runtime
 - approval inbox integration works
 - ledger/audit recording works at runtime
@@ -78,6 +98,8 @@ Documentation can define boundaries and planned architecture, but it cannot
 prove runtime behavior. Local fixture tests can prove local normalization, but
 they cannot prove live GitHub behavior. Local analyzer tests can prove
 deterministic findings, but they cannot prove model-driven proposals, approval
-routing, ledger recording, or execution. Any future runtime claim must be
-backed by tests, command output, and safety scans from the sprint that
-implements that behavior.
+routing, ledger recording, or execution. Local fake provider tests can prove
+non-executing fake proposal drafts, but they cannot prove policy decisions,
+approval decisions, ledger recording, executor behavior, real GitHub behavior,
+or real LLM behavior. Any future runtime claim must be backed by tests, command
+output, and safety scans from the sprint that implements that behavior.
