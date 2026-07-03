@@ -4,8 +4,8 @@ Artifact 07 is a GitHub Repo Steward vertical agent scaffold.
 
 ## Artifact Status
 
-Artifact 07 has its first local runtime slice. It is not a completed steward
-agent.
+Artifact 07 has local fixture intake, normalization, and deterministic finding
+analysis. It is not a completed steward agent.
 
 ## Sprint Status
 
@@ -16,13 +16,16 @@ Artifact 07 work.
 Sprint 7.1 adds local fixture repository snapshot loading and normalization
 only.
 
+Sprint 7.2 adds deterministic repository stewardship findings from the
+normalized local fixture snapshot only.
+
 ## Purpose
 
 Artifact 07 prepares a future vertical agent that can inspect repository state,
 propose stewardship actions, route those proposals through policy and approval,
-and preserve audit evidence. Sprint 7.1 proves only that a deterministic local
-fake GitHub-like snapshot can be loaded and normalized into typed internal
-records.
+and preserve audit evidence. Sprint 7.2 proves only that a deterministic local
+fake GitHub-like snapshot can be loaded, normalized, and analyzed into
+structured observational findings.
 
 ## What This Artifact Demonstrates
 
@@ -48,14 +51,30 @@ Sprint 7.1 does not demonstrate live repository automation, repo analysis,
 proposal generation, approval routing, ledger recording, execution, or
 model-driven behavior.
 
+Sprint 7.2 demonstrates:
+
+- structured `RepoFinding` records
+- deterministic finding IDs
+- deterministic finding order
+- local rules for issues missing reproduction details
+- local rules for stale issues without recorded maintainer response
+- local rules for pull requests with failing CI
+- local rules for pull requests waiting for review
+- analyzer tests that do not require network access, GitHub credentials, `.env`,
+  or a real LLM provider
+
+Sprint 7.2 does not demonstrate proposal generation, approval routing, ledger
+recording, execution, live repository automation, or model-driven behavior.
+
 ## Default Mode
 
 The default mode is fake/local/dry-run. The artifact does not perform real
 GitHub reads or writes. The artifact does not require a real LLM provider.
 
-Sprint 7.1 begins from fixture repository snapshots. Future implementation work
-may add deterministic analysis, fake proposal providers, local policy checks,
-approval records, ledger/audit evidence, and a dry-run executor.
+Sprint 7.2 begins from fixture repository snapshots, normalizes them, and
+produces deterministic findings only. Future implementation work may add fake
+proposal providers, local policy checks, approval records, ledger/audit
+evidence, and a dry-run executor.
 
 ## Safety Model
 
@@ -102,6 +121,16 @@ decision is not implemented in Sprint 7.0.
 - Prove the loader and normalizer do not require common secret environment
   variables.
 
+## In Scope for Sprint 7.2
+
+- Analyze a normalized local fixture snapshot.
+- Produce structured `RepoFinding` records.
+- Generate deterministic finding IDs and output order.
+- Identify local stewardship signals for open issues and pull requests.
+- Prove the analyzer does not require common secret environment variables or
+  network access.
+- Preserve Sprint 7.1 fixture loading and normalization behavior.
+
 ## Out of Scope for Sprint 7.0
 
 - Real GitHub writes.
@@ -130,11 +159,25 @@ decision is not implemented in Sprint 7.0.
 - Executor runtime.
 - Production readiness claims.
 
+## Out of Scope for Sprint 7.2
+
+- Real GitHub reads or writes.
+- GitHub API calls or SDKs.
+- Reading `.env`.
+- Reading tokens or credentials.
+- Real LLM providers or provider SDKs.
+- Proposal generation or fake proposal provider behavior.
+- Approval inbox runtime.
+- Ledger runtime.
+- Executor or dry-run executor runtime.
+- Background automation.
+- Autonomous external side effects.
+- Production readiness claims.
+
 ## Future Sprint Direction
 
 Future sprints may add:
 
-- deterministic repo analysis
 - fake proposal provider behavior
 - policy guard rejection tests
 - approval inbox integration
@@ -151,22 +194,25 @@ Review the following files:
 - [Evidence README](docs/evidence/README.md)
 - [Sprint 7.0 validation summary](docs/evidence/artifact-7.0-validation-summary.md)
 - [Sprint 7.1 validation summary](docs/evidence/artifact-7.1-validation-summary.md)
+- [Sprint 7.2 validation summary](docs/evidence/artifact-7.2-validation-summary.md)
 - [Tests README](tests/README.md)
 
 Check that every runtime claim is limited to local fixture intake and
-normalization and that no real GitHub path, real LLM provider, secret read, or
-external side effect has been added.
+normalization plus deterministic findings and that no real GitHub path, real
+LLM provider, secret read, proposal runtime, approval runtime, ledger runtime,
+executor runtime, or external side effect has been added.
 
 ## Evidence Location
 
-Sprint 7.0 evidence lives under [docs/evidence](docs/evidence/).
+Sprint evidence lives under [docs/evidence](docs/evidence/).
 
 ## Known Limitations
 
 - Sprint 7.0 is documentation-only.
 - Sprint 7.1 implements only fixture loading and normalization.
+- Sprint 7.2 implements only deterministic local finding analysis.
 - No operational GitHub Repo Steward exists yet.
-- No analyzer, proposal provider, policy guard, approval inbox, ledger
-  integration, or executor exists in this artifact yet.
+- No proposal provider, policy guard, approval inbox, ledger integration, or
+  executor exists in this artifact yet.
 - The scaffold does not prove production readiness, real GitHub safety, real LLM
   safety, or end-to-end repository stewardship.

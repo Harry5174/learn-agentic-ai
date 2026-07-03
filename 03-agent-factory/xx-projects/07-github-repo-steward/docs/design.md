@@ -163,7 +163,45 @@ The normalizer prepares future analyzer work by creating a stable typed input
 shape. It does not analyze the repository, infer stewardship actions, generate
 proposals, route approvals, write ledger records, or execute anything.
 
-## 13. Non-Goals
+## 13. Sprint 7.2 Deterministic Analyzer
+
+Sprint 7.2 adds the next local-only runtime slice:
+
+```text
+Local JSON fixture snapshot
+        ↓
+Fixture loader
+        ↓
+Normalizer
+        ↓
+Deterministic analyzer
+        ↓
+Structured findings
+```
+
+The analyzer consumes `NormalizedRepoSnapshot` and returns `RepoFinding`
+records. Findings are observations about local fixture state, not proposals and
+not executable actions. They have stable IDs, stable ordering, severity, target
+metadata, summaries, and evidence strings.
+
+Sprint 7.2 implements deterministic rules for:
+
+- open issues labeled `needs-info`
+- stale open issues with no comments
+- open pull requests with failing CI
+- open pull requests waiting for review
+
+The analyzer does not read the current date, environment variables, `.env`,
+network resources, GitHub APIs, or LLM providers. It does not mutate the
+normalized snapshot and does not create proposal objects, comments, labels,
+approval records, ledger entries, or executor commands.
+
+This finding boundary prepares future proposal-provider work by giving that
+future layer structured local observations to consume. Future proposals must be
+implemented in a separate sprint and treated as untrusted input until policy,
+approval, ledger, and execution boundaries exist.
+
+## 14. Non-Goals
 
 - Full GitHub Repo Steward runtime.
 - Real GitHub reads.
@@ -178,10 +216,10 @@ proposals, route approvals, write ledger records, or execute anything.
 - Background automation.
 - Production deployment.
 
-## 14. Future Sprint Candidates
+## 15. Future Sprint Candidates
 
-- A7.2 deterministic analyzer and fake proposal provider.
-- A7.3 policy guard and rejection evidence.
-- A7.4 approval inbox and decision binding.
-- A7.5 local ledger/audit evidence and dry-run executor.
+- A7.3 proposal model and fake proposal provider boundary.
+- A7.4 policy guard and rejection evidence.
+- A7.5 approval inbox and decision binding.
+- A7.6 local ledger/audit evidence and dry-run executor.
 - A7.x optional real-mode design review, only after explicit approval.

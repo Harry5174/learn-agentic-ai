@@ -77,6 +77,18 @@ class CiStatusSummary:
 
 
 @dataclass(frozen=True)
+class RepoFinding:
+    finding_id: str
+    finding_type: str
+    severity: str
+    target_type: str
+    target_number: int
+    title: str
+    summary: str
+    evidence: tuple[str, ...]
+
+
+@dataclass(frozen=True)
 class NormalizedRepoSnapshot:
     repository: RepositoryIdentity
     labels: tuple[LabelRecord, ...]
