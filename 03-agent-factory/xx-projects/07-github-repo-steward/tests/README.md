@@ -9,6 +9,9 @@ Sprint 7.2 adds local runtime tests for deterministic analyzer findings.
 
 Sprint 7.3 adds local runtime tests for non-executing fake proposal drafts.
 
+Sprint 7.4 adds local runtime tests for deterministic proposal policy
+evaluation.
+
 Current tests cover:
 
 - fixture repo loading
@@ -41,22 +44,37 @@ Current tests cover:
 - deterministic proposal order
 - fake provider no-mutation behavior
 - fake provider operation without network sockets
+- structured policy evaluation records
+- safe fake proposal drafts allowed for future operator review
+- policy evaluation IDs
+- policy evaluation order
+- blocked proposals with reasons
+- blocking missing approval requirements
+- blocking non-draft execution status
+- blocking high-risk proposals
+- blocking unsupported proposal and target types
+- blocking empty draft bodies
+- blocking draft text that claims completed actions
+- blocking local token-like guard-pattern strings
+- policy guard no-mutation behavior
+- policy guard operation without network sockets
 
 Current tests do not cover:
 
-- policy guard rejection
 - approval inbox behavior
 - ledger/audit recording
 - dry-run executor
 - no real side effects by default
 
-Run the Sprint 7.2 tests from this artifact directory with:
+Run the current Artifact 07 tests from this artifact directory with:
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src PYTEST_ADDOPTS="-p no:cacheprovider" python -m pytest tests
 ```
 
 Do not treat the fixture loader, normalizer, analyzer, or fake proposal draft
-tests as evidence that future policy, approval, ledger, executor, live GitHub,
-or real LLM behavior exists. Each future behavior needs implementation plus
-focused tests in the sprint that adds it.
+tests as evidence that future approval, ledger, executor, live GitHub, or real
+LLM behavior exists. Do not treat policy guard tests as evidence of approval
+decisions, approval inbox runtime, ledger runtime, dry-run executor runtime, or
+real GitHub integration. Each future behavior needs implementation plus focused
+tests in the sprint that adds it.

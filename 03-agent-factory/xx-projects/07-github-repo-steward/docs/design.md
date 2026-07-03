@@ -244,11 +244,72 @@ small structured proposal shape to validate. It prepares future approval inbox
 work by explicitly marking every draft as requiring future approval. It does
 not implement either layer.
 
-## 15. Non-Goals
+## 15. Sprint 7.4 Proposal Safety / Policy Guard
+
+Sprint 7.4 adds the next local-only runtime slice:
+
+```text
+Local JSON fixture snapshot
+        ↓
+Fixture loader
+        ↓
+Normalizer
+        ↓
+Deterministic analyzer
+        ↓
+Structured findings
+        ↓
+Fake proposal provider
+        ↓
+Non-executing fake proposal drafts
+        ↓
+Local policy guard
+        ↓
+Structured policy evaluations
+```
+
+The policy guard consumes `RepoProposal` objects and returns
+`ProposalPolicyEvaluation` records. Each evaluation has a stable ID, a policy
+verdict, reasons when blocked, the proposal risk level, and explicit flags that
+future operator approval is still required.
+
+The `allowed_for_operator_review` verdict means only that a draft passed the
+Sprint 7.4 local policy checks and may be routed to a future operator-review
+layer. It is not approval, it does not make a proposal executable, and it does
+not record a decision. Every policy evaluation still has
+`requires_operator_approval=True`.
+
+The `blocked_by_policy` verdict means the local guard found an unsafe or
+unsupported draft. Blocked evaluations include reasons and are not safe for
+future operator review.
+
+Policy evaluation differs from approval because it is deterministic local
+screening performed by the harness before any future human decision. Approval
+would require a future operator-review layer, an explicit operator identity,
+and a recorded decision. Sprint 7.4 implements none of that.
+
+Policy evaluation differs from execution because it never mutates a repository,
+never writes a ledger entry, never enqueues approval work, never calls GitHub,
+and never invokes a dry-run or real executor. It only evaluates local proposal
+objects.
+
+Sprint 7.4 also preserves the fixture boundary from Sprint 7.1: the committed
+`fake_repo_snapshot.json` is a canonical internal fixture shape, not a raw
+GitHub REST API payload. Future real GitHub read support must pass through a
+dedicated adapter sprint that maps raw endpoint payloads into this internal
+model before analyzer, proposal, policy, approval, ledger, or executor layers
+consume the data.
+
+This sprint prepares a future approval inbox by producing structured local
+policy results that can later be routed for operator review. It does not
+implement the approval inbox itself.
+
+## 16. Non-Goals
 
 - Full GitHub Repo Steward runtime.
 - Real GitHub reads.
 - Real GitHub writes.
+- GitHub API adapter implementation.
 - Real issue comments.
 - Label mutation.
 - Issue closing.
@@ -256,8 +317,10 @@ not implement either layer.
 - Branch or commit creation.
 - Workflow dispatch.
 - Required real LLM calls.
-- Policy guard runtime.
 - Approval inbox runtime.
+- Approval decisions.
+- Ledger runtime.
+- Dry-run executor runtime.
 - Ledger/audit runtime.
 - Executor or dry-run executor runtime.
 - Background automation.

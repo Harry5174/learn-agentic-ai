@@ -8,6 +8,8 @@ from github_repo_steward.models import (
     IssueRecord,
     LabelRecord,
     NormalizedRepoSnapshot,
+    ProposalPolicyEvaluation,
+    ProposalPolicyEvaluationError,
     PullRequestRecord,
     RepoFinding,
     RepoProposal,
@@ -16,6 +18,10 @@ from github_repo_steward.models import (
     RepoSnapshotValidationError,
 )
 from github_repo_steward.normalizer import normalize_repo_snapshot
+from github_repo_steward.policy_guard import (
+    evaluate_repo_proposal,
+    evaluate_repo_proposals,
+)
 from github_repo_steward.proposal_provider import (
     ProposalProvider,
     validate_repo_proposal,
@@ -33,6 +39,8 @@ __all__ = [
     "IssueRecord",
     "LabelRecord",
     "NormalizedRepoSnapshot",
+    "ProposalPolicyEvaluation",
+    "ProposalPolicyEvaluationError",
     "ProposalProvider",
     "PullRequestRecord",
     "RepoFinding",
@@ -42,6 +50,8 @@ __all__ = [
     "RepositoryIdentity",
     "RepoSnapshotValidationError",
     "analyze_repo_snapshot",
+    "evaluate_repo_proposal",
+    "evaluate_repo_proposals",
     "load_default_fixture_snapshot",
     "load_fixture_snapshot",
     "normalize_repo_snapshot",

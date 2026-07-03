@@ -13,6 +13,45 @@ class RepoProposalValidationError(ValueError):
     """Raised when a fake proposal draft violates local shape invariants."""
 
 
+class ProposalPolicyEvaluationError(ValueError):
+    """Raised when proposal policy evaluation cannot safely inspect input."""
+
+
+@dataclass(frozen=True)
+class ProposalPolicyEvaluation:
+    evaluation_id: str
+    proposal_id: str
+    verdict: str
+    reasons: tuple[str, ...]
+    risk_level: str
+    requires_operator_approval: bool
+    safe_for_operator_review: bool
+
+    def __post_init__(self) -> None:
+        if self.verdict not in {
+            "allowed_for_operator_review",
+            "blocked_by_policy",
+        }:
+            raise ProposalPolicyEvaluationError(
+                f"Unsupported policy verdict: {self.verdict}"
+            )
+        if self.requires_operator_approval is not True:
+            raise ProposalPolicyEvaluationError(
+                "requires_operator_approval must always be True."
+            )
+        if (
+            self.safe_for_operator_review
+            and self.verdict != "allowed_for_operator_review"
+        ):
+            raise ProposalPolicyEvaluationError(
+                "Only allowed proposals may be safe for operator review."
+            )
+        if self.verdict == "blocked_by_policy" and not self.reasons:
+            raise ProposalPolicyEvaluationError(
+                "Blocked policy evaluations must include at least one reason."
+            )
+
+
 @dataclass(frozen=True)
 class RepositoryIdentity:
     owner: str
