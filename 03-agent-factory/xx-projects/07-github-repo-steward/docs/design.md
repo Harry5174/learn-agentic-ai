@@ -304,7 +304,64 @@ This sprint prepares a future approval inbox by producing structured local
 policy results that can later be routed for operator review. It does not
 implement the approval inbox itself.
 
-## 16. Non-Goals
+## 16. Sprint 7.5 Approval Inbox Integration
+
+Sprint 7.5 adds the next local-only runtime slice:
+
+```text
+Local JSON fixture snapshot
+        ↓
+Fixture loader
+        ↓
+Normalizer
+        ↓
+Deterministic analyzer
+        ↓
+Structured findings
+        ↓
+Fake proposal provider
+        ↓
+Non-executing fake proposal drafts
+        ↓
+Local policy guard
+        ↓
+Structured policy evaluations
+        ↓
+Local approval inbox intake
+        ↓
+Pending approval inbox items
+```
+
+The approval inbox integration consumes `RepoProposal` objects and matching
+`ProposalPolicyEvaluation` records. It creates `ApprovalInboxItem` records only
+for evaluations with `allowed_for_operator_review`. Blocked policy evaluations
+do not enter the inbox.
+
+An inbox item with `status="pending_operator_review"` means only that a draft
+is waiting for a future operator decision layer. It is not approval, rejection,
+execution, audit, persistence, or ledger recording. Every inbox item still has
+`requires_operator_approval=True`.
+
+Approval inbox intake differs from operator decision handling because Sprint
+7.5 does not authenticate an operator, accept approve/reject input, bind a
+decision, or record a decision history. It only produces deterministic pending
+items from policy-allowed local drafts.
+
+Approval inbox intake differs from execution because it never mutates a
+repository, never writes a ledger entry, never calls GitHub, and never invokes
+a dry-run or real executor. It only builds local pending-review records.
+
+Sprint 7.5 still preserves the fixture boundary from Sprint 7.1:
+`fake_repo_snapshot.json` is a canonical internal fixture shape, not a raw
+GitHub REST API payload. A future GitHub API adapter sprint remains required
+before any real GitHub read/write claim.
+
+This sprint prepares future operator decision handling by establishing stable
+pending inbox item IDs, deterministic inbox order, and explicit linkage back to
+proposal and policy evaluation records. It does not implement operator
+decision handling itself.
+
+## 17. Non-Goals
 
 - Full GitHub Repo Steward runtime.
 - Real GitHub reads.
@@ -317,7 +374,8 @@ implement the approval inbox itself.
 - Branch or commit creation.
 - Workflow dispatch.
 - Required real LLM calls.
-- Approval inbox runtime.
+- Operator approval decision handling.
+- Operator rejection handling.
 - Approval decisions.
 - Ledger runtime.
 - Dry-run executor runtime.
@@ -326,9 +384,9 @@ implement the approval inbox itself.
 - Background automation.
 - Production deployment.
 
-## 16. Future Sprint Candidates
+## 18. Future Sprint Candidates
 
-- A7.4 policy guard and rejection evidence.
-- A7.5 approval inbox and decision binding.
-- A7.6 local ledger/audit evidence and dry-run executor.
+- A7.6 operator decision handling.
+- A7.7 local ledger/audit evidence.
+- A7.8 dry-run executor.
 - A7.x optional real-mode design review, only after explicit approval.

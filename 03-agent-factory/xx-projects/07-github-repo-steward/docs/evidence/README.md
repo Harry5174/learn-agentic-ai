@@ -65,8 +65,24 @@ For Sprint 7.4, evidence is limited to local proposal policy evaluation:
 - explicit statements about what local policy evaluation does and does not
   prove
 
-Future runtime sprints may add approval records, ledger/audit summaries, or
-dry-run executor evidence.
+For Sprint 7.5, evidence is limited to local approval inbox integration:
+
+- file inventory
+- approval inbox model coverage
+- deterministic inbox item ID and order checks
+- policy-allowed proposal intake checks
+- blocked proposal exclusion checks
+- pending-operator-review status checks
+- no-mutation checks
+- no-secret and no-network checks
+- pytest results
+- compile checks
+- hygiene command results
+- explicit statements about what local approval inbox intake does and does not
+  prove
+
+Future runtime sprints may add operator decision records, ledger/audit
+summaries, or dry-run executor evidence.
 
 ## How Sprint 7.0 Evidence Should Be Interpreted
 
@@ -102,15 +118,23 @@ operator-review layer, not approval. It is local offline test evidence, not
 live GitHub evidence, not real LLM evidence, and not evidence of approval,
 ledger, inbox, dry-run executor, or execution capability.
 
+## How Sprint 7.5 Evidence Should Be Interpreted
+
+Sprint 7.5 evidence proves only that policy-allowed fake proposal drafts can be
+converted into deterministic pending approval inbox items. The
+`pending_operator_review` status is not approval, rejection, execution, ledger
+recording, audit persistence, or a GitHub side effect. It is local offline test
+evidence, not live GitHub evidence and not real LLM evidence.
+
 ## What This Evidence Does Not Prove
 
-Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, and Sprint 7.4 evidence do not
-prove:
+Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, and Sprint 7.5
+evidence do not prove:
 
 - an operational GitHub Repo Steward runtime exists
 - real LLM proposal generation works
 - approval-gated runtime works
-- approval inbox integration works
+- operator approval decision handling works
 - ledger/audit recording works at runtime
 - dry-run execution works
 - real GitHub reads work
@@ -131,5 +155,8 @@ approval decisions, ledger recording, executor behavior, real GitHub behavior,
 or real LLM behavior. Local policy guard tests can prove deterministic policy
 evaluation, but they cannot prove approval decisions, approval inbox behavior,
 ledger recording, executor behavior, real GitHub behavior, or real LLM
-behavior. Any future runtime claim must be backed by tests, command output, and
-safety scans from the sprint that implements that behavior.
+behavior. Local approval inbox tests can prove pending inbox item creation, but
+they cannot prove operator approval or rejection decisions, ledger recording,
+executor behavior, real GitHub behavior, or real LLM behavior. Any future
+runtime claim must be backed by tests, command output, and safety scans from
+the sprint that implements that behavior.

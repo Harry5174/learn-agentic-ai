@@ -15,7 +15,7 @@ This directory contains the numbered artifact sequence for the Agent Factory tra
 | 4 | [04-approval-gated-real-github-comment-adapter](04-approval-gated-real-github-comment-adapter) | Approval-Gated Real GitHub Comment Adapter | Complete as local/demo real-comment adapter (A4.5) |
 | 5 | [05-real-mode-smoke-evidence-release-gate](05-real-mode-smoke-evidence-release-gate) | Real-Mode Smoke Evidence and Release Gate | Complete / published / tagged evidence artifact |
 | 6 | [06-operator-approval-workbench](06-operator-approval-workbench) | Operator Approval Console / Workbench | Current local/demo workbench artifact (A6.5) |
-| 7 | [07-github-repo-steward](07-github-repo-steward) | GitHub Repo Steward | Local fixture snapshot, normalizer, deterministic findings, fake proposal drafts, and local policy evaluation; fake/local/dry-run by default |
+| 7 | [07-github-repo-steward](07-github-repo-steward) | GitHub Repo Steward | Local fixture snapshot, normalizer, deterministic findings, fake proposal drafts, local policy evaluation, and pending inbox items; fake/local/dry-run by default |
 
 Numbering convention:
 
@@ -160,7 +160,8 @@ for the Artifact 6 demo.
 
 **Path:** `07-github-repo-steward`
 **Status:** Local fixture snapshot, normalizer, deterministic findings, and
-non-executing fake proposal drafts with local policy evaluation;
+non-executing fake proposal drafts with local policy evaluation and pending
+approval inbox items;
 fake/local/dry-run by default
 
 **Sprint 7.0 claim:** Artifact 07 is a GitHub Repo Steward vertical agent
@@ -184,14 +185,18 @@ drafts with deterministic local policy rules and produce structured
 `ProposalPolicyEvaluation` records. `allowed_for_operator_review` is not
 approval, and every evaluation still requires future operator approval.
 
+**Sprint 7.5 claim:** Artifact 07 can convert policy-allowed fake proposal
+drafts into deterministic pending approval inbox items. `pending_operator_review`
+is not approval, rejection, execution, ledger recording, or audit persistence.
+
 **Current boundary:** Local fixture intake, normalization, deterministic
-findings, non-executing fake proposal drafts, and local policy evaluation only.
-No real GitHub reads or writes, GitHub API calls, GitHub API adapter, GitHub
-SDKs, real GitHub issue comments, label mutation, issue closing, PR mutation,
-branch or commit creation, workflow dispatch, required real LLM calls, real LLM
-proposal generation, approval decisions, approval inbox runtime, ledger
-runtime, executor runtime, `.env` reads, token reads, background automation, or
-autonomous external side effects are included.
+findings, non-executing fake proposal drafts, local policy evaluation, and
+pending approval inbox item creation only. No real GitHub reads or writes,
+GitHub API calls, GitHub API adapter, GitHub SDKs, real GitHub issue comments,
+label mutation, issue closing, PR mutation, branch or commit creation, workflow
+dispatch, required real LLM calls, real LLM proposal generation, approval or
+rejection decisions, ledger runtime, executor runtime, `.env` reads, token
+reads, background automation, or autonomous external side effects are included.
 
 **Read first:**
 
@@ -203,6 +208,7 @@ autonomous external side effects are included.
 - [Artifact 7.2 validation summary](07-github-repo-steward/docs/evidence/artifact-7.2-validation-summary.md)
 - [Artifact 7.3 validation summary](07-github-repo-steward/docs/evidence/artifact-7.3-validation-summary.md)
 - [Artifact 7.4 validation summary](07-github-repo-steward/docs/evidence/artifact-7.4-validation-summary.md)
+- [Artifact 7.5 validation summary](07-github-repo-steward/docs/evidence/artifact-7.5-validation-summary.md)
 
 ## What Is Not Here Yet
 
@@ -217,7 +223,7 @@ claims.
 
 Artifact 07 currently implements only local fixture snapshot loading,
 normalization, deterministic findings, non-executing fake proposal drafts, and
-local policy evaluation for a future approval-gated repository stewardship
-vertical agent. It does not yet implement approval runtime, ledger runtime,
-executor runtime, real GitHub access, a GitHub API adapter, or a real LLM
-provider requirement.
+local policy evaluation with pending approval inbox item creation for a future
+approval-gated repository stewardship vertical agent. It does not yet implement
+operator decision handling, ledger runtime, executor runtime, real GitHub
+access, a GitHub API adapter, or a real LLM provider requirement.

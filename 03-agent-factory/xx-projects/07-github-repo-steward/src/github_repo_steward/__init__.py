@@ -1,8 +1,14 @@
 """Local fixture intake for Artifact 07 GitHub Repo Steward."""
 
+from github_repo_steward.approval_inbox import (
+    build_approval_inbox,
+    build_approval_inbox_item,
+)
 from github_repo_steward.analyzer import analyze_repo_snapshot
 from github_repo_steward.fake_proposal_provider import FakeProposalProvider
 from github_repo_steward.models import (
+    ApprovalInboxError,
+    ApprovalInboxItem,
     CiStatusSummary,
     CommentRecord,
     IssueRecord,
@@ -33,6 +39,8 @@ from github_repo_steward.repo_snapshot import (
 )
 
 __all__ = [
+    "ApprovalInboxError",
+    "ApprovalInboxItem",
     "CiStatusSummary",
     "CommentRecord",
     "FakeProposalProvider",
@@ -50,6 +58,8 @@ __all__ = [
     "RepositoryIdentity",
     "RepoSnapshotValidationError",
     "analyze_repo_snapshot",
+    "build_approval_inbox",
+    "build_approval_inbox_item",
     "evaluate_repo_proposal",
     "evaluate_repo_proposals",
     "load_default_fixture_snapshot",

@@ -12,6 +12,9 @@ Sprint 7.3 adds local runtime tests for non-executing fake proposal drafts.
 Sprint 7.4 adds local runtime tests for deterministic proposal policy
 evaluation.
 
+Sprint 7.5 adds local runtime tests for pending approval inbox item creation
+from policy-allowed proposal drafts.
+
 Current tests cover:
 
 - fixture repo loading
@@ -58,10 +61,21 @@ Current tests cover:
 - blocking local token-like guard-pattern strings
 - policy guard no-mutation behavior
 - policy guard operation without network sockets
+- structured approval inbox item records
+- policy-allowed proposal drafts entering the inbox
+- blocked proposal drafts being excluded from the inbox
+- pending operator review status on all inbox items
+- future operator approval required on all inbox items
+- deterministic approval inbox item IDs
+- deterministic approval inbox order
+- safe failure for missing, duplicate, extra, or mismatched policy evaluations
+- approval inbox no-mutation behavior
+- approval inbox operation without network sockets
 
 Current tests do not cover:
 
-- approval inbox behavior
+- operator approval decision handling
+- operator rejection handling
 - ledger/audit recording
 - dry-run executor
 - no real side effects by default
@@ -75,6 +89,8 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src PYTEST_ADDOPTS="-p no:cacheprovider" py
 Do not treat the fixture loader, normalizer, analyzer, or fake proposal draft
 tests as evidence that future approval, ledger, executor, live GitHub, or real
 LLM behavior exists. Do not treat policy guard tests as evidence of approval
-decisions, approval inbox runtime, ledger runtime, dry-run executor runtime, or
-real GitHub integration. Each future behavior needs implementation plus focused
-tests in the sprint that adds it.
+decisions, ledger runtime, dry-run executor runtime, or real GitHub
+integration. Do not treat approval inbox tests as evidence of operator
+approval/rejection decisions, ledger runtime, dry-run executor runtime, or real
+GitHub integration. Each future behavior needs implementation plus focused tests
+in the sprint that adds it.

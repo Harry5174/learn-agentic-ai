@@ -17,6 +17,10 @@ class ProposalPolicyEvaluationError(ValueError):
     """Raised when proposal policy evaluation cannot safely inspect input."""
 
 
+class ApprovalInboxError(ValueError):
+    """Raised when approval inbox intake receives inconsistent local data."""
+
+
 @dataclass(frozen=True)
 class ProposalPolicyEvaluation:
     evaluation_id: str
@@ -49,6 +53,41 @@ class ProposalPolicyEvaluation:
         if self.verdict == "blocked_by_policy" and not self.reasons:
             raise ProposalPolicyEvaluationError(
                 "Blocked policy evaluations must include at least one reason."
+            )
+
+
+@dataclass(frozen=True)
+class ApprovalInboxItem:
+    inbox_item_id: str
+    proposal_id: str
+    evaluation_id: str
+    proposal_type: str
+    target_type: str
+    target_number: int
+    title: str
+    draft_body: str
+    risk_level: str
+    status: str
+    requires_operator_approval: bool
+    created_from_policy_verdict: str
+    policy_reasons: tuple[str, ...]
+
+    def __post_init__(self) -> None:
+        if self.status != "pending_operator_review":
+            raise ApprovalInboxError(
+                "Approval inbox items must remain pending_operator_review."
+            )
+        if self.requires_operator_approval is not True:
+            raise ApprovalInboxError(
+                "Approval inbox items must require operator approval."
+            )
+        if self.created_from_policy_verdict != "allowed_for_operator_review":
+            raise ApprovalInboxError(
+                "Approval inbox items must come from allowed policy evaluations."
+            )
+        if self.policy_reasons:
+            raise ApprovalInboxError(
+                "Approval inbox items must not carry blocked policy reasons."
             )
 
 
