@@ -106,6 +106,21 @@ For Sprint 7.6R, evidence is limited to formal design and roadmap revision:
 - secret, local-path, and generated-file checks
 - explicit statements about what the design revision does and does not prove
 
+For Sprint 7.7, evidence is limited to local ledger/audit record integration:
+
+- file inventory
+- ledger/audit model coverage
+- approved and rejected operator decision ledger checks
+- deterministic ledger record ID and order checks
+- evidence-reference preservation checks
+- no-mutation checks
+- no-secret and no-network checks
+- no-file-persistence checks
+- pytest results
+- compile checks
+- hygiene command results
+- explicit statements about what local ledger/audit records do and do not prove
+
 Future runtime sprints may add ledger/audit summaries, dry-run executor
 evidence, GitHub adapter evidence, real-read evidence, or real-write readiness
 evidence. Each future evidence package must be interpreted by the sprint layer
@@ -123,8 +138,10 @@ that produced it.
 - 7.6 operator decision evidence proves local operator decision records only.
 - 7.6R design revision evidence proves documentation and roadmap alignment
   only.
-- Future ledger, executor, GitHub adapter, real-read, and real-write evidence
-  must be produced by the sprint that implements or gates that layer.
+- 7.7 ledger/audit evidence proves local in-memory audit records for operator
+  decision evidence only.
+- Future executor, GitHub adapter, real-read, and real-write evidence must be
+  produced by the sprint that implements or gates that layer.
 
 Earlier evidence does not prove later layers.
 
@@ -186,15 +203,25 @@ safety-boundary documentation, evidence interpretation, tests coverage wording,
 and project index wording were revised after Sprint 7.6. It is documentation
 evidence, not runtime evidence.
 
+## How Sprint 7.7 Evidence Should Be Interpreted
+
+Sprint 7.7 evidence proves only that local operator decision records can be
+converted into deterministic local ledger/audit records with matching approval
+inbox context. These records preserve decision evidence and explicitly retain
+`execution_status="not_executed"`, `github_status="not_called"`, and
+`executor_status="not_triggered"`. It is local offline test evidence, not
+durable persistence evidence, not executor evidence, not live GitHub evidence,
+and not real LLM evidence.
+
 ## What This Evidence Does Not Prove
 
 Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint 7.5,
-Sprint 7.6, and Sprint 7.6R evidence do not prove:
+Sprint 7.6, Sprint 7.6R, and Sprint 7.7 evidence do not prove:
 
 - an operational GitHub Repo Steward runtime exists
 - real LLM proposal generation works
 - approval-gated runtime works
-- ledger/audit recording works at runtime
+- durable ledger/audit persistence works
 - dry-run execution works
 - real GitHub reads work
 - GitHub API adapter correctness
@@ -219,6 +246,9 @@ they cannot prove operator approval or rejection decisions, ledger recording,
 executor behavior, real GitHub behavior, or real LLM behavior. Local operator
 decision tests can prove local approve/reject decision records, but they cannot
 prove ledger recording, durable audit persistence, executor behavior, real
+GitHub behavior, or real LLM behavior. Local ledger/audit tests can prove local
+in-memory audit records for operator decision evidence, but they cannot prove
+durable audit persistence, dry-run executor behavior, executor behavior, real
 GitHub behavior, or real LLM behavior. Any future runtime claim must be backed
 by tests, command output, and safety scans from the sprint that implements that
 behavior.

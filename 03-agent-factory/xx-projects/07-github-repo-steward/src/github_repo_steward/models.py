@@ -25,6 +25,10 @@ class OperatorDecisionError(ValueError):
     """Raised when local operator decision input is malformed or inconsistent."""
 
 
+class LedgerAuditError(ValueError):
+    """Raised when local ledger/audit input is malformed or inconsistent."""
+
+
 @dataclass(frozen=True)
 class OperatorDecisionRecord:
     decision_id: str
@@ -63,6 +67,67 @@ class OperatorDecisionRecord:
             raise OperatorDecisionError(
                 "rejected_by_operator decisions require a rationale."
             )
+
+
+@dataclass(frozen=True)
+class LedgerAuditRecord:
+    ledger_record_id: str
+    decision_id: str
+    inbox_item_id: str
+    proposal_id: str
+    decision: str
+    decided_by: str
+    decision_rationale: str
+    record_type: str
+    record_status: str
+    execution_status: str
+    github_status: str
+    executor_status: str
+    source_snapshot_id: str
+    evidence_refs: tuple[str, ...]
+
+    def __post_init__(self) -> None:
+        if self.decision not in {
+            "approved_by_operator",
+            "rejected_by_operator",
+        }:
+            raise LedgerAuditError(
+                f"Unsupported operator decision: {self.decision}"
+            )
+        if self.record_type != "operator_decision_audit":
+            raise LedgerAuditError(
+                "Ledger audit records must be operator_decision_audit."
+            )
+        if self.record_status != "recorded_locally":
+            raise LedgerAuditError(
+                "Ledger audit records must be recorded_locally."
+            )
+        if self.execution_status != "not_executed":
+            raise LedgerAuditError(
+                "Ledger audit records must not claim execution."
+            )
+        if self.github_status != "not_called":
+            raise LedgerAuditError(
+                "Ledger audit records must not claim GitHub calls."
+            )
+        if self.executor_status != "not_triggered":
+            raise LedgerAuditError(
+                "Ledger audit records must not claim executor work."
+            )
+        if not self.decision_id:
+            raise LedgerAuditError("decision_id is required.")
+        if not self.inbox_item_id:
+            raise LedgerAuditError("inbox_item_id is required.")
+        if not self.proposal_id:
+            raise LedgerAuditError("proposal_id is required.")
+        if not self.decided_by:
+            raise LedgerAuditError("decided_by is required.")
+        if not isinstance(self.source_snapshot_id, str):
+            raise LedgerAuditError("source_snapshot_id must be a string.")
+        if not isinstance(self.evidence_refs, tuple) or not all(
+            isinstance(ref, str) for ref in self.evidence_refs
+        ):
+            raise LedgerAuditError("evidence_refs must be a tuple of strings.")
 
 
 @dataclass(frozen=True)

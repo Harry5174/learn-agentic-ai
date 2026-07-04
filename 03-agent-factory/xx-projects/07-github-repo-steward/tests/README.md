@@ -20,23 +20,27 @@ records on pending approval inbox items.
 
 Sprint 7.6R is documentation-only and adds no runtime tests.
 
+Sprint 7.7 adds local runtime tests for ledger/audit records created from
+operator decisions and matching approval inbox items.
+
 Coverage by sprint:
 
+- 7.0 placeholder tests
 - 7.1 fixture/normalizer tests
 - 7.2 analyzer tests
-- 7.3 proposal/fake-provider tests
+- 7.3 proposal-boundary/fake-provider tests
 - 7.4 policy guard tests
 - 7.5 approval inbox tests
 - 7.6 operator decision tests
+- 7.7 ledger/audit-record tests
 
 Future test coverage needed:
 
-- future 7.7 ledger tests
 - future 7.8 dry-run executor tests
 - future 7.9 GitHub adapter tests
 
-Current tests do not cover ledger, executor, GitHub adapter, or real GitHub
-behavior.
+Current tests do not cover dry-run executor, executor runtime, GitHub adapter,
+or real GitHub behavior.
 
 Current tests cover:
 
@@ -110,10 +114,28 @@ Current tests cover:
 - operator decision operation without `GITHUB_TOKEN`, `OPENAI_API_KEY`, or
   `ANTHROPIC_API_KEY`
 - operator decision operation without network sockets
+- structured ledger/audit records
+- approved operator decisions ledgered locally
+- rejected operator decisions ledgered locally
+- ledger records preserving decision, proposal, inbox, operator, and rationale
+  values
+- ledger records with `execution_status="not_executed"`
+- ledger records with `github_status="not_called"`
+- ledger records with `executor_status="not_triggered"`
+- mismatched decision/inbox data rejection
+- duplicate ledger decision rejection
+- extra ledger evidence-reference rejection
+- empty ledger batch behavior
+- deterministic ledger record IDs
+- deterministic ledger record order
+- ledger no-mutation behavior for decision records and inbox items
+- ledger operation without `GITHUB_TOKEN`, `OPENAI_API_KEY`, or
+  `ANTHROPIC_API_KEY`
+- ledger operation without network sockets
+- ledger operation without file creation
 
 Current tests do not cover:
 
-- ledger/audit recording
 - dry-run executor
 - executor runtime
 - GitHub API read adapter
@@ -135,6 +157,8 @@ decisions, ledger runtime, dry-run executor runtime, or real GitHub
 integration. Do not treat approval inbox tests as evidence of operator
 approval/rejection decisions, ledger runtime, dry-run executor runtime, or real
 GitHub integration. Do not treat operator decision tests as evidence of
-ledger/audit runtime, dry-run executor runtime, or real GitHub integration.
-Each future behavior needs implementation plus focused tests in the sprint that
-adds it.
+ledger/audit runtime, dry-run executor runtime, or real GitHub integration. Do
+not treat ledger/audit-record tests as evidence of durable persistence, dry-run
+executor runtime, executor runtime, GitHub adapter behavior, or real GitHub
+integration. Each future behavior needs implementation plus focused tests in
+the sprint that adds it.

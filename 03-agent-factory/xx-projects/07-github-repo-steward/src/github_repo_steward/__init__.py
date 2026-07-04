@@ -6,6 +6,10 @@ from github_repo_steward.approval_inbox import (
 )
 from github_repo_steward.analyzer import analyze_repo_snapshot
 from github_repo_steward.fake_proposal_provider import FakeProposalProvider
+from github_repo_steward.ledger import (
+    record_decision_to_ledger,
+    record_decisions_to_ledger,
+)
 from github_repo_steward.models import (
     ApprovalInboxError,
     ApprovalInboxItem,
@@ -13,6 +17,8 @@ from github_repo_steward.models import (
     CommentRecord,
     IssueRecord,
     LabelRecord,
+    LedgerAuditError,
+    LedgerAuditRecord,
     NormalizedRepoSnapshot,
     OperatorDecisionError,
     OperatorDecisionRecord,
@@ -52,6 +58,8 @@ __all__ = [
     "FakeProposalProvider",
     "IssueRecord",
     "LabelRecord",
+    "LedgerAuditError",
+    "LedgerAuditRecord",
     "NormalizedRepoSnapshot",
     "OperatorDecisionError",
     "OperatorDecisionRecord",
@@ -73,6 +81,8 @@ __all__ = [
     "load_default_fixture_snapshot",
     "load_fixture_snapshot",
     "normalize_repo_snapshot",
+    "record_decision_to_ledger",
+    "record_decisions_to_ledger",
     "record_operator_decision",
     "record_operator_decisions",
     "validate_repo_proposal",
