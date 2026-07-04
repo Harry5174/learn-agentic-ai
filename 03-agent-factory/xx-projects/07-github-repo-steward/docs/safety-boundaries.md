@@ -3,29 +3,54 @@
 ## 1. Safety Invariants
 
 - Use fake/local/dry-run behavior by default.
+- Real mode explicit only.
 - Do not read `.env`.
+- Do not paste `.env`.
+- Do not print secrets.
 - Do not read, print, or require credentials in Sprint 7.0, Sprint 7.1, Sprint
-  7.2, Sprint 7.3, Sprint 7.4, Sprint 7.5, or Sprint 7.6.
+  7.2, Sprint 7.3, Sprint 7.4, Sprint 7.5, Sprint 7.6, or Sprint 7.6R.
 - Do not call GitHub APIs in Sprint 7.1, Sprint 7.2, Sprint 7.3, or Sprint
-  7.4, Sprint 7.5, or Sprint 7.6.
+  7.4, Sprint 7.5, Sprint 7.6, or Sprint 7.6R.
 - Do not perform real GitHub reads or writes in Sprint 7.1, Sprint 7.2, or
-  Sprint 7.3, Sprint 7.4, Sprint 7.5, or Sprint 7.6.
+  Sprint 7.3, Sprint 7.4, Sprint 7.5, Sprint 7.6, or Sprint 7.6R.
 - Do not run live external side effects.
+- Do not run live external side effects without Product Owner approval.
 - Treat proposal-provider output as untrusted.
 - Validate and policy-check proposed actions before approval.
 - Require operator approval before any future external side effect.
 - Record ledger/audit evidence before claiming execution success.
 - Preserve the invariant: LLM proposes; harness decides; operator approves;
   executor acts only after approval.
+- Do not overclaim mocked, fake/default, local demo, unpublished, or untagged
+  work as production-ready.
+- Raw GitHub API responses must pass through a dedicated adapter before
+  internal layers consume them.
 
-## 2. Default-Deny Behavior
+## 2. Post-7.6 Safety Boundary
+
+After Sprint 7.6, Artifact 07 has local fixture intake, normalization,
+deterministic analysis, fake proposal drafts, local policy evaluation, pending
+approval inbox items, and local operator decision records only.
+
+- Ledger work remains future.
+- Executor work remains future.
+- Dry-run executor remains future.
+- GitHub API adapter remains future.
+- Real GitHub read/write remains future.
+- Real LLM integration remains future.
+
+Sprint 7.6R is documentation-only. It does not implement ledger runtime,
+executor runtime, dry-run executor runtime, GitHub API adapter logic, real
+GitHub reads, real GitHub writes, or real LLM integration.
+
+## 3. Default-Deny Behavior
 
 If a future proposal is ambiguous, unsafe, unsupported, outside policy, missing
 evidence, or not explicitly approved, the harness should reject it or keep it in
 dry-run/non-executing state. Default-deny is the expected behavior for all
 unclear cases.
 
-## 3. Fake GitHub Boundary
+## 4. Fake GitHub Boundary
 
 Sprint 7.1 adds a local fixture snapshot and normalizer only. Sprint 7.2 adds a
 deterministic analyzer over that normalized local snapshot only. Sprint 7.3
@@ -40,23 +65,23 @@ analysis, non-executing proposal drafts, local policy evaluation, pending
 approval inbox items, and local decision records, but it must not imply live
 repository mutation.
 
-## 4. Real GitHub Boundary
+## 5. Real GitHub Boundary
 
 Real GitHub behavior is out of scope for Sprint 7.0, Sprint 7.1, Sprint 7.2,
-Sprint 7.3, Sprint 7.4, Sprint 7.5, and Sprint 7.6. Future real GitHub access,
-if ever approved, must be explicit, allowlisted, policy-gated,
+Sprint 7.3, Sprint 7.4, Sprint 7.5, Sprint 7.6, and Sprint 7.6R. Future real
+GitHub access, if ever approved, must be explicit, allowlisted, policy-gated,
 operator-approved, audited, and separate from the default demo path. A future
 GitHub API adapter sprint is required before raw GitHub API payloads may feed
 analyzer, proposal, policy, approval, operator decision, ledger, or executor
 layers.
 
-## 5. Fake LLM Boundary
+## 6. Fake LLM Boundary
 
 Future default proposal behavior should be deterministic and fake. Fake proposal
 providers should let tests prove validation, policy rejection, approval routing,
 and dry-run behavior without a network call or provider credential.
 
-## 6. Real LLM Boundary
+## 7. Real LLM Boundary
 
 Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint 7.5, and
 Sprint 7.6 add no real LLM provider. A future provider-neutral LLM boundary may
@@ -64,7 +89,7 @@ be designed only as an optional layer. Real provider use must not allow the
 model to execute tools, approve side effects, reject side effects, alter policy,
 or select real execution mode.
 
-## 7. Sprint 7.3 Proposal Draft Invariants
+## 8. Sprint 7.3 Proposal Draft Invariants
 
 - All Sprint 7.3 proposal objects are drafts.
 - All Sprint 7.3 proposal objects require future approval.
@@ -75,7 +100,7 @@ or select real execution mode.
   applied, issues were closed, pull requests were changed, or any repository
   mutation occurred.
 
-## 8. Approval Requirements
+## 9. Approval Requirements
 
 Any future external side effect requires:
 
@@ -107,7 +132,7 @@ work, or prove a future side effect is safe to execute. `rejected_by_operator`
 means only that a local rejection record was created for a pending inbox item.
 It does not write a ledger entry or durable audit event.
 
-## 9. Ledger/Audit Requirements
+## 10. Ledger/Audit Requirements
 
 Future runtime sprints should record:
 
@@ -122,7 +147,7 @@ Future runtime sprints should record:
 
 Sprint 7.0 creates only the documentation location for this future evidence.
 
-## 10. Secret Handling
+## 11. Secret Handling
 
 Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint 7.5, and
 Sprint 7.6 must not read secrets, print secrets, create secret placeholders
@@ -134,7 +159,7 @@ Sprint 7.4 includes local guard-pattern literals such as `GITHUB_TOKEN=`,
 prove token-like draft text is blocked. Safety-scan hits for these strings must
 be classified as intentional local guard-pattern literals, not secret values.
 
-## 11. Forbidden Actions in Sprint 7.0
+## 12. Forbidden Actions in Sprint 7.0
 
 Sprint 7.0 explicitly forbids:
 
@@ -156,7 +181,7 @@ The local git branch and local commit used to package this documentation sprint
 are repository maintenance actions for the sprint itself, not Artifact 07
 runtime capabilities.
 
-## 12. Forbidden Actions in Sprint 7.1
+## 13. Forbidden Actions in Sprint 7.1
 
 Sprint 7.1 explicitly forbids:
 
@@ -181,7 +206,7 @@ Sprint 7.1 explicitly forbids:
 - background automation
 - autonomous external side effects
 
-## 13. Forbidden Actions in Sprint 7.2
+## 14. Forbidden Actions in Sprint 7.2
 
 Sprint 7.2 explicitly forbids:
 
@@ -211,7 +236,7 @@ The local git branch and local commit used to package this implementation
 sprint are repository maintenance actions for the sprint itself, not Artifact
 07 runtime capabilities.
 
-## 14. Forbidden Actions in Sprint 7.3
+## 15. Forbidden Actions in Sprint 7.3
 
 Sprint 7.3 explicitly forbids:
 
@@ -241,7 +266,7 @@ The local git branch and local commit used to package this implementation
 sprint are repository maintenance actions for the sprint itself, not Artifact
 07 runtime capabilities.
 
-## 15. Forbidden Actions in Sprint 7.4
+## 16. Forbidden Actions in Sprint 7.4
 
 Sprint 7.4 explicitly forbids:
 
@@ -281,7 +306,7 @@ Sprint 7.4 policy guard invariants:
 - Policy guard does not enqueue approval inbox items.
 - All proposals still require future operator approval.
 
-## 16. Forbidden Actions in Sprint 7.5
+## 17. Forbidden Actions in Sprint 7.5
 
 Sprint 7.5 explicitly forbids:
 
@@ -322,7 +347,7 @@ Sprint 7.5 approval inbox invariants:
 - Approval inbox does not call GitHub.
 - All inbox items remain pending future operator review.
 
-## 17. Forbidden Actions in Sprint 7.6
+## 18. Forbidden Actions in Sprint 7.6
 
 Sprint 7.6 explicitly forbids:
 
@@ -364,7 +389,36 @@ Sprint 7.6 operator decision invariants:
 - Operator decisions do not enqueue executor work.
 - All execution remains out of scope.
 
-## 18. Overclaim Prevention
+## 19. Forbidden Actions in Sprint 7.6R
+
+Sprint 7.6R explicitly forbids:
+
+- runtime source changes
+- ledger runtime
+- audit persistence runtime
+- executor runtime
+- dry-run executor runtime
+- real GitHub reads
+- real GitHub writes
+- GitHub API calls
+- GitHub API adapter implementation
+- GitHub SDKs
+- real GitHub issue comments
+- real label mutation
+- real issue closing
+- real PR mutation
+- workflow dispatch
+- token reads
+- `.env` reads
+- required real LLM calls
+- real LLM proposal generation
+- background automation
+- autonomous external side effects
+- final green-gate claims by the IDE Agent
+
+Sprint 7.6R may revise documentation and evidence interpretation only.
+
+## 20. Overclaim Prevention
 
 Allowed Sprint 7.0 claim:
 
@@ -415,8 +469,15 @@ Sprint 7.6 local operator decision handling for pending inbox items is
 implemented when tests and validation evidence support that claim.
 ```
 
+Allowed Sprint 7.6R claim:
+
+```text
+Sprint 7.6R formal design outline and roadmap revision is complete when
+documentation validation evidence supports that claim.
+```
+
 Forbidden Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint
-7.5, and Sprint 7.6 claims:
+7.5, Sprint 7.6, and Sprint 7.6R claims:
 
 - Artifact 07 is complete.
 - Artifact 07 is operational.
@@ -430,7 +491,7 @@ Forbidden Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint
 - Artifact 07 has executable approval decisions for proposal drafts.
 - Artifact 07 proves production readiness.
 
-## 19. Green-Gate Safety Checklist
+## 21. Green-Gate Safety Checklist
 
 - [ ] Artifact 07 directory exists.
 - [ ] Documentation scaffold is complete.

@@ -4,10 +4,27 @@ Artifact 07 is a GitHub Repo Steward vertical agent scaffold.
 
 ## Artifact Status
 
-Artifact 07 has local fixture intake, normalization, deterministic finding
-analysis, non-executing fake proposal drafts, and deterministic local policy
-evaluation with pending approval inbox items and local operator decision
-records. It is not a completed steward agent.
+Current status after Sprint 7.6:
+
+- local fixture intake
+- normalization
+- deterministic observational findings
+- non-executing fake proposal drafts
+- deterministic local policy evaluation
+- pending approval inbox items
+- local operator decision records
+
+Artifact 07 is not a completed steward agent.
+
+Still not implemented:
+
+- ledger/audit runtime
+- dry-run executor
+- executor runtime
+- GitHub API read adapter
+- real GitHub integration
+- real LLM integration
+- production readiness
 
 ## Sprint Status
 
@@ -23,7 +40,9 @@ Sprint 7.4: closed - proposal safety / policy guard.
 
 Sprint 7.5: closed - approval inbox integration.
 
-Sprint 7.6: operator decision handling.
+Sprint 7.6: closed - operator decision handling.
+
+Sprint 7.6R: current - documentation and roadmap revision only.
 
 Runtime status: local fixture intake, normalization, deterministic findings,
 non-executing fake proposals, local policy evaluation, and pending approval
@@ -380,11 +399,19 @@ decision is not implemented in Sprint 7.0.
 
 ## Future Sprint Direction
 
-Future sprints may add:
+Future sprints may add, subject to Design Supervisor authorization:
 
-- ledger/audit recording
-- dry-run executor behavior
-- optional real-mode design gates, only after separate approval
+- Sprint 7.7 local ledger/audit record integration
+- Sprint 7.8 dry-run executor behavior
+- Sprint 7.9 GitHub API read adapter contract
+- Sprint 7.10 real-read mode evidence gate
+- Sprint 7.11 real-write readiness gate
+- Sprint 7.12 Artifact 07 closeout and AFDF framework update
+
+The GitHub API adapter and real-mode gates remain after local ledger/audit and
+dry-run executor work. Raw GitHub API responses must pass through a dedicated
+adapter before internal analyzer, proposal, policy, approval, ledger, or
+executor layers consume them.
 
 ## How to Review This Scaffold
 
@@ -400,6 +427,7 @@ Review the following files:
 - [Sprint 7.4 validation summary](docs/evidence/artifact-7.4-validation-summary.md)
 - [Sprint 7.5 validation summary](docs/evidence/artifact-7.5-validation-summary.md)
 - [Sprint 7.6 validation summary](docs/evidence/artifact-7.6-validation-summary.md)
+- [Sprint 7.6R validation summary](docs/evidence/artifact-7.6r-validation-summary.md)
 - [Tests README](tests/README.md)
 
 Check that every runtime claim is limited to local fixture intake and

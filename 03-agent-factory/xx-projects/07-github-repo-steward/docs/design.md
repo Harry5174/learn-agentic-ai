@@ -1,463 +1,252 @@
-# Artifact 07 Design Scaffold
+# Artifact 07 Design Outline
 
-## 1. Problem Statement
+## 1. Current Status After Sprint 7.6
 
-The Agent Factory sequence has proven controlled local/demo side effects,
-release-gated real GitHub issue-comment evidence, and an operator approval
-workbench. The next vertical-agent step needs a GitHub Repo Steward that can
-reason over repository state and propose useful maintenance actions without
-turning model output into autonomous repository mutation.
-
-Sprint 7.0 documents the intended shape before implementation begins.
-
-## 2. Artifact 07 Thesis
-
-Artifact 07 should demonstrate a proposal-first repository stewardship agent:
+Artifact 07 is a local/fake GitHub Repo Steward vertical-agent scaffold. After
+Sprint 7.6, the implemented local layers are:
 
 ```text
-LLM proposes.
-Harness decides.
-Operator approves.
-Executor acts only after approval.
+canonical fixture snapshot
+normalizer
+deterministic analyzer
+fake proposal provider
+policy guard
+approval inbox
+operator decision records
 ```
 
-The model or proposal provider may suggest actions, but the harness owns
-normalization, validation, policy, approval routing, execution mode, ledger
-state, and audit evidence.
+These layers operate on committed local fixture data and deterministic in-memory
+records. They do not read GitHub, call GitHub APIs, call a real LLM provider,
+write ledger/audit records, run an executor, or perform repository mutation.
 
-## 3. Intended User/Operator Flow
+Sprint 7.6R is a documentation and roadmap revision sprint only. It updates the
+formal design outline to match the implementation path through Sprint 7.6 and
+to make the remaining safety gates explicit before future ledger, executor, and
+real GitHub work.
 
-1. A local fixture repo snapshot is loaded.
-2. The repo intake layer normalizes issues, repository metadata, and candidate
-   stewardship context.
-3. A repo steward analyzer identifies deterministic observations and risks.
-4. A fake proposal provider suggests candidate stewardship actions.
-5. A safety and policy guard accepts, rejects, or requires approval for each
-   proposal.
-6. Approval-required proposals enter an approval inbox.
-7. The operator approves or rejects with evidence visible.
-8. Approved proposals are recorded in a ledger/audit trail.
-9. The executor runs in dry-run mode by default and records what would happen.
+## 2. Completed Sprint Summary
 
-## 4. Proposed Future Architecture
+| Sprint | Name | Status | Narrow Capability Proven |
+|--------|------|--------|--------------------------|
+| 7.0 | Design Scaffold and Safety Contract | closed | Documentation scaffold, safety contract, evidence locations, and future test plan. |
+| 7.1 | Fixture Repo Snapshot and Normalizer | closed | Local fixture loading and typed normalization into internal records. |
+| 7.2 | Deterministic Repo Steward Analyzer | closed | Deterministic local stewardship findings from normalized fixture data. |
+| 7.3 | Proposal Model and Fake Proposal Provider Boundary | closed | Non-executing fake proposal drafts from deterministic findings. |
+| 7.4 | Proposal Safety / Policy Guard | closed | Deterministic local policy evaluations for fake proposal drafts. |
+| 7.5 | Approval Inbox Integration | closed | Pending approval inbox items from policy-allowed proposal drafts. |
+| 7.6 | Operator Decision Handling | closed | Local approve/reject operator decision records for pending inbox items. |
+| 7.6R | Formal Design Outline Revision and Roadmap Alignment | current | Documentation-only alignment of design, roadmap, safety boundaries, and evidence interpretation. |
+
+Each sprint proves only its own layer. Earlier evidence does not prove later
+layers.
+
+## 3. Revised Architecture Diagram
 
 ```text
-Fixture Repo Snapshot
-        ↓
-Repo Intake / Normalizer
-        ↓
-Repo Steward Analyzer
-        ↓
-Proposal Provider
-        ↓
-Safety / Policy Guard
-        ↓
+Canonical Internal Fixture Snapshot
+        |
+        v
+Normalizer
+        |
+        v
+Deterministic Analyzer
+        |
+        v
+Fake Proposal Provider
+        |
+        v
+Policy Guard
+        |
+        v
 Approval Inbox
-        ↓
-Operator Decision
-        ↓
-Ledger / Audit Evidence
-        ↓
-Dry-run Executor by default
+        |
+        v
+Operator Decision Record
+        |
+        v
+Future Ledger / Audit Record
+        |
+        v
+Future Dry-Run Executor
+        |
+        v
+Future GitHub API Read Adapter Contract
+        |
+        v
+Future Real-Read Evidence Gate
+        |
+        v
+Future Real-Write Readiness Gate
 ```
 
-This is an architecture target for future sprints, not implemented runtime in
-Sprint 7.0.
+Implemented through Sprint 7.6:
 
-## 5. Key Boundaries
+- canonical internal fixture snapshot
+- normalizer
+- deterministic analyzer
+- fake proposal provider
+- policy guard
+- approval inbox
+- local operator decision records
 
-- Fixture/local input before any live repository input.
-- Fake proposal provider before any real LLM provider.
-- Dry-run executor before any real external side effect.
-- Policy guard before approval inbox.
-- Operator decision before execution.
-- Ledger/audit evidence before any completion claim.
+Future, unimplemented layers:
 
-## 6. Proposal-First Model
+- ledger/audit runtime
+- dry-run executor
+- executor runtime
+- GitHub API read adapter
+- real-read evidence gate
+- real-write readiness gate
 
-The proposal provider produces candidate actions. It does not execute them,
-authorize them, mutate repositories, or bypass policy. Proposals should be
-treated as untrusted input until normalized, validated, policy-checked, and
-approved when needed.
+## 4. Current Runtime Capability Boundary
 
-Initial proposal examples for future sprints may include draft issue triage,
-label suggestions, stale-issue recommendations, documentation cleanup
-recommendations, or dependency review notes. In Sprint 7.0 these remain design
-examples only.
+The current runtime can load a committed local fixture snapshot, normalize it,
+derive deterministic findings, create fake proposal drafts, evaluate those
+drafts with local policy rules, build pending approval inbox items, and record
+local operator approve/reject decision records.
 
-## 7. Approval-Gated Side Effect Model
+The current runtime cannot:
 
-Any future external side effect must be routed through:
+- persist ledger/audit records
+- run a dry-run executor
+- run any executor
+- call GitHub APIs
+- read live GitHub data
+- write live GitHub data
+- adapt raw GitHub API responses
+- call a real LLM provider
+- prove production readiness
 
-1. validated proposal intent
-2. policy decision
-3. approval requirement
-4. operator approval
-5. ledger/audit recording
-6. explicit execution mode
-7. executor result evidence
+`approved_by_operator` means only that a local decision record exists.
+`rejected_by_operator` means only that a local rejection record exists. Neither
+status executes, writes ledger/audit entries, calls GitHub, or proves a future
+side effect is safe.
 
-Without those controls, the executor must not perform real repository mutation.
+## 5. Canonical Fixture vs Raw GitHub API Boundary
 
-## 8. Fake/Default-First GitHub Strategy
+The committed `fake_repo_snapshot.json` fixture is a canonical internal fixture
+shape. It is not a raw GitHub REST API response mock.
 
-Sprint 7.0 adds no GitHub client. Future sprints should start with fixture repo
-snapshots and fake GitHub adapters. Real GitHub writes must remain out of the
-default path and require separate Product Owner approval before implementation
-or execution.
-
-## 9. Fake/Default-First LLM Strategy
-
-Sprint 7.0 adds no real LLM provider requirement. Future sprints should start
-with deterministic fake proposal providers so tests can prove policy and
-approval behavior without network access, credentials, cost, or nondeterminism.
-
-An optional provider-neutral boundary may be designed later, but no provider
-should be required for the default demo.
-
-## 10. Relationship to Previous Artifacts
-
-- Artifact 04 provides the local/demo real GitHub comment adapter boundary and
-  shows why real external side effects require explicit gates.
-- Artifact 05 packages release-gate evidence and reinforces that live evidence
-  must be narrow, redacted, and not overclaimed.
-- Artifact 06 provides the operator approval workbench context for reviewing
-  proposed actions before execution.
-- Artifact 07 should inherit these safety lessons while staying a vertical-agent
-  scaffold in Sprint 7.0.
-
-## 11. Sprint 7.0 Deliverables
-
-- Artifact README.
-- Design scaffold.
-- Safety-boundary contract.
-- Evidence README.
-- Sprint 7.0 validation summary.
-- Tests placeholder and future test plan.
-- Root artifact index updates where applicable.
-
-## 12. Sprint 7.1 Fixture Snapshot and Normalizer
-
-Sprint 7.1 adds the first local runtime slice:
+The internal Artifact 07 layers consume normalized internal records, not raw
+GitHub endpoint payloads. Future real GitHub read work must introduce a
+dedicated adapter boundary:
 
 ```text
-Local JSON fixture snapshot
-        ↓
-Fixture loader
-        ↓
-Normalizer
-        ↓
-Typed internal records
+Raw GitHub API Responses
+        |
+        v
+GitHub API Read Adapter
+        |
+        v
+Canonical Internal Repo Snapshot
+        |
+        v
+Normalizer / Analyzer / Proposal / Policy / Approval layers
 ```
 
-This slice loads a committed fake GitHub-like repository snapshot from disk and
-normalizes repository identity, labels, issues, pull requests, comments, and
-CI/status summaries into dataclass records.
+Raw GitHub API responses must never be fed directly into analyzer, proposal,
+policy, approval, ledger, or executor layers.
 
-The fixture uses fixed timestamps and explicit `stale_days` values so tests are
-deterministic and do not depend on the current date. The loader and normalizer
-use only the Python standard library and do not read environment variables,
-`.env`, network resources, GitHub APIs, or LLM providers.
+## 6. Required GitHub API Adapter Gate
 
-The normalizer prepares future analyzer work by creating a stable typed input
-shape. It does not analyze the repository, infer stewardship actions, generate
-proposals, route approvals, write ledger records, or execute anything.
+A future GitHub API adapter sprint must be completed before any real-read or
+real-write claim. That adapter must prove:
 
-## 13. Sprint 7.2 Deterministic Analyzer
+- raw GitHub endpoint payloads are mapped into the canonical internal snapshot
+  shape
+- missing or malformed remote data fails safely
+- authentication and token handling are not exposed to internal layers
+- analyzer/proposal/policy/approval layers continue to consume internal records
+- no real write path is introduced by the read adapter itself
 
-Sprint 7.2 adds the next local-only runtime slice:
+The adapter gate must happen after local ledger/audit and dry-run executor
+work, so future real-read evidence has a safer local record and execution
+boundary to attach to.
 
-```text
-Local JSON fixture snapshot
-        ↓
-Fixture loader
-        ↓
-Normalizer
-        ↓
-Deterministic analyzer
-        ↓
-Structured findings
-```
+## 7. Revised Future Sprint Roadmap
 
-The analyzer consumes `NormalizedRepoSnapshot` and returns `RepoFinding`
-records. Findings are observations about local fixture state, not proposals and
-not executable actions. They have stable IDs, stable ordering, severity, target
-metadata, summaries, and evidence strings.
+Future numbering is provisional until approved by the Design Supervisor, but the
+order is intentional: ledger and dry-run executor work happen before GitHub API
+adapter and real-mode gates.
 
-Sprint 7.2 implements deterministic rules for:
+| Sprint | Name | Status |
+|--------|------|--------|
+| 7.0 | Design Scaffold and Safety Contract | closed |
+| 7.1 | Fixture Repo Snapshot and Normalizer | closed |
+| 7.2 | Deterministic Repo Steward Analyzer | closed |
+| 7.3 | Proposal Model and Fake Proposal Provider Boundary | closed |
+| 7.4 | Proposal Safety / Policy Guard | closed |
+| 7.5 | Approval Inbox Integration | closed |
+| 7.6 | Operator Decision Handling | closed |
+| 7.6R | Formal Design Outline Revision and Roadmap Alignment | current |
+| 7.7 | Local Ledger / Audit Record Integration | future |
+| 7.8 | Dry-Run Executor | future |
+| 7.9 | GitHub API Read Adapter Contract | future |
+| 7.10 | Real-Read Mode Evidence Gate | future |
+| 7.11 | Real-Write Readiness Gate | future |
+| 7.12 | Artifact 07 Closeout and AFDF Framework Update | future |
 
-- open issues labeled `needs-info`
-- stale open issues with no comments
-- open pull requests with failing CI
-- open pull requests waiting for review
+## 8. Three-Role Evidence Lifecycle
 
-The analyzer does not read the current date, environment variables, `.env`,
-network resources, GitHub APIs, or LLM providers. It does not mutate the
-normalized snapshot and does not create proposal objects, comments, labels,
-approval records, ledger entries, or executor commands.
+Future Artifact 07 sprints must follow the three-role evidence lifecycle:
 
-This finding boundary prepares future proposal-provider work by giving that
-future layer structured local observations to consume. Future proposals must be
-implemented in a separate sprint and treated as untrusted input until policy,
-approval, ledger, and execution boundaries exist.
+1. IDE Agent produces an evidence report with raw command outputs.
+2. Implementation Supervisor derives a completion report and recommendation
+   from that evidence.
+3. Design Supervisor issues the final green gate, closeout decision, and next
+   sprint authorization.
 
-## 14. Sprint 7.3 Proposal Model and Fake Provider Boundary
+The IDE Agent must not issue the final green gate. The Implementation
+Supervisor must not self-close the sprint. The Implementation Supervisor may
+recommend only `GREEN CANDIDATE`, `AMBER CANDIDATE`, or `RED / BLOCKED`.
 
-Sprint 7.3 adds the next local-only runtime slice:
+## 9. Safety Invariants Before Ledger/Executor Work
 
-```text
-Local JSON fixture snapshot
-        ↓
-Fixture loader
-        ↓
-Normalizer
-        ↓
-Deterministic analyzer
-        ↓
-Structured findings
-        ↓
-Fake proposal provider
-        ↓
-Non-executing fake proposal drafts
-```
+Before ledger or executor work begins:
 
-Findings are observations about local fixture state. Fake proposal drafts are
-structured, non-executing proposal objects derived from those findings. A draft
-may contain a suggested comment body and rationale, but it does not represent a
-posted comment, a policy decision, an approval decision, a ledger record, or an
-executor command.
+- fake/default mode remains first
+- real mode remains explicit only
+- no `.env` is read or pasted
+- no secrets are printed
+- no live external side effect occurs without Product Owner approval
+- approval must precede any future side effect
+- operator decisions remain local records until ledger/audit runtime exists
+- ledger/audit evidence must exist before any completion claim involving
+  execution or persistence
+- executor work must start as dry-run only
+- LLM proposes; harness decides; operator approves
 
-The Sprint 7.3 fake provider is deterministic and local. It uses template text
-and standard-library code only; it does not call a real LLM provider, GitHub
-API, network resource, environment variable, or `.env` file. It is a stand-in
-for a future provider implementation behind the same proposal boundary, not
-evidence that real LLM proposal generation exists.
+## 10. Safety Invariants Before Real GitHub Work
 
-Every Sprint 7.3 proposal object is a draft, has `requires_approval=True`, and
-has `execution_status="draft_only"`. This means a future policy and approval
-path would be required before any future execution path could exist. It does
-not mean any approval inbox, approval decision, ledger entry, or executor is
-implemented in this sprint.
+Before real GitHub read or write work begins:
 
-Sprint 7.3 prepares future policy guard work by giving that future layer a
-small structured proposal shape to validate. It prepares future approval inbox
-work by explicitly marking every draft as requiring future approval. It does
-not implement either layer.
+- a dedicated GitHub API read adapter gate must exist
+- raw GitHub API responses must pass through the adapter before internal layers
+  consume them
+- the canonical internal snapshot boundary must remain stable
+- real read mode must be explicit and evidence-gated
+- real write mode must remain future until a separate readiness gate
+- no GitHub token may be printed, committed, or supplied by client input
+- no real GitHub writes may occur without Product Owner approval and operator
+  approval
+- real GitHub behavior must not be inferred from fixture, fake, or mocked
+  evidence
 
-## 15. Sprint 7.4 Proposal Safety / Policy Guard
+## 11. Non-Claims / Overclaim Prevention
 
-Sprint 7.4 adds the next local-only runtime slice:
+Sprint 7.6R does not claim:
 
-```text
-Local JSON fixture snapshot
-        ↓
-Fixture loader
-        ↓
-Normalizer
-        ↓
-Deterministic analyzer
-        ↓
-Structured findings
-        ↓
-Fake proposal provider
-        ↓
-Non-executing fake proposal drafts
-        ↓
-Local policy guard
-        ↓
-Structured policy evaluations
-```
+- Artifact 07 is complete
+- Artifact 07 is production-ready
+- ledger/audit runtime exists
+- dry-run executor exists
+- executor runtime exists
+- GitHub API adapter exists
+- real GitHub reads are safe
+- real GitHub writes are safe
+- real GitHub integration exists
+- real LLM integration exists
 
-The policy guard consumes `RepoProposal` objects and returns
-`ProposalPolicyEvaluation` records. Each evaluation has a stable ID, a policy
-verdict, reasons when blocked, the proposal risk level, and explicit flags that
-future operator approval is still required.
-
-The `allowed_for_operator_review` verdict means only that a draft passed the
-Sprint 7.4 local policy checks and may be routed to a future operator-review
-layer. It is not approval, it does not make a proposal executable, and it does
-not record a decision. Every policy evaluation still has
-`requires_operator_approval=True`.
-
-The `blocked_by_policy` verdict means the local guard found an unsafe or
-unsupported draft. Blocked evaluations include reasons and are not safe for
-future operator review.
-
-Policy evaluation differs from approval because it is deterministic local
-screening performed by the harness before any future human decision. Approval
-would require a future operator-review layer, an explicit operator identity,
-and a recorded decision. Sprint 7.4 implements none of that.
-
-Policy evaluation differs from execution because it never mutates a repository,
-never writes a ledger entry, never enqueues approval work, never calls GitHub,
-and never invokes a dry-run or real executor. It only evaluates local proposal
-objects.
-
-Sprint 7.4 also preserves the fixture boundary from Sprint 7.1: the committed
-`fake_repo_snapshot.json` is a canonical internal fixture shape, not a raw
-GitHub REST API payload. Future real GitHub read support must pass through a
-dedicated adapter sprint that maps raw endpoint payloads into this internal
-model before analyzer, proposal, policy, approval, ledger, or executor layers
-consume the data.
-
-This sprint prepares a future approval inbox by producing structured local
-policy results that can later be routed for operator review. It does not
-implement the approval inbox itself.
-
-## 16. Sprint 7.5 Approval Inbox Integration
-
-Sprint 7.5 adds the next local-only runtime slice:
-
-```text
-Local JSON fixture snapshot
-        ↓
-Fixture loader
-        ↓
-Normalizer
-        ↓
-Deterministic analyzer
-        ↓
-Structured findings
-        ↓
-Fake proposal provider
-        ↓
-Non-executing fake proposal drafts
-        ↓
-Local policy guard
-        ↓
-Structured policy evaluations
-        ↓
-Local approval inbox intake
-        ↓
-Pending approval inbox items
-```
-
-The approval inbox integration consumes `RepoProposal` objects and matching
-`ProposalPolicyEvaluation` records. It creates `ApprovalInboxItem` records only
-for evaluations with `allowed_for_operator_review`. Blocked policy evaluations
-do not enter the inbox.
-
-An inbox item with `status="pending_operator_review"` means only that a draft
-is waiting for a future operator decision layer. It is not approval, rejection,
-execution, audit, persistence, or ledger recording. Every inbox item still has
-`requires_operator_approval=True`.
-
-Approval inbox intake differs from operator decision handling because Sprint
-7.5 does not authenticate an operator, accept approve/reject input, bind a
-decision, or record a decision history. It only produces deterministic pending
-items from policy-allowed local drafts.
-
-Approval inbox intake differs from execution because it never mutates a
-repository, never writes a ledger entry, never calls GitHub, and never invokes
-a dry-run or real executor. It only builds local pending-review records.
-
-Sprint 7.5 still preserves the fixture boundary from Sprint 7.1:
-`fake_repo_snapshot.json` is a canonical internal fixture shape, not a raw
-GitHub REST API payload. A future GitHub API adapter sprint remains required
-before any real GitHub read/write claim.
-
-This sprint prepares future operator decision handling by establishing stable
-pending inbox item IDs, deterministic inbox order, and explicit linkage back to
-proposal and policy evaluation records. It does not implement operator
-decision handling itself.
-
-## 17. Sprint 7.6 Operator Decision Handling
-
-Sprint 7.6 adds the next local-only runtime slice:
-
-```text
-Local JSON fixture snapshot
-        ↓
-Fixture loader
-        ↓
-Normalizer
-        ↓
-Deterministic analyzer
-        ↓
-Structured findings
-        ↓
-Fake proposal provider
-        ↓
-Non-executing fake proposal drafts
-        ↓
-Local policy guard
-        ↓
-Structured policy evaluations
-        ↓
-Local approval inbox intake
-        ↓
-Pending approval inbox items
-        ↓
-Local operator decision records
-```
-
-The operator decision layer consumes `ApprovalInboxItem` objects and returns
-`OperatorDecisionRecord` records. A decision may be
-`approved_by_operator` or `rejected_by_operator`. Every decision record has
-`status="local_decision_recorded"`,
-`execution_status="not_executed"`, and
-`ledger_status="not_recorded"`.
-
-Operator decision handling differs from execution because it never mutates a
-repository, never posts a comment, never applies a label, never closes an
-issue, never changes a pull request, never calls GitHub, and never invokes a
-dry-run or real executor. `approved_by_operator` means only that the operator
-recorded local approval for a pending inbox item. It is not a GitHub write and
-does not make a proposal executable in Sprint 7.6.
-
-Operator decision handling differs from ledger/audit runtime because it does
-not persist audit events, allocate ledger entry IDs, reconcile replay, or bind
-execution evidence. `rejected_by_operator` means only that the operator
-recorded local rejection for a pending inbox item. It is not a ledgered
-rejection and does not prove durable audit storage.
-
-Sprint 7.6 keeps the rejected-decision rationale requirement local and
-deterministic. Rejections without a rationale fail safely. Invalid decision
-values, missing operator identity, duplicate decisions for one inbox item, and
-decisions for unknown inbox items also fail safely.
-
-The decision ID format is deterministic:
-
-```text
-a7d:{inbox_item_id}:{decision}
-```
-
-Batch decision output is sorted by the same target-oriented order used by the
-approval inbox. This keeps decision order stable even if inbox items or input
-decision dictionaries are supplied in a different order.
-
-Sprint 7.6 still preserves the fixture boundary from Sprint 7.1:
-`fake_repo_snapshot.json` is a canonical internal fixture shape, not a raw
-GitHub REST API payload. A future GitHub API adapter sprint remains required
-before raw endpoint payloads may feed analyzer, proposal, policy, approval,
-decision, ledger, or executor layers.
-
-This sprint prepares future ledger/audit integration by producing structured
-local decision records that a later sprint can consume. It deliberately does
-not implement that ledger/audit integration.
-
-## 18. Non-Goals
-
-- Full GitHub Repo Steward runtime.
-- Real GitHub reads.
-- Real GitHub writes.
-- GitHub API adapter implementation.
-- Real issue comments.
-- Label mutation.
-- Issue closing.
-- Pull request mutation.
-- Branch or commit creation.
-- Workflow dispatch.
-- Required real LLM calls.
-- Ledger runtime.
-- Dry-run executor runtime.
-- Ledger/audit runtime.
-- Executor or dry-run executor runtime.
-- Background automation.
-- Production deployment.
-
-## 19. Future Sprint Candidates
-
-- A7.7 local ledger/audit evidence.
-- A7.8 dry-run executor.
-- A7.x optional real-mode design review, only after explicit approval.
+The only Sprint 7.6R completion claim is that the formal design outline,
+roadmap, safety-boundary documentation, evidence interpretation, and project
+index wording have been revised when validation evidence supports that claim.

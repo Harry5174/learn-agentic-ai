@@ -18,6 +18,26 @@ from policy-allowed proposal drafts.
 Sprint 7.6 adds local runtime tests for operator approve/reject decision
 records on pending approval inbox items.
 
+Sprint 7.6R is documentation-only and adds no runtime tests.
+
+Coverage by sprint:
+
+- 7.1 fixture/normalizer tests
+- 7.2 analyzer tests
+- 7.3 proposal/fake-provider tests
+- 7.4 policy guard tests
+- 7.5 approval inbox tests
+- 7.6 operator decision tests
+
+Future test coverage needed:
+
+- future 7.7 ledger tests
+- future 7.8 dry-run executor tests
+- future 7.9 GitHub adapter tests
+
+Current tests do not cover ledger, executor, GitHub adapter, or real GitHub
+behavior.
+
 Current tests cover:
 
 - fixture repo loading
@@ -95,6 +115,11 @@ Current tests do not cover:
 
 - ledger/audit recording
 - dry-run executor
+- executor runtime
+- GitHub API read adapter
+- real GitHub reads
+- real GitHub writes
+- real LLM integration
 - no real side effects by default
 
 Run the current Artifact 07 tests from this artifact directory with:

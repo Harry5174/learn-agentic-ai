@@ -94,8 +94,39 @@ For Sprint 7.6, evidence is limited to local operator decision handling:
 - hygiene command results
 - explicit statements about what local operator decisions do and do not prove
 
-Future runtime sprints may add ledger/audit summaries or dry-run executor
-evidence.
+For Sprint 7.6R, evidence is limited to formal design and roadmap revision:
+
+- documentation file inventory
+- design outline changes
+- roadmap changes
+- safety-boundary changes
+- evidence interpretation updates
+- tests README coverage updates
+- hygiene command results
+- secret, local-path, and generated-file checks
+- explicit statements about what the design revision does and does not prove
+
+Future runtime sprints may add ledger/audit summaries, dry-run executor
+evidence, GitHub adapter evidence, real-read evidence, or real-write readiness
+evidence. Each future evidence package must be interpreted by the sprint layer
+that produced it.
+
+## Evidence by Sprint Layer
+
+- 7.0 scaffold evidence proves documentation scaffold and safety contract only.
+- 7.1 fixture/normalizer evidence proves local fixture intake and
+  normalization only.
+- 7.2 analyzer evidence proves deterministic local findings only.
+- 7.3 proposal evidence proves non-executing fake proposal drafts only.
+- 7.4 policy guard evidence proves deterministic local policy evaluation only.
+- 7.5 approval inbox evidence proves pending inbox item creation only.
+- 7.6 operator decision evidence proves local operator decision records only.
+- 7.6R design revision evidence proves documentation and roadmap alignment
+  only.
+- Future ledger, executor, GitHub adapter, real-read, and real-write evidence
+  must be produced by the sprint that implements or gates that layer.
+
+Earlier evidence does not prove later layers.
 
 ## How Sprint 7.0 Evidence Should Be Interpreted
 
@@ -148,10 +179,17 @@ execution, not a GitHub write, and not executor enqueueing.
 persistence. It is local offline test evidence, not live GitHub evidence and
 not real LLM evidence.
 
+## How Sprint 7.6R Evidence Should Be Interpreted
+
+Sprint 7.6R evidence proves only that the formal design outline, roadmap,
+safety-boundary documentation, evidence interpretation, tests coverage wording,
+and project index wording were revised after Sprint 7.6. It is documentation
+evidence, not runtime evidence.
+
 ## What This Evidence Does Not Prove
 
-Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint 7.5, and
-Sprint 7.6 evidence do not prove:
+Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint 7.5,
+Sprint 7.6, and Sprint 7.6R evidence do not prove:
 
 - an operational GitHub Repo Steward runtime exists
 - real LLM proposal generation works

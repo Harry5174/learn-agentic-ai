@@ -15,7 +15,7 @@ This directory contains the numbered artifact sequence for the Agent Factory tra
 | 4 | [04-approval-gated-real-github-comment-adapter](04-approval-gated-real-github-comment-adapter) | Approval-Gated Real GitHub Comment Adapter | Complete as local/demo real-comment adapter (A4.5) |
 | 5 | [05-real-mode-smoke-evidence-release-gate](05-real-mode-smoke-evidence-release-gate) | Real-Mode Smoke Evidence and Release Gate | Complete / published / tagged evidence artifact |
 | 6 | [06-operator-approval-workbench](06-operator-approval-workbench) | Operator Approval Console / Workbench | Current local/demo workbench artifact (A6.5) |
-| 7 | [07-github-repo-steward](07-github-repo-steward) | GitHub Repo Steward | Local fixture snapshot, normalizer, deterministic findings, fake proposal drafts, local policy evaluation, pending inbox items, and local operator decision records; fake/local/dry-run by default |
+| 7 | [07-github-repo-steward](07-github-repo-steward) | GitHub Repo Steward | Local/fake vertical agent runtime through operator decision records. Current layers include fixture intake, normalization, deterministic analysis, fake proposals, policy guard, approval inbox, and local operator decisions. Ledger/audit, dry-run executor, GitHub API adapter, real GitHub integration, and real LLM integration remain future work. |
 
 Numbering convention:
 
