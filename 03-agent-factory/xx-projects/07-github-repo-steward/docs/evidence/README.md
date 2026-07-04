@@ -81,8 +81,21 @@ For Sprint 7.5, evidence is limited to local approval inbox integration:
 - explicit statements about what local approval inbox intake does and does not
   prove
 
-Future runtime sprints may add operator decision records, ledger/audit
-summaries, or dry-run executor evidence.
+For Sprint 7.6, evidence is limited to local operator decision handling:
+
+- file inventory
+- operator decision model coverage
+- approve/reject decision checks
+- deterministic decision ID and order checks
+- no-mutation checks
+- no-secret and no-network checks
+- pytest results
+- compile checks
+- hygiene command results
+- explicit statements about what local operator decisions do and do not prove
+
+Future runtime sprints may add ledger/audit summaries or dry-run executor
+evidence.
 
 ## How Sprint 7.0 Evidence Should Be Interpreted
 
@@ -126,15 +139,23 @@ converted into deterministic pending approval inbox items. The
 recording, audit persistence, or a GitHub side effect. It is local offline test
 evidence, not live GitHub evidence and not real LLM evidence.
 
+## How Sprint 7.6 Evidence Should Be Interpreted
+
+Sprint 7.6 evidence proves only that pending approval inbox items can receive
+local operator approve/reject decision records. `approved_by_operator` is not
+execution, not a GitHub write, and not executor enqueueing.
+`rejected_by_operator` is not a ledgered rejection and not durable audit
+persistence. It is local offline test evidence, not live GitHub evidence and
+not real LLM evidence.
+
 ## What This Evidence Does Not Prove
 
-Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, and Sprint 7.5
-evidence do not prove:
+Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint 7.5, and
+Sprint 7.6 evidence do not prove:
 
 - an operational GitHub Repo Steward runtime exists
 - real LLM proposal generation works
 - approval-gated runtime works
-- operator approval decision handling works
 - ledger/audit recording works at runtime
 - dry-run execution works
 - real GitHub reads work
@@ -157,6 +178,9 @@ evaluation, but they cannot prove approval decisions, approval inbox behavior,
 ledger recording, executor behavior, real GitHub behavior, or real LLM
 behavior. Local approval inbox tests can prove pending inbox item creation, but
 they cannot prove operator approval or rejection decisions, ledger recording,
-executor behavior, real GitHub behavior, or real LLM behavior. Any future
-runtime claim must be backed by tests, command output, and safety scans from
-the sprint that implements that behavior.
+executor behavior, real GitHub behavior, or real LLM behavior. Local operator
+decision tests can prove local approve/reject decision records, but they cannot
+prove ledger recording, durable audit persistence, executor behavior, real
+GitHub behavior, or real LLM behavior. Any future runtime claim must be backed
+by tests, command output, and safety scans from the sprint that implements that
+behavior.

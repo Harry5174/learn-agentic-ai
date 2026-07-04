@@ -5,11 +5,11 @@
 - Use fake/local/dry-run behavior by default.
 - Do not read `.env`.
 - Do not read, print, or require credentials in Sprint 7.0, Sprint 7.1, Sprint
-  7.2, Sprint 7.3, Sprint 7.4, or Sprint 7.5.
+  7.2, Sprint 7.3, Sprint 7.4, Sprint 7.5, or Sprint 7.6.
 - Do not call GitHub APIs in Sprint 7.1, Sprint 7.2, Sprint 7.3, or Sprint
-  7.4, or Sprint 7.5.
+  7.4, Sprint 7.5, or Sprint 7.6.
 - Do not perform real GitHub reads or writes in Sprint 7.1, Sprint 7.2, or
-  Sprint 7.3, Sprint 7.4, or Sprint 7.5.
+  Sprint 7.3, Sprint 7.4, Sprint 7.5, or Sprint 7.6.
 - Do not run live external side effects.
 - Treat proposal-provider output as untrusted.
 - Validate and policy-check proposed actions before approval.
@@ -31,21 +31,24 @@ Sprint 7.1 adds a local fixture snapshot and normalizer only. Sprint 7.2 adds a
 deterministic analyzer over that normalized local snapshot only. Sprint 7.3
 adds non-executing fake proposal drafts from analyzer findings only. Sprint 7.4
 adds deterministic local policy evaluation of those drafts only. Sprint 7.5
-adds pending approval inbox items from policy-allowed drafts only. These sprints
+adds pending approval inbox items from policy-allowed drafts only. Sprint 7.6
+adds local operator decision records for pending inbox items only. These sprints
 do not add a GitHub client, GitHub SDK, GitHub API call, raw GitHub API adapter,
 or real repository read path. Future fake GitHub behavior should use local
 fixtures or fake adapters only. Fake behavior may support deterministic
-analysis, non-executing proposal drafts, local policy evaluation, and pending
-approval inbox items, but it must not imply live repository mutation.
+analysis, non-executing proposal drafts, local policy evaluation, pending
+approval inbox items, and local decision records, but it must not imply live
+repository mutation.
 
 ## 4. Real GitHub Boundary
 
 Real GitHub behavior is out of scope for Sprint 7.0, Sprint 7.1, Sprint 7.2,
-Sprint 7.3, Sprint 7.4, and Sprint 7.5. Future real GitHub access, if ever
-approved, must be explicit, allowlisted, policy-gated, operator-approved,
-audited, and separate from the default demo path. A future GitHub API adapter
-sprint is required before raw GitHub API payloads may feed analyzer, proposal,
-policy, approval, ledger, or executor layers.
+Sprint 7.3, Sprint 7.4, Sprint 7.5, and Sprint 7.6. Future real GitHub access,
+if ever approved, must be explicit, allowlisted, policy-gated,
+operator-approved, audited, and separate from the default demo path. A future
+GitHub API adapter sprint is required before raw GitHub API payloads may feed
+analyzer, proposal, policy, approval, operator decision, ledger, or executor
+layers.
 
 ## 5. Fake LLM Boundary
 
@@ -55,11 +58,11 @@ and dry-run behavior without a network call or provider credential.
 
 ## 6. Real LLM Boundary
 
-Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, and Sprint 7.5 add
-no real LLM provider. A future provider-neutral LLM boundary may be designed
-only as an optional layer. Real provider use must not allow the model to
-execute tools, approve side effects, alter policy, or select real execution
-mode.
+Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint 7.5, and
+Sprint 7.6 add no real LLM provider. A future provider-neutral LLM boundary may
+be designed only as an optional layer. Real provider use must not allow the
+model to execute tools, approve side effects, reject side effects, alter policy,
+or select real execution mode.
 
 ## 7. Sprint 7.3 Proposal Draft Invariants
 
@@ -97,6 +100,13 @@ means only that a policy-allowed local proposal draft is waiting for a future
 operator decision layer. Every Sprint 7.5 inbox item still requires future
 operator approval.
 
+Sprint 7.6 operator decision handling is not execution and is not ledger/audit
+runtime. `approved_by_operator` means only that a local decision record was
+created for a pending inbox item. It does not post to GitHub, enqueue executor
+work, or prove a future side effect is safe to execute. `rejected_by_operator`
+means only that a local rejection record was created for a pending inbox item.
+It does not write a ledger entry or durable audit event.
+
 ## 9. Ledger/Audit Requirements
 
 Future runtime sprints should record:
@@ -114,10 +124,10 @@ Sprint 7.0 creates only the documentation location for this future evidence.
 
 ## 10. Secret Handling
 
-Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, and Sprint 7.5
-must not read secrets, print secrets, create secret placeholders that look like
-real credentials, or require provider credentials. Documentation may refer to
-credentials generically, but it must not include real values.
+Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint 7.5, and
+Sprint 7.6 must not read secrets, print secrets, create secret placeholders
+that look like real credentials, or require provider credentials. Documentation
+may refer to credentials generically, but it must not include real values.
 
 Sprint 7.4 includes local guard-pattern literals such as `GITHUB_TOKEN=`,
 `Authorization:`, `Bearer `, `ghp_`, and `github_pat_` only so policy tests can
@@ -312,7 +322,49 @@ Sprint 7.5 approval inbox invariants:
 - Approval inbox does not call GitHub.
 - All inbox items remain pending future operator review.
 
-## 17. Overclaim Prevention
+## 17. Forbidden Actions in Sprint 7.6
+
+Sprint 7.6 explicitly forbids:
+
+- real GitHub reads
+- real GitHub writes
+- GitHub API calls
+- GitHub API adapter implementation
+- GitHub SDKs
+- real GitHub issue comments
+- real label mutation
+- real issue closing
+- real PR mutation
+- branch creation as an Artifact 07 runtime side effect
+- commit creation as an Artifact 07 runtime side effect
+- workflow dispatch
+- token reads
+- `.env` reads
+- required real LLM calls
+- real LLM proposal generation
+- ledger runtime
+- audit persistence runtime
+- executor or dry-run executor runtime
+- treating `approved_by_operator` as execution
+- treating `rejected_by_operator` as a ledgered rejection
+- background automation
+- autonomous external side effects
+
+The local git branch and local commit used to package this implementation
+sprint are repository maintenance actions for the sprint itself, not Artifact
+07 runtime capabilities.
+
+Sprint 7.6 operator decision invariants:
+
+- Operator decisions are local records only.
+- Operator approval does not execute.
+- Operator rejection does not execute.
+- Operator decisions do not write ledger entries.
+- Operator decisions do not call GitHub.
+- Operator decisions do not enqueue executor work.
+- All execution remains out of scope.
+
+## 18. Overclaim Prevention
 
 Allowed Sprint 7.0 claim:
 
@@ -356,8 +408,15 @@ Sprint 7.5 local approval inbox integration for policy-allowed proposal drafts
 is implemented when tests and validation evidence support that claim.
 ```
 
-Forbidden Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, and
-Sprint 7.5 claims:
+Allowed Sprint 7.6 claim:
+
+```text
+Sprint 7.6 local operator decision handling for pending inbox items is
+implemented when tests and validation evidence support that claim.
+```
+
+Forbidden Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint
+7.5, and Sprint 7.6 claims:
 
 - Artifact 07 is complete.
 - Artifact 07 is operational.
@@ -367,11 +426,11 @@ Sprint 7.5 claims:
 - Artifact 07 has a raw GitHub API adapter.
 - Artifact 07 has real LLM routing.
 - Artifact 07 generates real LLM proposals.
-- Artifact 07 has operator decision handling, ledger, or executor runtime.
-- Artifact 07 has approval decisions for proposal drafts.
+- Artifact 07 has ledger or executor runtime.
+- Artifact 07 has executable approval decisions for proposal drafts.
 - Artifact 07 proves production readiness.
 
-## 18. Green-Gate Safety Checklist
+## 19. Green-Gate Safety Checklist
 
 - [ ] Artifact 07 directory exists.
 - [ ] Documentation scaffold is complete.
@@ -382,6 +441,9 @@ Sprint 7.5 claims:
 - [ ] Findings remain observations, not executable proposals.
 - [ ] Fake proposal drafts remain non-executing proposal objects.
 - [ ] Every fake proposal draft requires future approval.
+- [ ] Operator decision records remain local records only.
+- [ ] Operator approvals do not execute.
+- [ ] Operator rejections do not write ledger entries.
 - [ ] No secrets are read or printed.
 - [ ] No `.env` file is tracked.
 - [ ] No generated Python cache files are tracked.

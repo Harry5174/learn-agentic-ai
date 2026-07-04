@@ -15,6 +15,9 @@ evaluation.
 Sprint 7.5 adds local runtime tests for pending approval inbox item creation
 from policy-allowed proposal drafts.
 
+Sprint 7.6 adds local runtime tests for operator approve/reject decision
+records on pending approval inbox items.
+
 Current tests cover:
 
 - fixture repo loading
@@ -71,11 +74,25 @@ Current tests cover:
 - safe failure for missing, duplicate, extra, or mismatched policy evaluations
 - approval inbox no-mutation behavior
 - approval inbox operation without network sockets
+- structured operator decision records
+- local approved decision records
+- local rejected decision records
+- decision records with `execution_status="not_executed"`
+- decision records with `ledger_status="not_recorded"`
+- rejected decision rationale requirement
+- invalid decision value rejection
+- missing operator identity rejection
+- duplicate decision rejection
+- unknown inbox item rejection
+- deterministic operator decision IDs
+- deterministic operator decision order
+- operator decision no-mutation behavior
+- operator decision operation without `GITHUB_TOKEN`, `OPENAI_API_KEY`, or
+  `ANTHROPIC_API_KEY`
+- operator decision operation without network sockets
 
 Current tests do not cover:
 
-- operator approval decision handling
-- operator rejection handling
 - ledger/audit recording
 - dry-run executor
 - no real side effects by default
@@ -92,5 +109,7 @@ LLM behavior exists. Do not treat policy guard tests as evidence of approval
 decisions, ledger runtime, dry-run executor runtime, or real GitHub
 integration. Do not treat approval inbox tests as evidence of operator
 approval/rejection decisions, ledger runtime, dry-run executor runtime, or real
-GitHub integration. Each future behavior needs implementation plus focused tests
-in the sprint that adds it.
+GitHub integration. Do not treat operator decision tests as evidence of
+ledger/audit runtime, dry-run executor runtime, or real GitHub integration.
+Each future behavior needs implementation plus focused tests in the sprint that
+adds it.

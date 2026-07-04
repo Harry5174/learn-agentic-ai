@@ -14,6 +14,8 @@ from github_repo_steward.models import (
     IssueRecord,
     LabelRecord,
     NormalizedRepoSnapshot,
+    OperatorDecisionError,
+    OperatorDecisionRecord,
     ProposalPolicyEvaluation,
     ProposalPolicyEvaluationError,
     PullRequestRecord,
@@ -24,6 +26,10 @@ from github_repo_steward.models import (
     RepoSnapshotValidationError,
 )
 from github_repo_steward.normalizer import normalize_repo_snapshot
+from github_repo_steward.operator_decisions import (
+    record_operator_decision,
+    record_operator_decisions,
+)
 from github_repo_steward.policy_guard import (
     evaluate_repo_proposal,
     evaluate_repo_proposals,
@@ -47,6 +53,8 @@ __all__ = [
     "IssueRecord",
     "LabelRecord",
     "NormalizedRepoSnapshot",
+    "OperatorDecisionError",
+    "OperatorDecisionRecord",
     "ProposalPolicyEvaluation",
     "ProposalPolicyEvaluationError",
     "ProposalProvider",
@@ -65,5 +73,7 @@ __all__ = [
     "load_default_fixture_snapshot",
     "load_fixture_snapshot",
     "normalize_repo_snapshot",
+    "record_operator_decision",
+    "record_operator_decisions",
     "validate_repo_proposal",
 ]

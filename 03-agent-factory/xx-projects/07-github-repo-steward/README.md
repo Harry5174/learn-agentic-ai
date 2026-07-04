@@ -6,8 +6,8 @@ Artifact 07 is a GitHub Repo Steward vertical agent scaffold.
 
 Artifact 07 has local fixture intake, normalization, deterministic finding
 analysis, non-executing fake proposal drafts, and deterministic local policy
-evaluation with pending approval inbox items. It is not a completed steward
-agent.
+evaluation with pending approval inbox items and local operator decision
+records. It is not a completed steward agent.
 
 ## Sprint Status
 
@@ -21,11 +21,13 @@ Sprint 7.3: closed - proposal model and fake proposal provider boundary.
 
 Sprint 7.4: closed - proposal safety / policy guard.
 
-Sprint 7.5: approval inbox integration.
+Sprint 7.5: closed - approval inbox integration.
+
+Sprint 7.6: operator decision handling.
 
 Runtime status: local fixture intake, normalization, deterministic findings,
 non-executing fake proposals, local policy evaluation, and pending approval
-inbox items only.
+inbox items with local operator decision records only.
 
 ## Purpose
 
@@ -35,7 +37,8 @@ and preserve audit evidence. Sprint 7.5 proves only that a deterministic local
 fake GitHub-like snapshot can be loaded, normalized, analyzed into structured
 observational findings, converted into non-executing fake proposal drafts, and
 evaluated by local policy rules, then converted into pending approval inbox
-items for future operator review.
+items for future operator review. Sprint 7.6 adds local operator decision
+records for those pending inbox items only.
 
 ## What This Artifact Demonstrates
 
@@ -125,16 +128,35 @@ handling, ledger recording, execution, dry-run execution, real GitHub reads or
 writes, GitHub API adapter correctness, real LLM integration, or production
 readiness.
 
+Sprint 7.6 demonstrates:
+
+- structured `OperatorDecisionRecord` records
+- deterministic local decision IDs and order
+- local approval decisions for pending approval inbox items
+- local rejection decisions for pending approval inbox items
+- `status="local_decision_recorded"` on every decision record
+- `execution_status="not_executed"` on every decision record
+- `ledger_status="not_recorded"` on every decision record
+- safe failure for invalid decisions, missing operator identity, rejection
+  without rationale, duplicate decisions, and unknown inbox items
+- local decision handling without network access, GitHub credentials, `.env`,
+  or a real LLM provider
+
+Sprint 7.6 does not demonstrate ledger recording, audit persistence,
+approval-gated execution, dry-run execution, real GitHub reads or writes,
+GitHub API adapter correctness, real LLM integration, or production readiness.
+
 ## Default Mode
 
 The default mode is fake/local/dry-run. The artifact does not perform real
 GitHub reads or writes. The artifact does not require a real LLM provider.
 
-Sprint 7.5 begins from fixture repository snapshots, normalizes them, produces
+Sprint 7.6 begins from fixture repository snapshots, normalizes them, produces
 deterministic findings, converts those findings into non-executing fake proposal
 drafts, evaluates those drafts with deterministic local policy rules, and
-creates pending approval inbox items only. Future implementation work may add
-operator decision handling, ledger/audit evidence, and a dry-run executor.
+creates pending approval inbox items, then records local operator approve/reject
+decisions only. Future implementation work may add ledger/audit evidence and a
+dry-run executor.
 
 ## Safety Model
 
@@ -231,6 +253,23 @@ decision is not implemented in Sprint 7.0.
   7.3 fake proposal behavior, Sprint 7.4 policy behavior, and all existing
   tests.
 
+## In Scope for Sprint 7.6
+
+- Define structured local operator decision records.
+- Record local approve/reject decisions for pending approval inbox items.
+- Keep all decision records in `local_decision_recorded`.
+- Keep all approved and rejected decisions `not_executed`.
+- Keep all approved and rejected decisions `not_recorded` for ledger status.
+- Require an operator identity for all decisions.
+- Require a rationale for rejected decisions.
+- Fail safely for invalid decisions, duplicate decisions, and unknown inbox
+  items.
+- Prove operator decision handling does not require common secret environment
+  variables or network access.
+- Preserve Sprint 7.1 fixture loading, Sprint 7.2 analyzer behavior, Sprint
+  7.3 fake proposal behavior, Sprint 7.4 policy behavior, Sprint 7.5 inbox
+  behavior, and all existing tests.
+
 ## Out of Scope for Sprint 7.0
 
 - Real GitHub writes.
@@ -322,11 +361,27 @@ decision is not implemented in Sprint 7.0.
 - Autonomous external side effects.
 - Production readiness claims.
 
+## Out of Scope for Sprint 7.6
+
+- Real GitHub reads or writes.
+- GitHub API calls, SDKs, or adapter implementation.
+- Reading `.env`.
+- Reading tokens or credentials.
+- Real LLM providers or provider SDKs.
+- Real LLM proposal generation.
+- Ledger runtime.
+- Audit persistence runtime.
+- Executor or dry-run executor runtime.
+- Treating `approved_by_operator` as execution.
+- Treating `rejected_by_operator` as a ledgered rejection.
+- Background automation.
+- Autonomous external side effects.
+- Production readiness claims.
+
 ## Future Sprint Direction
 
 Future sprints may add:
 
-- operator decision handling
 - ledger/audit recording
 - dry-run executor behavior
 - optional real-mode design gates, only after separate approval
@@ -344,13 +399,14 @@ Review the following files:
 - [Sprint 7.3 validation summary](docs/evidence/artifact-7.3-validation-summary.md)
 - [Sprint 7.4 validation summary](docs/evidence/artifact-7.4-validation-summary.md)
 - [Sprint 7.5 validation summary](docs/evidence/artifact-7.5-validation-summary.md)
+- [Sprint 7.6 validation summary](docs/evidence/artifact-7.6-validation-summary.md)
 - [Tests README](tests/README.md)
 
 Check that every runtime claim is limited to local fixture intake and
 normalization plus deterministic findings, non-executing fake proposal drafts,
-local policy evaluation, and pending approval inbox items. No real GitHub path,
-real LLM provider, secret read, operator decision runtime, ledger runtime,
-executor runtime, or external side effect has been added.
+local policy evaluation, pending approval inbox items, and local operator
+decision records. No real GitHub path, real LLM provider, secret read, ledger
+runtime, executor runtime, or external side effect has been added.
 
 ## Evidence Location
 
@@ -365,10 +421,11 @@ Sprint evidence lives under [docs/evidence](docs/evidence/).
 - Sprint 7.5 approval inbox items are pending local review records only; they
   are not approval decisions, ledger records, executor commands, or persistent
   audit records.
+- Sprint 7.6 operator decisions are local decision records only; approvals do
+  not execute and rejections do not write ledger/audit records.
 - Sprint 7.2 implements only deterministic local finding analysis.
 - Sprint 7.3 implements only non-executing fake proposal drafts.
 - No operational GitHub Repo Steward exists yet.
-- No policy guard, approval inbox, ledger integration, or executor exists in
-  this artifact yet.
+- No ledger integration or executor exists in this artifact yet.
 - The scaffold does not prove production readiness, real GitHub safety, real LLM
   safety, or end-to-end repository stewardship.

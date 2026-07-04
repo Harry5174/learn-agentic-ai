@@ -21,6 +21,50 @@ class ApprovalInboxError(ValueError):
     """Raised when approval inbox intake receives inconsistent local data."""
 
 
+class OperatorDecisionError(ValueError):
+    """Raised when local operator decision input is malformed or inconsistent."""
+
+
+@dataclass(frozen=True)
+class OperatorDecisionRecord:
+    decision_id: str
+    inbox_item_id: str
+    proposal_id: str
+    decision: str
+    decided_by: str
+    rationale: str
+    status: str
+    execution_status: str
+    ledger_status: str
+
+    def __post_init__(self) -> None:
+        if self.decision not in {
+            "approved_by_operator",
+            "rejected_by_operator",
+        }:
+            raise OperatorDecisionError(
+                f"Unsupported operator decision: {self.decision}"
+            )
+        if self.status != "local_decision_recorded":
+            raise OperatorDecisionError(
+                "Operator decision status must be local_decision_recorded."
+            )
+        if self.execution_status != "not_executed":
+            raise OperatorDecisionError(
+                "Operator decisions must never mark proposals as executed."
+            )
+        if self.ledger_status != "not_recorded":
+            raise OperatorDecisionError(
+                "Operator decisions must not mark ledger records as written."
+            )
+        if not self.decided_by:
+            raise OperatorDecisionError("decided_by is required.")
+        if self.decision == "rejected_by_operator" and not self.rationale:
+            raise OperatorDecisionError(
+                "rejected_by_operator decisions require a rationale."
+            )
+
+
 @dataclass(frozen=True)
 class ProposalPolicyEvaluation:
     evaluation_id: str

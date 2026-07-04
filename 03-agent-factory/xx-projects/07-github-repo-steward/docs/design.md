@@ -361,7 +361,82 @@ pending inbox item IDs, deterministic inbox order, and explicit linkage back to
 proposal and policy evaluation records. It does not implement operator
 decision handling itself.
 
-## 17. Non-Goals
+## 17. Sprint 7.6 Operator Decision Handling
+
+Sprint 7.6 adds the next local-only runtime slice:
+
+```text
+Local JSON fixture snapshot
+        ↓
+Fixture loader
+        ↓
+Normalizer
+        ↓
+Deterministic analyzer
+        ↓
+Structured findings
+        ↓
+Fake proposal provider
+        ↓
+Non-executing fake proposal drafts
+        ↓
+Local policy guard
+        ↓
+Structured policy evaluations
+        ↓
+Local approval inbox intake
+        ↓
+Pending approval inbox items
+        ↓
+Local operator decision records
+```
+
+The operator decision layer consumes `ApprovalInboxItem` objects and returns
+`OperatorDecisionRecord` records. A decision may be
+`approved_by_operator` or `rejected_by_operator`. Every decision record has
+`status="local_decision_recorded"`,
+`execution_status="not_executed"`, and
+`ledger_status="not_recorded"`.
+
+Operator decision handling differs from execution because it never mutates a
+repository, never posts a comment, never applies a label, never closes an
+issue, never changes a pull request, never calls GitHub, and never invokes a
+dry-run or real executor. `approved_by_operator` means only that the operator
+recorded local approval for a pending inbox item. It is not a GitHub write and
+does not make a proposal executable in Sprint 7.6.
+
+Operator decision handling differs from ledger/audit runtime because it does
+not persist audit events, allocate ledger entry IDs, reconcile replay, or bind
+execution evidence. `rejected_by_operator` means only that the operator
+recorded local rejection for a pending inbox item. It is not a ledgered
+rejection and does not prove durable audit storage.
+
+Sprint 7.6 keeps the rejected-decision rationale requirement local and
+deterministic. Rejections without a rationale fail safely. Invalid decision
+values, missing operator identity, duplicate decisions for one inbox item, and
+decisions for unknown inbox items also fail safely.
+
+The decision ID format is deterministic:
+
+```text
+a7d:{inbox_item_id}:{decision}
+```
+
+Batch decision output is sorted by the same target-oriented order used by the
+approval inbox. This keeps decision order stable even if inbox items or input
+decision dictionaries are supplied in a different order.
+
+Sprint 7.6 still preserves the fixture boundary from Sprint 7.1:
+`fake_repo_snapshot.json` is a canonical internal fixture shape, not a raw
+GitHub REST API payload. A future GitHub API adapter sprint remains required
+before raw endpoint payloads may feed analyzer, proposal, policy, approval,
+decision, ledger, or executor layers.
+
+This sprint prepares future ledger/audit integration by producing structured
+local decision records that a later sprint can consume. It deliberately does
+not implement that ledger/audit integration.
+
+## 18. Non-Goals
 
 - Full GitHub Repo Steward runtime.
 - Real GitHub reads.
@@ -374,9 +449,6 @@ decision handling itself.
 - Branch or commit creation.
 - Workflow dispatch.
 - Required real LLM calls.
-- Operator approval decision handling.
-- Operator rejection handling.
-- Approval decisions.
 - Ledger runtime.
 - Dry-run executor runtime.
 - Ledger/audit runtime.
@@ -384,9 +456,8 @@ decision handling itself.
 - Background automation.
 - Production deployment.
 
-## 18. Future Sprint Candidates
+## 19. Future Sprint Candidates
 
-- A7.6 operator decision handling.
 - A7.7 local ledger/audit evidence.
 - A7.8 dry-run executor.
 - A7.x optional real-mode design review, only after explicit approval.
