@@ -1,9 +1,9 @@
 # Artifact 07 Design Outline
 
-## 1. Current Status After Sprint 7.9
+## 1. Current Status After Sprint 7.10
 
 Artifact 07 is a local/fake GitHub Repo Steward vertical-agent scaffold. After
-Sprint 7.9, the implemented local layers are:
+Sprint 7.10, the implemented local layers are:
 
 ```text
 raw GitHub-like fixture payloads
@@ -17,6 +17,7 @@ approval inbox
 operator decision records
 local ledger/audit records
 local dry-run execution results
+real-read mode evidence gate
 ```
 
 These layers operate on committed local fixture data and deterministic in-memory
@@ -24,11 +25,13 @@ records. They do not read GitHub, call GitHub APIs, call a real LLM provider,
 persist ledger/audit records, run a real executor, or perform repository
 mutation.
 
-Sprint 7.9 adds a local GitHub-like fixture adapter contract only. It maps
-committed raw endpoint-shaped fixture payloads into the canonical internal
-snapshot shape; it does not call GitHub, authenticate, add GitHub SDKs, add
-SQLite, add files-on-disk persistence, add durable storage, add real executor
-runtime, or add real LLM integration.
+Sprint 7.10 adds a local real-read mode evidence gate only. It can allow the
+fake/default adapter path, block unsafe real-read requests, or mark a read-only
+real-read request as preflight allowed when explicit Product Owner
+authorization and safe metadata are present. It does not call GitHub,
+authenticate, read `.env`, add GitHub SDKs, add SQLite, add files-on-disk
+persistence, add durable storage, add real executor runtime, or add real LLM
+integration.
 
 ## 2. Completed Sprint Summary
 
@@ -44,7 +47,8 @@ runtime, or add real LLM integration.
 | 7.6R | Formal Design Outline Revision and Roadmap Alignment | closed | Documentation-only alignment of design, roadmap, safety boundaries, and evidence interpretation. |
 | 7.7 | Local Ledger / Audit Record Integration | closed | Local in-memory ledger/audit records for operator decision evidence. |
 | 7.8 | Dry-Run Executor | closed | Local dry-run execution result records for ledgered operator decisions. |
-| 7.9 | GitHub API Read Adapter Contract | current | Local raw GitHub-like fixture adapter into canonical internal snapshot shape. |
+| 7.9 | GitHub API Read Adapter Contract | closed | Local raw GitHub-like fixture adapter into canonical internal snapshot shape. |
+| 7.10 | Real-Read Mode Evidence Gate | current | Local gate records for fake/default adapter evidence and blocked/preflight real-read requests. |
 
 Each sprint proves only its own layer. Earlier evidence does not prove later
 layers.
@@ -85,13 +89,13 @@ Ledger / Audit Record
 Dry-Run Executor
         |
         v
-Future Real-Read Evidence Gate
+Real-Read Mode Evidence Gate
         |
         v
 Future Real-Write Readiness Gate
 ```
 
-Implemented through Sprint 7.6:
+Implemented through Sprint 7.10:
 
 - canonical internal fixture snapshot
 - local raw GitHub-like fixture adapter contract
@@ -103,11 +107,11 @@ Implemented through Sprint 7.6:
 - local operator decision records
 - local ledger/audit records
 - local dry-run execution results
+- local real-read evidence gate
 
 Future, unimplemented layers:
 
 - executor runtime
-- real-read evidence gate
 - real-write readiness gate
 
 ## 4. Current Runtime Capability Boundary
@@ -118,7 +122,7 @@ snapshot, derive deterministic findings, create fake proposal drafts, evaluate
 those drafts with local policy rules, build pending approval inbox items, and
 record local operator approve/reject decision records with local ledger/audit
 evidence records, then convert those audit records into local dry-run execution
-results.
+results and local real-read evidence records.
 
 The current runtime cannot:
 
@@ -150,6 +154,19 @@ effect was safe or performed.
 were mapped into canonical internal snapshot-shaped data. It is not a live
 GitHub API response, not authentication, not complete GitHub API coverage, and
 not evidence that real GitHub reads are safe.
+
+`RealReadGateEvaluation` means only that a local request object was evaluated
+against the real-read evidence gate. `fake_default_allowed` keeps the local
+adapter path available without credentials. `real_read_blocked` means the gate
+denied a real-read request before any GitHub access. `real_read_preflight_allowed`
+means only that the request metadata is sufficient for a future explicitly
+authorized read-only evidence collection step; it is not proof that a real read
+happened, not proof that credentials were inspected, and not write readiness.
+
+`RealReadEvidenceRecord` means only that local gate evidence was structured. In
+Sprint 7.10 the evidence records represent either the fake/default adapter path
+or a blocked/preflight real-read request. No live GitHub read was authorized or
+attempted in this sprint.
 
 ## 5. Canonical Fixture vs Raw GitHub API Boundary
 
@@ -192,7 +209,34 @@ The local adapter gate happens after local ledger/audit and dry-run result work,
 so future real-read evidence has a safer local record and execution boundary to
 attach to. Sprint 7.9 itself still uses committed fixtures only.
 
-## 7. Revised Future Sprint Roadmap
+## 7. Sprint 7.10 Real-Read Mode Evidence Gate
+
+Sprint 7.10 adds a local evidence gate around optional future real-read mode.
+Fake/default remains the default because it requires no credentials, no `.env`,
+no network, and no live GitHub provider. A real-read request is blocked unless
+it includes explicit Product Owner authorization, a repository target, safe
+credential-handling metadata, the Sprint 7.9 adapter boundary, forbidden write
+operations, and explicit read-only network preflight intent.
+
+The gate differs from live GitHub integration. It evaluates local request
+metadata and returns deterministic records; it does not call GitHub, inspect
+credentials, read `.env`, capture live payloads, normalize live responses, or
+run executor work. Any future authorized live read must capture raw read-only
+payload evidence, pass that payload through the Sprint 7.9 adapter boundary,
+then feed only the canonical internal snapshot into the normalizer and later
+local layers.
+
+Product Owner authorization is required before live read because credentials,
+repository privacy, rate limits, and external API access are outside the
+fake/default safety boundary. Credential values must not be printed or read from
+`.env` by default; Sprint 7.10 records only credential-handling metadata.
+
+Sprint 7.10 does not prove real GitHub writes, GitHub write safety, production
+readiness, live GitHub authentication, or complete GitHub API coverage. It
+prepares future real-write readiness work only by making the read side explicit,
+gated, evidence-labeled, and adapter-bound.
+
+## 8. Revised Future Sprint Roadmap
 
 Future numbering is provisional until approved by the Design Supervisor, but the
 order is intentional: ledger and dry-run executor work happen before GitHub API
@@ -210,12 +254,12 @@ adapter and real-mode gates.
 | 7.6R | Formal Design Outline Revision and Roadmap Alignment | closed |
 | 7.7 | Local Ledger / Audit Record Integration | closed |
 | 7.8 | Dry-Run Executor | closed |
-| 7.9 | GitHub API Read Adapter Contract | current |
-| 7.10 | Real-Read Mode Evidence Gate | future |
+| 7.9 | GitHub API Read Adapter Contract | closed |
+| 7.10 | Real-Read Mode Evidence Gate | current |
 | 7.11 | Real-Write Readiness Gate | future |
 | 7.12 | Artifact 07 Closeout and AFDF Framework Update | future |
 
-## 8. Sprint 7.7 Local Ledger / Audit Record Integration
+## 9. Sprint 7.7 Local Ledger / Audit Record Integration
 
 Sprint 7.7 adds the next local-only runtime slice:
 
@@ -271,7 +315,7 @@ Sprint 7.7 preserves the fixture boundary from Sprint 7.1:
 GitHub REST API payload. A future GitHub API adapter sprint remains required
 before any real-read or real-write claim.
 
-## 9. Sprint 7.8 Dry-Run Executor
+## 10. Sprint 7.8 Dry-Run Executor
 
 Sprint 7.8 adds the next local-only runtime slice:
 
@@ -332,7 +376,7 @@ Sprint 7.8 preserves the fixture boundary from Sprint 7.1:
 GitHub REST API payload. A future GitHub API adapter sprint remains required
 before any real-read or real-write claim.
 
-## 10. Sprint 7.9 GitHub API Read Adapter Contract
+## 11. Sprint 7.9 GitHub API Read Adapter Contract
 
 Sprint 7.9 adds the local adapter boundary before the canonical snapshot:
 
@@ -376,7 +420,7 @@ persistence, or real LLM integration. It prepares a future real-read evidence
 gate by proving the local mapping contract and failure behavior before any live
 GitHub payloads are introduced.
 
-## 11. Three-Role Evidence Lifecycle
+## 12. Three-Role Evidence Lifecycle
 
 Future Artifact 07 sprints must follow the three-role evidence lifecycle:
 
@@ -390,7 +434,7 @@ The IDE Agent must not issue the final green gate. The Implementation
 Supervisor must not self-close the sprint. The Implementation Supervisor may
 recommend only `GREEN CANDIDATE`, `AMBER CANDIDATE`, or `RED / BLOCKED`.
 
-## 12. Safety Invariants Before Executor Work
+## 13. Safety Invariants Before Executor Work
 
 Before executor work begins:
 
@@ -406,7 +450,7 @@ Before executor work begins:
 - executor readiness work must start from dry-run result evidence
 - LLM proposes; harness decides; operator approves
 
-## 13. Safety Invariants Before Real GitHub Work
+## 14. Safety Invariants Before Real GitHub Work
 
 Before real GitHub read or write work begins:
 
@@ -422,7 +466,7 @@ Before real GitHub read or write work begins:
 - real GitHub behavior must not be inferred from fixture, fake, or mocked
   evidence
 
-## 14. Non-Claims / Overclaim Prevention
+## 15. Non-Claims / Overclaim Prevention
 
 Sprint 7.9 does not claim:
 

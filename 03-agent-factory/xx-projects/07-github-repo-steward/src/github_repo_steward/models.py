@@ -37,6 +37,227 @@ class GitHubReadAdapterError(ValueError):
     """Raised when local GitHub-like fixture adapter input is malformed."""
 
 
+class RealReadGateError(ValueError):
+    """Raised when real-read gate input is malformed or inconsistent."""
+
+
+@dataclass(frozen=True)
+class RealReadRequest:
+    mode: str
+    repository_full_name: str
+    requested_by: str
+    product_owner_authorized: bool
+    authorization_reference: str
+    credential_source: str
+    adapter_required: bool
+    write_operations_allowed: bool
+    network_access_requested: bool
+    evidence_expected: tuple[str, ...]
+
+    def __post_init__(self) -> None:
+        if self.mode not in {"fake_default", "real_read_requested"}:
+            raise RealReadGateError(f"Unsupported real-read mode: {self.mode}")
+        if not isinstance(self.repository_full_name, str):
+            raise RealReadGateError("repository_full_name must be a string.")
+        if not isinstance(self.requested_by, str) or not self.requested_by:
+            raise RealReadGateError("requested_by is required.")
+        if not isinstance(self.product_owner_authorized, bool):
+            raise RealReadGateError(
+                "product_owner_authorized must be a boolean."
+            )
+        if not isinstance(self.authorization_reference, str):
+            raise RealReadGateError(
+                "authorization_reference must be a string."
+            )
+        if not isinstance(self.credential_source, str):
+            raise RealReadGateError("credential_source must be a string.")
+        if not isinstance(self.adapter_required, bool):
+            raise RealReadGateError("adapter_required must be a boolean.")
+        if not isinstance(self.write_operations_allowed, bool):
+            raise RealReadGateError(
+                "write_operations_allowed must be a boolean."
+            )
+        if not isinstance(self.network_access_requested, bool):
+            raise RealReadGateError(
+                "network_access_requested must be a boolean."
+            )
+        if not isinstance(self.evidence_expected, tuple) or not all(
+            isinstance(ref, str) for ref in self.evidence_expected
+        ):
+            raise RealReadGateError(
+                "evidence_expected must be a tuple of strings."
+            )
+
+
+@dataclass(frozen=True)
+class RealReadGateEvaluation:
+    evaluation_id: str
+    mode: str
+    repository_full_name: str
+    verdict: str
+    reasons: tuple[str, ...]
+    adapter_required: bool
+    github_status: str
+    network_status: str
+    write_status: str
+    secret_status: str
+    safe_to_attempt_real_read: bool
+
+    def __post_init__(self) -> None:
+        if self.mode not in {"fake_default", "real_read_requested"}:
+            raise RealReadGateError(f"Unsupported real-read mode: {self.mode}")
+        if self.verdict not in {
+            "fake_default_allowed",
+            "real_read_blocked",
+            "real_read_preflight_allowed",
+        }:
+            raise RealReadGateError(f"Unsupported gate verdict: {self.verdict}")
+        if self.github_status not in {
+            "not_called",
+            "read_only_preflight_only",
+        }:
+            raise RealReadGateError(
+                f"Unsupported GitHub status: {self.github_status}"
+            )
+        if self.network_status not in {
+            "not_used",
+            "blocked",
+            "preflight_allowed",
+        }:
+            raise RealReadGateError(
+                f"Unsupported network status: {self.network_status}"
+            )
+        if self.write_status != "writes_forbidden":
+            raise RealReadGateError("Real-read gate must forbid writes.")
+        if self.secret_status not in {
+            "not_required_for_fake_default",
+            "credentials_not_inspected",
+            "credential_handling_required",
+        }:
+            raise RealReadGateError(
+                f"Unsupported secret status: {self.secret_status}"
+            )
+        if not isinstance(self.reasons, tuple) or not all(
+            isinstance(reason, str) for reason in self.reasons
+        ):
+            raise RealReadGateError("reasons must be a tuple of strings.")
+        if not isinstance(self.adapter_required, bool):
+            raise RealReadGateError("adapter_required must be a boolean.")
+        if not isinstance(self.safe_to_attempt_real_read, bool):
+            raise RealReadGateError(
+                "safe_to_attempt_real_read must be a boolean."
+            )
+        if self.safe_to_attempt_real_read and (
+            self.verdict != "real_read_preflight_allowed"
+            or self.github_status != "read_only_preflight_only"
+            or self.network_status != "preflight_allowed"
+        ):
+            raise RealReadGateError(
+                "Only read-only preflight evaluations may be safe to attempt."
+            )
+        if (
+            self.verdict == "real_read_preflight_allowed"
+            and self.mode != "real_read_requested"
+        ):
+            raise RealReadGateError(
+                "Only real_read_requested mode may be preflight allowed."
+            )
+        if self.verdict == "fake_default_allowed" and self.mode != "fake_default":
+            raise RealReadGateError(
+                "Only fake_default mode may be fake_default_allowed."
+            )
+
+
+@dataclass(frozen=True)
+class RealReadEvidenceRecord:
+    evidence_id: str
+    evaluation_id: str
+    repository_full_name: str
+    mode: str
+    adapter_boundary_status: str
+    raw_payload_status: str
+    canonical_snapshot_status: str
+    normalization_status: str
+    pipeline_status: str
+    github_status: str
+    write_status: str
+    secret_status: str
+    summary: str
+
+    def __post_init__(self) -> None:
+        if self.mode not in {"fake_default", "real_read_requested"}:
+            raise RealReadGateError(f"Unsupported evidence mode: {self.mode}")
+        if self.adapter_boundary_status not in {
+            "adapter_used",
+            "blocked_before_adapter",
+            "adapter_required_but_not_used",
+        }:
+            raise RealReadGateError(
+                "Unsupported adapter boundary status: "
+                f"{self.adapter_boundary_status}"
+            )
+        if self.raw_payload_status not in {
+            "local_fixture_payload",
+            "blocked_no_raw_payload",
+            "live_payload_not_captured",
+            "live_payload_captured",
+        }:
+            raise RealReadGateError(
+                f"Unsupported raw payload status: {self.raw_payload_status}"
+            )
+        if self.canonical_snapshot_status not in {
+            "mapped_locally",
+            "not_mapped_blocked",
+            "not_available",
+        }:
+            raise RealReadGateError(
+                "Unsupported canonical snapshot status: "
+                f"{self.canonical_snapshot_status}"
+            )
+        if self.normalization_status not in {
+            "normalized_locally",
+            "not_normalized_blocked",
+            "not_available",
+        }:
+            raise RealReadGateError(
+                f"Unsupported normalization status: {self.normalization_status}"
+            )
+        if self.pipeline_status not in {
+            "local_pipeline_completed",
+            "blocked_before_pipeline",
+            "not_run",
+        }:
+            raise RealReadGateError(
+                f"Unsupported pipeline status: {self.pipeline_status}"
+            )
+        if self.github_status not in {
+            "not_called",
+            "read_only_preflight_only",
+        }:
+            raise RealReadGateError(
+                f"Unsupported GitHub status: {self.github_status}"
+            )
+        if self.write_status != "writes_forbidden":
+            raise RealReadGateError("Real-read evidence must forbid writes.")
+        if self.secret_status not in {
+            "not_required_for_fake_default",
+            "credentials_not_inspected",
+            "credential_handling_required",
+        }:
+            raise RealReadGateError(
+                f"Unsupported secret status: {self.secret_status}"
+            )
+        if self.mode == "fake_default" and (
+            self.pipeline_status == "local_pipeline_completed"
+            and self.adapter_boundary_status != "adapter_used"
+        ):
+            raise RealReadGateError(
+                "Completed fake/default evidence must use the adapter boundary."
+            )
+        if not isinstance(self.summary, str):
+            raise RealReadGateError("summary must be a string.")
+
+
 @dataclass(frozen=True)
 class OperatorDecisionRecord:
     decision_id: str

@@ -39,6 +39,10 @@ from github_repo_steward.models import (
     ProposalPolicyEvaluation,
     ProposalPolicyEvaluationError,
     PullRequestRecord,
+    RealReadEvidenceRecord,
+    RealReadGateError,
+    RealReadGateEvaluation,
+    RealReadRequest,
     RepoFinding,
     RepoProposal,
     RepoProposalValidationError,
@@ -57,6 +61,11 @@ from github_repo_steward.policy_guard import (
 from github_repo_steward.proposal_provider import (
     ProposalProvider,
     validate_repo_proposal,
+)
+from github_repo_steward.real_read_gate import (
+    build_real_read_evidence_record,
+    evaluate_fake_default_real_read_gate,
+    evaluate_real_read_request,
 )
 from github_repo_steward.repo_snapshot import (
     RawRepoSnapshot,
@@ -85,6 +94,10 @@ __all__ = [
     "ProposalPolicyEvaluationError",
     "ProposalProvider",
     "PullRequestRecord",
+    "RealReadEvidenceRecord",
+    "RealReadGateError",
+    "RealReadGateEvaluation",
+    "RealReadRequest",
     "RepoFinding",
     "RepoProposal",
     "RepoProposalValidationError",
@@ -95,8 +108,11 @@ __all__ = [
     "analyze_repo_snapshot",
     "build_approval_inbox",
     "build_approval_inbox_item",
+    "build_real_read_evidence_record",
     "dry_run_ledger_record",
     "dry_run_ledger_records",
+    "evaluate_fake_default_real_read_gate",
+    "evaluate_real_read_request",
     "evaluate_repo_proposal",
     "evaluate_repo_proposals",
     "load_default_github_api_fixture_snapshot",

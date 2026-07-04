@@ -157,6 +157,28 @@ validation:
 - explicit statements about what local adapter contract evidence does and does
   not prove
 
+For Sprint 7.10, evidence is limited to local real-read mode evidence gate
+validation:
+
+- file inventory
+- real-read request model coverage
+- real-read gate evaluation model coverage
+- real-read evidence record model coverage
+- fake/default gate allow checks
+- blocked real-read request checks
+- read-only preflight-allowed metadata checks
+- deterministic evaluation ID and evidence ID checks
+- adapter-boundary evidence checks
+- fake/default adapter path through the full local pipeline
+- no-mutation checks
+- no-secret and no-network checks
+- pytest results
+- compile checks
+- hygiene command results
+- explicit statements about whether live-read authorization was present
+- explicit statements about whether live-read was attempted
+- explicit statements about what real-read gate evidence does and does not prove
+
 Future runtime sprints may add real-read evidence or real-write readiness
 evidence. Each future evidence package must be interpreted by the sprint layer
 that produced it.
@@ -179,7 +201,9 @@ that produced it.
   ledgered operator decisions only.
 - 7.9 GitHub-like read adapter evidence proves local raw fixture payload mapping
   into canonical snapshot shape only.
-- Future real executor, real-read, and real-write evidence must be produced by
+- 7.10 real-read gate evidence proves local gate behavior and fake/default
+  adapter-path evidence only.
+- Future real executor and real-write evidence must be produced by
   the sprint that implements or gates that layer.
 
 Earlier evidence does not prove later layers.
@@ -272,11 +296,21 @@ evidence, not live GitHub evidence, not authentication evidence, not complete
 GitHub API payload coverage, not real execution evidence, and not real LLM
 evidence.
 
+## How Sprint 7.10 Evidence Should Be Interpreted
+
+Sprint 7.10 evidence proves only that local real-read gate request,
+evaluation, and evidence records can be produced deterministically, and that
+fake/default adapter-path evidence can represent the full local pipeline without
+live GitHub access. `real_read_preflight_allowed` is not proof that a live read
+happened. It is local offline gate evidence, not live GitHub evidence, not
+authentication evidence, not write-readiness evidence, not real execution
+evidence, and not real LLM evidence.
+
 ## What This Evidence Does Not Prove
 
 Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint 7.5,
-Sprint 7.6, Sprint 7.6R, Sprint 7.7, Sprint 7.8, and Sprint 7.9 evidence do
-not prove:
+Sprint 7.6, Sprint 7.6R, Sprint 7.7, Sprint 7.8, Sprint 7.9, and Sprint 7.10
+evidence do not prove:
 
 - an operational GitHub Repo Steward runtime exists
 - real LLM proposal generation works
@@ -284,6 +318,7 @@ not prove:
 - durable ledger/audit persistence works
 - real execution works
 - real GitHub reads work
+- live GitHub read safety
 - GitHub authentication works
 - GitHub API adapter correctness
 - complete GitHub API payload coverage
@@ -320,3 +355,6 @@ Local GitHub-like adapter tests can prove local fixture mapping into canonical
 snapshot shape, but they cannot prove live GitHub reads, GitHub authentication,
 complete API coverage, real GitHub behavior, durable persistence, or real LLM
 behavior.
+Local real-read gate tests can prove blocked/default/preflight gate behavior,
+but they cannot prove live GitHub reads, live authentication behavior, write
+readiness, real executor runtime, durable persistence, or real LLM behavior.

@@ -30,6 +30,8 @@ Sprint 7.9 adds local runtime tests for raw GitHub-like fixture adapter
 contracts that map endpoint-shaped payloads into canonical internal snapshot
 data.
 
+Sprint 7.10 adds local runtime tests for the real-read evidence gate.
+
 Coverage by sprint:
 
 - 7.0 placeholder tests
@@ -42,13 +44,14 @@ Coverage by sprint:
 - 7.7 ledger/audit-record tests
 - 7.8 dry-run executor tests
 - 7.9 GitHub-like read adapter contract tests
+- 7.10 real-read evidence gate tests
 
 Future test coverage needed:
 
-- future 7.10 real-read evidence gate tests
+- future 7.11 real-write readiness tests
 
-Current tests do not cover real executor runtime, real-read evidence, or real
-GitHub behavior.
+Current tests do not cover real executor runtime, live GitHub reads, real
+GitHub writes, or real GitHub behavior.
 
 Current tests cover:
 
@@ -188,11 +191,30 @@ Current tests cover:
 - adapter safe failure for missing pull payloads
 - adapter safe failure for malformed issue payloads
 - adapter safe failure for malformed pull request payloads
+- structured real-read request records
+- structured real-read gate evaluation records
+- structured real-read evidence records
+- fake/default gate allowance without credentials
+- real-read request blocking without Product Owner authorization
+- real-read request blocking without repository target
+- real-read request blocking without safe credential metadata
+- real-read request blocking without adapter boundary
+- real-read request blocking when writes are allowed
+- read-only preflight allowed metadata without GitHub calls
+- evidence records for fake/default adapter path
+- evidence records for blocked real-read path
+- deterministic gate evaluation IDs
+- deterministic gate evidence IDs
+- gate no-mutation behavior for requests and evaluations
+- gate operation without `GITHUB_TOKEN`, `OPENAI_API_KEY`, or
+  `ANTHROPIC_API_KEY`
+- gate operation without network sockets
+- gate operation without file reads
 
 Current tests do not cover:
 
 - real executor runtime
-- real GitHub reads
+- live GitHub reads
 - real GitHub writes
 - GitHub authentication
 - real LLM integration
@@ -219,5 +241,7 @@ real executor runtime, durable persistence, GitHub adapter behavior, or real
 GitHub integration. Do not treat GitHub-like read adapter tests as evidence of
 live GitHub reads, GitHub authentication, complete GitHub API coverage, real
 GitHub behavior, real executor runtime, durable persistence, or real LLM
-integration. Each future behavior needs implementation plus focused tests in
-the sprint that adds it.
+integration. Do not treat real-read evidence gate tests as evidence of live
+GitHub reads, live GitHub authentication, GitHub write readiness, real executor
+runtime, durable persistence, or real LLM integration. Each future behavior
+needs implementation plus focused tests in the sprint that adds it.

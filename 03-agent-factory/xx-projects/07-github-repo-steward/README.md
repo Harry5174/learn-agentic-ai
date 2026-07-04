@@ -4,7 +4,7 @@ Artifact 07 is a GitHub Repo Steward vertical agent scaffold.
 
 ## Artifact Status
 
-Current status after Sprint 7.9:
+Current status after Sprint 7.10:
 
 - local fixture intake
 - normalization
@@ -16,6 +16,7 @@ Current status after Sprint 7.9:
 - local ledger/audit records
 - local dry-run execution results
 - local GitHub-like fixture adapter contract
+- local real-read mode evidence gate
 
 Artifact 07 is not a completed steward agent.
 
@@ -23,6 +24,7 @@ Still not implemented:
 
 - executor runtime
 - real GitHub integration
+- live GitHub read behavior
 - real LLM integration
 - production readiness
 
@@ -48,25 +50,27 @@ Sprint 7.7: closed - local ledger / audit record integration.
 
 Sprint 7.8: closed - dry-run executor.
 
-Sprint 7.9: GitHub API read adapter contract.
+Sprint 7.9: closed - GitHub API read adapter contract.
+
+Sprint 7.10: real-read mode evidence gate.
 
 Runtime status: local fixture intake, normalization, deterministic findings,
 non-executing fake proposals, local policy evaluation, and pending approval
 inbox items with local operator decision records and local ledger/audit records
 plus local dry-run execution results and a local GitHub-like fixture adapter
-contract only.
+contract plus a local real-read evidence gate only.
 
 ## Purpose
 
 Artifact 07 prepares a future vertical agent that can inspect repository state,
 propose stewardship actions, route those proposals through policy and approval,
-and preserve audit evidence. Sprint 7.9 proves only that deterministic local
+and preserve audit evidence. Sprint 7.10 proves only that deterministic local
 fake GitHub-like snapshot can be loaded, normalized, analyzed into structured
 observational findings, converted into non-executing fake proposal drafts, and
 evaluated by local policy rules, then converted into pending approval inbox
 items for future operator review, local operator decision records, local
 ledger/audit records, local dry-run execution results, and local raw
-GitHub-like fixture adapter output.
+GitHub-like fixture adapter output plus local real-read gate evidence.
 
 ## What This Artifact Demonstrates
 
@@ -243,17 +247,44 @@ authentication, GitHub App integration, GitHub OAuth integration, complete
 GitHub API payload coverage, real GitHub integration, real LLM integration,
 real executor runtime, or production readiness.
 
+Sprint 7.10 demonstrates:
+
+- structured `RealReadRequest` records
+- structured `RealReadGateEvaluation` records
+- structured `RealReadEvidenceRecord` records
+- fake/default mode allowed without credentials
+- real-read requests blocked without explicit Product Owner authorization
+- real-read requests blocked without a repository target
+- real-read requests blocked without safe credential-handling metadata
+- real-read requests blocked if the Sprint 7.9 adapter boundary is disabled
+- real-read requests blocked if write operations are allowed
+- a read-only preflight-allowed state that still does not call GitHub
+- deterministic evaluation IDs and evidence IDs
+- fake/default adapter-path evidence through the full local pipeline
+- local gate handling without network access, GitHub credentials, `.env`, file
+  persistence, database persistence, or a real LLM provider
+
+Sprint 7.10 does not demonstrate live GitHub reads, live GitHub read safety,
+live GitHub authentication behavior, real GitHub writes, GitHub write
+readiness, GitHub App integration, GitHub OAuth integration, complete GitHub API
+payload coverage, real executor runtime, real LLM integration, or production
+readiness.
+
 ## Default Mode
 
-The default mode is fake/local/dry-run. The artifact does not perform real
+The default mode is fake/local/dry-run. The artifact does not perform live
 GitHub reads or writes. The artifact does not require a real LLM provider.
+Real-read mode is blocked unless the Product Owner explicitly authorizes it
+with a repository target, read-only credential-handling metadata, and evidence
+expectations.
 
-Sprint 7.9 begins from fixture repository snapshots, normalizes them, produces
+Sprint 7.10 begins from fixture repository snapshots, normalizes them, produces
 deterministic findings, converts those findings into non-executing fake proposal
 drafts, evaluates those drafts with deterministic local policy rules, and
 creates pending approval inbox items, then records local operator approve/reject
 decisions, local ledger/audit records, local dry-run execution results, and
-local raw GitHub-like fixture adapter output only.
+local raw GitHub-like fixture adapter output plus local real-read gate evidence
+only.
 
 ## Safety Model
 
