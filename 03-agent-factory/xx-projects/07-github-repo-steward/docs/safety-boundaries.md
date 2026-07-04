@@ -9,11 +9,12 @@
 - Do not print secrets.
 - Do not read, print, or require credentials in Sprint 7.0, Sprint 7.1, Sprint
   7.2, Sprint 7.3, Sprint 7.4, Sprint 7.5, Sprint 7.6, Sprint 7.6R, or
-  Sprint 7.7.
+  Sprint 7.7, or Sprint 7.8.
 - Do not call GitHub APIs in Sprint 7.1, Sprint 7.2, Sprint 7.3, or Sprint
-  7.4, Sprint 7.5, Sprint 7.6, Sprint 7.6R, or Sprint 7.7.
+  7.4, Sprint 7.5, Sprint 7.6, Sprint 7.6R, Sprint 7.7, or Sprint 7.8.
 - Do not perform real GitHub reads or writes in Sprint 7.1, Sprint 7.2, or
-  Sprint 7.3, Sprint 7.4, Sprint 7.5, Sprint 7.6, Sprint 7.6R, or Sprint 7.7.
+  Sprint 7.3, Sprint 7.4, Sprint 7.5, Sprint 7.6, Sprint 7.6R, Sprint 7.7,
+  or Sprint 7.8.
 - Do not run live external side effects.
 - Do not run live external side effects without Product Owner approval.
 - Treat proposal-provider output as untrusted.
@@ -27,24 +28,23 @@
 - Raw GitHub API responses must pass through a dedicated adapter before
   internal layers consume them.
 
-## 2. Post-7.7 Safety Boundary
+## 2. Post-7.8 Safety Boundary
 
-After Sprint 7.7, Artifact 07 has local fixture intake, normalization,
+After Sprint 7.8, Artifact 07 has local fixture intake, normalization,
 deterministic analysis, fake proposal drafts, local policy evaluation, pending
 approval inbox items, local operator decision records, and local ledger/audit
-records only.
+records, plus local dry-run execution results only.
 
 - Durable ledger/audit persistence remains future.
 - Executor work remains future.
-- Dry-run executor remains future.
 - GitHub API adapter remains future.
 - Real GitHub read/write remains future.
 - Real LLM integration remains future.
 
-Sprint 7.7 implements in-memory local audit record building only. It does not
-implement file persistence, database persistence, executor runtime, dry-run
-executor runtime, GitHub API adapter logic, real GitHub reads, real GitHub
-writes, or real LLM integration.
+Sprint 7.8 implements in-memory local dry-run result generation only. It does
+not implement file persistence, database persistence, real executor runtime,
+GitHub API adapter logic, real GitHub reads, real GitHub writes, or real LLM
+integration.
 
 ## 3. Default-Deny Behavior
 
@@ -61,18 +61,20 @@ adds non-executing fake proposal drafts from analyzer findings only. Sprint 7.4
 adds deterministic local policy evaluation of those drafts only. Sprint 7.5
 adds pending approval inbox items from policy-allowed drafts only. Sprint 7.6
 adds local operator decision records for pending inbox items only. Sprint 7.7
-adds local ledger/audit records for operator decision evidence only. These
-sprints do not add a GitHub client, GitHub SDK, GitHub API call, raw GitHub API
-adapter, or real repository read path. Future fake GitHub behavior should use
-local fixtures or fake adapters only. Fake behavior may support deterministic
+adds local ledger/audit records for operator decision evidence only. Sprint 7.8
+adds local dry-run execution results for ledgered decisions only. These sprints
+do not add a GitHub client, GitHub SDK, GitHub API call, raw GitHub API adapter,
+or real repository read path. Future fake GitHub behavior should use local
+fixtures or fake adapters only. Fake behavior may support deterministic
 analysis, non-executing proposal drafts, local policy evaluation, pending
-approval inbox items, local decision records, and local audit records, but it
-must not imply live repository mutation.
+approval inbox items, local decision records, local audit records, and local
+dry-run result records, but it must not imply live repository mutation.
 
 ## 5. Real GitHub Boundary
 
 Real GitHub behavior is out of scope for Sprint 7.0, Sprint 7.1, Sprint 7.2,
-Sprint 7.3, Sprint 7.4, Sprint 7.5, Sprint 7.6, Sprint 7.6R, and Sprint 7.7.
+Sprint 7.3, Sprint 7.4, Sprint 7.5, Sprint 7.6, Sprint 7.6R, Sprint 7.7, and
+Sprint 7.8.
 Future real GitHub access, if ever approved, must be explicit, allowlisted,
 policy-gated, operator-approved, audited, and separate from the default demo
 path. A future GitHub API adapter sprint is required before raw GitHub API
@@ -88,10 +90,10 @@ and dry-run behavior without a network call or provider credential.
 ## 7. Real LLM Boundary
 
 Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint 7.5, Sprint
-7.6, and Sprint 7.7 add no real LLM provider. A future provider-neutral LLM
-boundary may be designed only as an optional layer. Real provider use must not
-allow the model to execute tools, approve side effects, reject side effects,
-alter policy, or select real execution mode.
+7.6, Sprint 7.7, and Sprint 7.8 add no real LLM provider. A future
+provider-neutral LLM boundary may be designed only as an optional layer. Real
+provider use must not allow the model to execute tools, approve side effects,
+reject side effects, alter policy, or select real execution mode.
 
 ## 8. Sprint 7.3 Proposal Draft Invariants
 
@@ -142,6 +144,12 @@ decision evidence was structured with matching approval inbox context. It does
 not post to GitHub, enqueue executor work, persist to disk, write to a database,
 or prove a future side effect is safe to execute.
 
+Sprint 7.8 dry-run result generation is not execution, not persistence, and not
+real executor work. A `DryRunExecutionResult` means only that local ledgered
+operator decision evidence was converted into a deterministic local simulation
+record. It does not post to GitHub, enqueue executor work, persist to disk,
+write to a database, or prove a future side effect is safe to execute.
+
 ## 10. Ledger/Audit Requirements
 
 Sprint 7.7 local ledger/audit records preserve:
@@ -161,10 +169,31 @@ Sprint 7.7 records are local in-memory dataclass records only. Future runtime
 sprints may add dry-run executor evidence, durable audit storage, or real-mode
 evidence only after separate approval and focused implementation.
 
-## 11. Secret Handling
+## 11. Dry-Run Result Requirements
+
+Sprint 7.8 local dry-run execution results preserve:
+
+- ledger record identity
+- proposal identity
+- approval inbox identity
+- operator decision identity
+- proposal type
+- target type and number
+- planned action
+- execution status as `not_executed`
+- GitHub status as `not_called`
+- external side-effect status as `none`
+- ledger record status as `verified_local_audit_record`
+- evidence references
+
+Sprint 7.8 results are local in-memory dataclass records only. They do not
+execute proposals, call GitHub, trigger real executor work, or persist to a file
+or database.
+
+## 12. Secret Handling
 
 Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint 7.5, Sprint
-7.6, and Sprint 7.7 must not read secrets, print secrets, create secret
+7.6, Sprint 7.7, and Sprint 7.8 must not read secrets, print secrets, create secret
 placeholders that look like real credentials, or require provider credentials.
 Documentation may refer to credentials generically, but it must not include
 real values.
@@ -174,7 +203,7 @@ Sprint 7.4 includes local guard-pattern literals such as `GITHUB_TOKEN=`,
 prove token-like draft text is blocked. Safety-scan hits for these strings must
 be classified as intentional local guard-pattern literals, not secret values.
 
-## 12. Forbidden Actions in Sprint 7.0
+## 13. Forbidden Actions in Sprint 7.0
 
 Sprint 7.0 explicitly forbids:
 
@@ -196,7 +225,7 @@ The local git branch and local commit used to package this documentation sprint
 are repository maintenance actions for the sprint itself, not Artifact 07
 runtime capabilities.
 
-## 13. Forbidden Actions in Sprint 7.1
+## 14. Forbidden Actions in Sprint 7.1
 
 Sprint 7.1 explicitly forbids:
 
@@ -221,7 +250,7 @@ Sprint 7.1 explicitly forbids:
 - background automation
 - autonomous external side effects
 
-## 14. Forbidden Actions in Sprint 7.2
+## 15. Forbidden Actions in Sprint 7.2
 
 Sprint 7.2 explicitly forbids:
 
@@ -251,7 +280,7 @@ The local git branch and local commit used to package this implementation
 sprint are repository maintenance actions for the sprint itself, not Artifact
 07 runtime capabilities.
 
-## 15. Forbidden Actions in Sprint 7.3
+## 16. Forbidden Actions in Sprint 7.3
 
 Sprint 7.3 explicitly forbids:
 
@@ -281,7 +310,7 @@ The local git branch and local commit used to package this implementation
 sprint are repository maintenance actions for the sprint itself, not Artifact
 07 runtime capabilities.
 
-## 16. Forbidden Actions in Sprint 7.4
+## 17. Forbidden Actions in Sprint 7.4
 
 Sprint 7.4 explicitly forbids:
 
@@ -321,7 +350,7 @@ Sprint 7.4 policy guard invariants:
 - Policy guard does not enqueue approval inbox items.
 - All proposals still require future operator approval.
 
-## 17. Forbidden Actions in Sprint 7.5
+## 18. Forbidden Actions in Sprint 7.5
 
 Sprint 7.5 explicitly forbids:
 
@@ -362,7 +391,7 @@ Sprint 7.5 approval inbox invariants:
 - Approval inbox does not call GitHub.
 - All inbox items remain pending future operator review.
 
-## 18. Forbidden Actions in Sprint 7.6
+## 19. Forbidden Actions in Sprint 7.6
 
 Sprint 7.6 explicitly forbids:
 
@@ -404,7 +433,7 @@ Sprint 7.6 operator decision invariants:
 - Operator decisions do not enqueue executor work.
 - All execution remains out of scope.
 
-## 19. Forbidden Actions in Sprint 7.6R
+## 20. Forbidden Actions in Sprint 7.6R
 
 Sprint 7.6R explicitly forbids:
 
@@ -433,7 +462,7 @@ Sprint 7.6R explicitly forbids:
 
 Sprint 7.6R may revise documentation and evidence interpretation only.
 
-## 20. Forbidden Actions in Sprint 7.7
+## 21. Forbidden Actions in Sprint 7.7
 
 Sprint 7.7 explicitly forbids:
 
@@ -474,7 +503,48 @@ Sprint 7.7 ledger/audit invariants:
 - Ledger records preserve operator decision evidence.
 - Execution remains out of scope.
 
-## 21. Overclaim Prevention
+## 22. Forbidden Actions in Sprint 7.8
+
+Sprint 7.8 explicitly forbids:
+
+- real GitHub reads
+- real GitHub writes
+- GitHub API calls
+- GitHub API adapter implementation
+- GitHub SDKs
+- real GitHub issue comments
+- real label mutation
+- real issue closing
+- real PR mutation
+- workflow dispatch
+- token reads
+- `.env` reads
+- required real LLM calls
+- real LLM proposal generation
+- real executor runtime
+- executing approved proposals
+- treating dry-run results as execution
+- treating dry-run results as GitHub writes
+- treating dry-run results as external side effects
+- database persistence
+- file persistence
+- durable audit storage
+- background automation
+- autonomous external side effects
+
+Sprint 7.8 may create in-memory local `DryRunExecutionResult` objects only.
+
+Sprint 7.8 dry-run invariants:
+
+- Dry-run results are local simulation records only.
+- Dry-run results do not execute.
+- Dry-run results do not call GitHub.
+- Dry-run results do not trigger real executor work.
+- Dry-run results do not persist to a file or database.
+- Dry-run results preserve ledger and operator-decision evidence.
+- Real execution remains out of scope.
+
+## 23. Overclaim Prevention
 
 Allowed Sprint 7.0 claim:
 
@@ -539,8 +609,15 @@ Sprint 7.7 local ledger/audit record integration for operator decisions is
 implemented when tests and validation evidence support that claim.
 ```
 
+Allowed Sprint 7.8 claim:
+
+```text
+Sprint 7.8 local dry-run execution result generation for ledgered operator
+decisions is implemented when tests and validation evidence support that claim.
+```
+
 Forbidden Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint
-7.5, Sprint 7.6, Sprint 7.6R, and Sprint 7.7 claims:
+7.5, Sprint 7.6, Sprint 7.6R, Sprint 7.7, and Sprint 7.8 claims:
 
 - Artifact 07 is complete.
 - Artifact 07 is operational.
@@ -554,7 +631,7 @@ Forbidden Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint
 - Artifact 07 has executable approval decisions for proposal drafts.
 - Artifact 07 proves production readiness.
 
-## 22. Green-Gate Safety Checklist
+## 24. Green-Gate Safety Checklist
 
 - [ ] Artifact 07 directory exists.
 - [ ] Documentation scaffold is complete.
@@ -572,6 +649,11 @@ Forbidden Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint
 - [ ] Ledger/audit records do not execute.
 - [ ] Ledger/audit records do not call GitHub.
 - [ ] Ledger/audit records do not trigger executor work.
+- [ ] Dry-run results remain local simulation records only.
+- [ ] Dry-run results do not execute.
+- [ ] Dry-run results do not call GitHub.
+- [ ] Dry-run results do not trigger real executor work.
+- [ ] Dry-run results do not claim external side effects.
 - [ ] No database or file persistence is added.
 - [ ] No secrets are read or printed.
 - [ ] No `.env` file is tracked.

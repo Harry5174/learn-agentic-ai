@@ -1,9 +1,9 @@
 # Artifact 07 Design Outline
 
-## 1. Current Status After Sprint 7.7
+## 1. Current Status After Sprint 7.8
 
 Artifact 07 is a local/fake GitHub Repo Steward vertical-agent scaffold. After
-Sprint 7.7, the implemented local layers are:
+Sprint 7.8, the implemented local layers are:
 
 ```text
 canonical fixture snapshot
@@ -14,16 +14,18 @@ policy guard
 approval inbox
 operator decision records
 local ledger/audit records
+local dry-run execution results
 ```
 
 These layers operate on committed local fixture data and deterministic in-memory
 records. They do not read GitHub, call GitHub APIs, call a real LLM provider,
-persist ledger/audit records, run an executor, or perform repository mutation.
+persist ledger/audit records, run a real executor, or perform repository
+mutation.
 
-Sprint 7.7 adds local ledger/audit record integration for operator decision
-evidence only. It records structured local audit records in memory; it does not
-add SQLite, files-on-disk persistence, durable storage, executor runtime,
-dry-run executor runtime, GitHub calls, or real LLM integration.
+Sprint 7.8 adds local dry-run result generation for ledgered operator decisions
+only. It records structured local dry-run result records in memory; it does not
+add SQLite, files-on-disk persistence, durable storage, real executor runtime,
+GitHub calls, or real LLM integration.
 
 ## 2. Completed Sprint Summary
 
@@ -37,7 +39,8 @@ dry-run executor runtime, GitHub calls, or real LLM integration.
 | 7.5 | Approval Inbox Integration | closed | Pending approval inbox items from policy-allowed proposal drafts. |
 | 7.6 | Operator Decision Handling | closed | Local approve/reject operator decision records for pending inbox items. |
 | 7.6R | Formal Design Outline Revision and Roadmap Alignment | closed | Documentation-only alignment of design, roadmap, safety boundaries, and evidence interpretation. |
-| 7.7 | Local Ledger / Audit Record Integration | current | Local in-memory ledger/audit records for operator decision evidence. |
+| 7.7 | Local Ledger / Audit Record Integration | closed | Local in-memory ledger/audit records for operator decision evidence. |
+| 7.8 | Dry-Run Executor | current | Local dry-run execution result records for ledgered operator decisions. |
 
 Each sprint proves only its own layer. Earlier evidence does not prove later
 layers.
@@ -69,7 +72,7 @@ Operator Decision Record
 Ledger / Audit Record
         |
         v
-Future Dry-Run Executor
+Dry-Run Executor
         |
         v
 Future GitHub API Read Adapter Contract
@@ -91,10 +94,10 @@ Implemented through Sprint 7.6:
 - approval inbox
 - local operator decision records
 - local ledger/audit records
+- local dry-run execution results
 
 Future, unimplemented layers:
 
-- dry-run executor
 - executor runtime
 - GitHub API read adapter
 - real-read evidence gate
@@ -106,13 +109,12 @@ The current runtime can load a committed local fixture snapshot, normalize it,
 derive deterministic findings, create fake proposal drafts, evaluate those
 drafts with local policy rules, build pending approval inbox items, and record
 local operator approve/reject decision records with local ledger/audit evidence
-records.
+records, then convert those audit records into local dry-run execution results.
 
 The current runtime cannot:
 
 - persist ledger/audit records to disk or a database
-- run a dry-run executor
-- run any executor
+- run a real executor
 - call GitHub APIs
 - read live GitHub data
 - write live GitHub data
@@ -129,6 +131,11 @@ future side effect is safe.
 local operator decision and matching approval inbox context. It is not a
 side-effect ledger entry, durable audit event, GitHub write, executor command,
 or proof of execution readiness.
+
+`DryRunExecutionResult` means only that a ledgered local operator decision was
+converted into a local simulation record. It is not a GitHub write, not a real
+executor command, not durable persistence, and not evidence that a future side
+effect was safe or performed.
 
 ## 5. Canonical Fixture vs Raw GitHub API Boundary
 
@@ -167,9 +174,9 @@ real-write claim. That adapter must prove:
 - analyzer/proposal/policy/approval layers continue to consume internal records
 - no real write path is introduced by the read adapter itself
 
-The adapter gate must happen after local ledger/audit and dry-run executor
-work, so future real-read evidence has a safer local record and execution
-boundary to attach to.
+The adapter gate must happen after local ledger/audit and dry-run result work,
+so future real-read evidence has a safer local record and execution boundary to
+attach to.
 
 ## 7. Revised Future Sprint Roadmap
 
@@ -187,8 +194,8 @@ adapter and real-mode gates.
 | 7.5 | Approval Inbox Integration | closed |
 | 7.6 | Operator Decision Handling | closed |
 | 7.6R | Formal Design Outline Revision and Roadmap Alignment | closed |
-| 7.7 | Local Ledger / Audit Record Integration | current |
-| 7.8 | Dry-Run Executor | future |
+| 7.7 | Local Ledger / Audit Record Integration | closed |
+| 7.8 | Dry-Run Executor | current |
 | 7.9 | GitHub API Read Adapter Contract | future |
 | 7.10 | Real-Read Mode Evidence Gate | future |
 | 7.11 | Real-Write Readiness Gate | future |
@@ -250,7 +257,68 @@ Sprint 7.7 preserves the fixture boundary from Sprint 7.1:
 GitHub REST API payload. A future GitHub API adapter sprint remains required
 before any real-read or real-write claim.
 
-## 9. Three-Role Evidence Lifecycle
+## 9. Sprint 7.8 Dry-Run Executor
+
+Sprint 7.8 adds the next local-only runtime slice:
+
+```text
+Canonical Internal Fixture Snapshot
+        |
+        v
+Normalizer
+        |
+        v
+Deterministic Analyzer
+        |
+        v
+Fake Proposal Provider
+        |
+        v
+Policy Guard
+        |
+        v
+Approval Inbox
+        |
+        v
+Operator Decision Record
+        |
+        v
+Local Ledger / Audit Record
+        |
+        v
+Local Dry-Run Execution Result
+```
+
+The dry-run layer consumes `LedgerAuditRecord` objects and matching
+`ApprovalInboxItem` context. It returns `DryRunExecutionResult` objects that
+preserve ledger record ID, decision ID, inbox item ID, proposal ID, proposal
+type, target type, target number, operator decision, and evidence references.
+
+Dry-run results differ from execution because they do not mutate a repository,
+post comments, apply labels, close issues, modify pull requests, call GitHub,
+trigger executor work, or enqueue real work. Every Sprint 7.8 result has
+`execution_status="not_executed"`, `github_status="not_called"`,
+`external_side_effect_status="none"`, and
+`ledger_record_status="verified_local_audit_record"`.
+
+Approved ledgered decisions produce `dry_run_completed` results with local
+planned-action strings such as `would_prepare_issue_comment` or
+`would_prepare_pull_request_comment`. Rejected ledgered decisions produce
+`dry_run_skipped` no-op results with
+`planned_action="no_op_rejected_by_operator"`.
+
+The dry-run layer preserves upstream evidence but deliberately does not perform
+side effects. It prepares future executor-readiness discussions by separating
+"what would be prepared" from "what was actually executed." Real execution,
+durable persistence, real GitHub reads, real GitHub writes, GitHub API adapter
+logic, and real LLM integration remain unimplemented.
+
+Sprint 7.8 preserves the fixture boundary from Sprint 7.1:
+`fake_repo_snapshot.json` is a canonical internal fixture shape, not a raw
+GitHub REST API payload. A future GitHub API adapter sprint remains required
+before any real-read or real-write claim.
+
+## 10. Three-Role Evidence Lifecycle
 
 Future Artifact 07 sprints must follow the three-role evidence lifecycle:
 
@@ -264,7 +332,7 @@ The IDE Agent must not issue the final green gate. The Implementation
 Supervisor must not self-close the sprint. The Implementation Supervisor may
 recommend only `GREEN CANDIDATE`, `AMBER CANDIDATE`, or `RED / BLOCKED`.
 
-## 10. Safety Invariants Before Executor Work
+## 11. Safety Invariants Before Executor Work
 
 Before executor work begins:
 
@@ -277,10 +345,10 @@ Before executor work begins:
 - operator decisions and ledger/audit records remain local records
 - local ledger/audit evidence must exist before any future completion claim
   involving decisions
-- executor work must start as dry-run only
+- executor readiness work must start from dry-run result evidence
 - LLM proposes; harness decides; operator approves
 
-## 11. Safety Invariants Before Real GitHub Work
+## 12. Safety Invariants Before Real GitHub Work
 
 Before real GitHub read or write work begins:
 
@@ -296,21 +364,20 @@ Before real GitHub read or write work begins:
 - real GitHub behavior must not be inferred from fixture, fake, or mocked
   evidence
 
-## 12. Non-Claims / Overclaim Prevention
+## 13. Non-Claims / Overclaim Prevention
 
-Sprint 7.7 does not claim:
+Sprint 7.8 does not claim:
 
 - Artifact 07 is complete
 - Artifact 07 is production-ready
 - durable ledger/audit persistence exists
-- dry-run executor exists
-- executor runtime exists
+- executor runtime exists beyond local dry-run result generation
 - GitHub API adapter exists
 - real GitHub reads are safe
 - real GitHub writes are safe
 - real GitHub integration exists
 - real LLM integration exists
 
-The only Sprint 7.7 completion claim is that local operator decision records can
-be converted into deterministic local ledger/audit records when validation
+The only Sprint 7.8 completion claim is that local ledger/audit records can be
+converted into deterministic local dry-run execution results when validation
 evidence supports that claim.

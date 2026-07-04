@@ -15,7 +15,7 @@ This directory contains the numbered artifact sequence for the Agent Factory tra
 | 4 | [04-approval-gated-real-github-comment-adapter](04-approval-gated-real-github-comment-adapter) | Approval-Gated Real GitHub Comment Adapter | Complete as local/demo real-comment adapter (A4.5) |
 | 5 | [05-real-mode-smoke-evidence-release-gate](05-real-mode-smoke-evidence-release-gate) | Real-Mode Smoke Evidence and Release Gate | Complete / published / tagged evidence artifact |
 | 6 | [06-operator-approval-workbench](06-operator-approval-workbench) | Operator Approval Console / Workbench | Current local/demo workbench artifact (A6.5) |
-| 7 | [07-github-repo-steward](07-github-repo-steward) | GitHub Repo Steward | Local/fake vertical agent runtime through local ledger/audit records. Current layers include fixture intake, normalization, deterministic analysis, fake proposals, policy guard, approval inbox, local operator decisions, and local audit records. Dry-run executor, GitHub API adapter, real GitHub integration, and real LLM integration remain future work. |
+| 7 | [07-github-repo-steward](07-github-repo-steward) | GitHub Repo Steward | Local/fake vertical agent runtime through local dry-run execution results. Current layers include fixture intake, normalization, deterministic analysis, fake proposals, policy guard, approval inbox, local operator decisions, local audit records, and local dry-run results. GitHub API adapter, real executor runtime, real GitHub integration, and real LLM integration remain future work. |
 
 Numbering convention:
 
@@ -162,7 +162,7 @@ for the Artifact 6 demo.
 **Status:** Local fixture snapshot, normalizer, deterministic findings, and
 non-executing fake proposal drafts with local policy evaluation, pending
 approval inbox items, local operator decision records, and local ledger/audit
-records;
+records plus local dry-run execution results;
 fake/local/dry-run by default
 
 **Sprint 7.0 claim:** Artifact 07 is a GitHub Repo Steward vertical agent
@@ -201,15 +201,22 @@ records. These records are local in-memory audit evidence only: they do not
 execute proposals, call GitHub, trigger executor work, or persist to files or a
 database.
 
+**Sprint 7.8 claim:** Artifact 07 can convert local ledger/audit records and
+matching approval inbox context into deterministic local
+`DryRunExecutionResult` records. These records are local simulation evidence
+only: they do not execute proposals, call GitHub, trigger real executor work,
+create external side effects, or persist to files or a database.
+
 **Current boundary:** Local fixture intake, normalization, deterministic
 findings, non-executing fake proposal drafts, local policy evaluation, and
 pending approval inbox item creation with local operator decision records and
-local ledger/audit records only. No real GitHub reads or writes, GitHub API
-calls, GitHub API adapter, GitHub SDKs, real GitHub issue comments, label
-mutation, issue closing, PR mutation, branch or commit creation, workflow
-dispatch, required real LLM calls, real LLM proposal generation, durable
-ledger/audit persistence, executor runtime, `.env` reads, token reads,
-background automation, or autonomous external side effects are included.
+local ledger/audit records plus local dry-run execution results only. No real
+GitHub reads or writes, GitHub API calls, GitHub API adapter, GitHub SDKs, real
+GitHub issue comments, label mutation, issue closing, PR mutation, branch or
+commit creation, workflow dispatch, required real LLM calls, real LLM proposal
+generation, durable ledger/audit persistence, real executor runtime, `.env`
+reads, token reads, background automation, or autonomous external side effects
+are included.
 
 **Read first:**
 
@@ -224,6 +231,7 @@ background automation, or autonomous external side effects are included.
 - [Artifact 7.5 validation summary](07-github-repo-steward/docs/evidence/artifact-7.5-validation-summary.md)
 - [Artifact 7.6 validation summary](07-github-repo-steward/docs/evidence/artifact-7.6-validation-summary.md)
 - [Artifact 7.7 validation summary](07-github-repo-steward/docs/evidence/artifact-7.7-validation-summary.md)
+- [Artifact 7.8 validation summary](07-github-repo-steward/docs/evidence/artifact-7.8-validation-summary.md)
 
 ## What Is Not Here Yet
 
@@ -239,7 +247,8 @@ claims.
 Artifact 07 currently implements only local fixture snapshot loading,
 normalization, deterministic findings, non-executing fake proposal drafts, and
 local policy evaluation with pending approval inbox item creation and local
-operator decision records plus local ledger/audit records for a future
-approval-gated repository stewardship vertical agent. It does not yet implement
-dry-run executor runtime, executor runtime, real GitHub access, a GitHub API
-adapter, durable ledger/audit persistence, or a real LLM provider requirement.
+operator decision records plus local ledger/audit records and local dry-run
+execution results for a future approval-gated repository stewardship vertical
+agent. It does not yet implement real executor runtime, real GitHub access, a
+GitHub API adapter, durable ledger/audit persistence, or a real LLM provider
+requirement.

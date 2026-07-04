@@ -5,6 +5,10 @@ from github_repo_steward.approval_inbox import (
     build_approval_inbox_item,
 )
 from github_repo_steward.analyzer import analyze_repo_snapshot
+from github_repo_steward.dry_run_executor import (
+    dry_run_ledger_record,
+    dry_run_ledger_records,
+)
 from github_repo_steward.fake_proposal_provider import FakeProposalProvider
 from github_repo_steward.ledger import (
     record_decision_to_ledger,
@@ -15,6 +19,8 @@ from github_repo_steward.models import (
     ApprovalInboxItem,
     CiStatusSummary,
     CommentRecord,
+    DryRunExecutionError,
+    DryRunExecutionResult,
     IssueRecord,
     LabelRecord,
     LedgerAuditError,
@@ -55,6 +61,8 @@ __all__ = [
     "ApprovalInboxItem",
     "CiStatusSummary",
     "CommentRecord",
+    "DryRunExecutionError",
+    "DryRunExecutionResult",
     "FakeProposalProvider",
     "IssueRecord",
     "LabelRecord",
@@ -76,6 +84,8 @@ __all__ = [
     "analyze_repo_snapshot",
     "build_approval_inbox",
     "build_approval_inbox_item",
+    "dry_run_ledger_record",
+    "dry_run_ledger_records",
     "evaluate_repo_proposal",
     "evaluate_repo_proposals",
     "load_default_fixture_snapshot",

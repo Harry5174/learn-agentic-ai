@@ -29,6 +29,10 @@ class LedgerAuditError(ValueError):
     """Raised when local ledger/audit input is malformed or inconsistent."""
 
 
+class DryRunExecutionError(ValueError):
+    """Raised when local dry-run execution input is malformed or inconsistent."""
+
+
 @dataclass(frozen=True)
 class OperatorDecisionRecord:
     decision_id: str
@@ -128,6 +132,67 @@ class LedgerAuditRecord:
             isinstance(ref, str) for ref in self.evidence_refs
         ):
             raise LedgerAuditError("evidence_refs must be a tuple of strings.")
+
+
+@dataclass(frozen=True)
+class DryRunExecutionResult:
+    dry_run_id: str
+    ledger_record_id: str
+    decision_id: str
+    inbox_item_id: str
+    proposal_id: str
+    proposal_type: str
+    target_type: str
+    target_number: int
+    decision: str
+    planned_action: str
+    dry_run_status: str
+    execution_status: str
+    github_status: str
+    external_side_effect_status: str
+    ledger_record_status: str
+    evidence_refs: tuple[str, ...]
+    summary: str
+
+    def __post_init__(self) -> None:
+        if self.dry_run_status not in {
+            "dry_run_completed",
+            "dry_run_skipped",
+        }:
+            raise DryRunExecutionError(
+                f"Unsupported dry-run status: {self.dry_run_status}"
+            )
+        if self.execution_status != "not_executed":
+            raise DryRunExecutionError(
+                "Dry-run results must never claim execution."
+            )
+        if self.github_status != "not_called":
+            raise DryRunExecutionError(
+                "Dry-run results must never claim GitHub calls."
+            )
+        if self.external_side_effect_status != "none":
+            raise DryRunExecutionError(
+                "Dry-run results must never claim external side effects."
+            )
+        if self.ledger_record_status != "verified_local_audit_record":
+            raise DryRunExecutionError(
+                "Dry-run results require verified local audit records."
+            )
+        if self.decision not in {
+            "approved_by_operator",
+            "rejected_by_operator",
+        }:
+            raise DryRunExecutionError(
+                f"Unsupported operator decision: {self.decision}"
+            )
+        if not isinstance(self.target_number, int) or self.target_number < 1:
+            raise DryRunExecutionError("target_number must be a positive int.")
+        if not isinstance(self.evidence_refs, tuple) or not all(
+            isinstance(ref, str) for ref in self.evidence_refs
+        ):
+            raise DryRunExecutionError(
+                "evidence_refs must be a tuple of strings."
+            )
 
 
 @dataclass(frozen=True)

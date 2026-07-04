@@ -23,6 +23,9 @@ Sprint 7.6R is documentation-only and adds no runtime tests.
 Sprint 7.7 adds local runtime tests for ledger/audit records created from
 operator decisions and matching approval inbox items.
 
+Sprint 7.8 adds local runtime tests for dry-run execution results created from
+ledger/audit records and matching approval inbox items.
+
 Coverage by sprint:
 
 - 7.0 placeholder tests
@@ -33,14 +36,14 @@ Coverage by sprint:
 - 7.5 approval inbox tests
 - 7.6 operator decision tests
 - 7.7 ledger/audit-record tests
+- 7.8 dry-run executor tests
 
 Future test coverage needed:
 
-- future 7.8 dry-run executor tests
 - future 7.9 GitHub adapter tests
 
-Current tests do not cover dry-run executor, executor runtime, GitHub adapter,
-or real GitHub behavior.
+Current tests do not cover real executor runtime, GitHub adapter, or real
+GitHub behavior.
 
 Current tests cover:
 
@@ -133,11 +136,31 @@ Current tests cover:
   `ANTHROPIC_API_KEY`
 - ledger operation without network sockets
 - ledger operation without file creation
+- structured dry-run execution result records
+- approved ledgered decisions producing `dry_run_completed` results
+- rejected ledgered decisions producing `dry_run_skipped` no-op results
+- dry-run results preserving ledger, decision, proposal, inbox, and target
+  values
+- dry-run results with `execution_status="not_executed"`
+- dry-run results with `github_status="not_called"`
+- dry-run results with `external_side_effect_status="none"`
+- dry-run results with
+  `ledger_record_status="verified_local_audit_record"`
+- mismatched ledger/inbox data rejection
+- duplicate dry-run ledger record rejection
+- missing dry-run inbox reference rejection
+- empty dry-run batch behavior
+- deterministic dry-run result IDs
+- deterministic dry-run result order
+- dry-run no-mutation behavior for ledger records and inbox items
+- dry-run operation without `GITHUB_TOKEN`, `OPENAI_API_KEY`, or
+  `ANTHROPIC_API_KEY`
+- dry-run operation without network sockets
+- dry-run operation without file creation
 
 Current tests do not cover:
 
-- dry-run executor
-- executor runtime
+- real executor runtime
 - GitHub API read adapter
 - real GitHub reads
 - real GitHub writes
@@ -160,5 +183,7 @@ GitHub integration. Do not treat operator decision tests as evidence of
 ledger/audit runtime, dry-run executor runtime, or real GitHub integration. Do
 not treat ledger/audit-record tests as evidence of durable persistence, dry-run
 executor runtime, executor runtime, GitHub adapter behavior, or real GitHub
-integration. Each future behavior needs implementation plus focused tests in
-the sprint that adds it.
+integration. Do not treat dry-run executor tests as evidence of real execution,
+real executor runtime, durable persistence, GitHub adapter behavior, or real
+GitHub integration. Each future behavior needs implementation plus focused
+tests in the sprint that adds it.

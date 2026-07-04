@@ -121,10 +121,26 @@ For Sprint 7.7, evidence is limited to local ledger/audit record integration:
 - hygiene command results
 - explicit statements about what local ledger/audit records do and do not prove
 
-Future runtime sprints may add ledger/audit summaries, dry-run executor
-evidence, GitHub adapter evidence, real-read evidence, or real-write readiness
-evidence. Each future evidence package must be interpreted by the sprint layer
-that produced it.
+For Sprint 7.8, evidence is limited to local dry-run executor result
+generation:
+
+- file inventory
+- dry-run result model coverage
+- approved and rejected ledgered decision dry-run checks
+- deterministic dry-run result ID and order checks
+- ledger, decision, proposal, inbox, target, and evidence-reference
+  preservation checks
+- no-mutation checks
+- no-secret and no-network checks
+- no-file-persistence checks
+- pytest results
+- compile checks
+- hygiene command results
+- explicit statements about what local dry-run results do and do not prove
+
+Future runtime sprints may add GitHub adapter evidence, real-read evidence, or
+real-write readiness evidence. Each future evidence package must be interpreted
+by the sprint layer that produced it.
 
 ## Evidence by Sprint Layer
 
@@ -140,6 +156,8 @@ that produced it.
   only.
 - 7.7 ledger/audit evidence proves local in-memory audit records for operator
   decision evidence only.
+- 7.8 dry-run executor evidence proves local dry-run result generation for
+  ledgered operator decisions only.
 - Future executor, GitHub adapter, real-read, and real-write evidence must be
   produced by the sprint that implements or gates that layer.
 
@@ -213,16 +231,27 @@ inbox context. These records preserve decision evidence and explicitly retain
 durable persistence evidence, not executor evidence, not live GitHub evidence,
 and not real LLM evidence.
 
+## How Sprint 7.8 Evidence Should Be Interpreted
+
+Sprint 7.8 evidence proves only that local ledger/audit records can be
+converted into deterministic local dry-run execution result records with
+matching approval inbox context. These records preserve upstream evidence and
+explicitly retain `execution_status="not_executed"`,
+`github_status="not_called"`, and `external_side_effect_status="none"`. It is
+local offline test evidence, not real execution evidence, not real executor
+runtime evidence, not durable persistence evidence, not live GitHub evidence,
+and not real LLM evidence.
+
 ## What This Evidence Does Not Prove
 
 Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint 7.5,
-Sprint 7.6, Sprint 7.6R, and Sprint 7.7 evidence do not prove:
+Sprint 7.6, Sprint 7.6R, Sprint 7.7, and Sprint 7.8 evidence do not prove:
 
 - an operational GitHub Repo Steward runtime exists
 - real LLM proposal generation works
 - approval-gated runtime works
 - durable ledger/audit persistence works
-- dry-run execution works
+- real execution works
 - real GitHub reads work
 - GitHub API adapter correctness
 - real GitHub execution works
@@ -249,6 +278,8 @@ prove ledger recording, durable audit persistence, executor behavior, real
 GitHub behavior, or real LLM behavior. Local ledger/audit tests can prove local
 in-memory audit records for operator decision evidence, but they cannot prove
 durable audit persistence, dry-run executor behavior, executor behavior, real
-GitHub behavior, or real LLM behavior. Any future runtime claim must be backed
-by tests, command output, and safety scans from the sprint that implements that
-behavior.
+GitHub behavior, or real LLM behavior. Local dry-run executor tests can prove
+local simulation result generation, but they cannot prove real executor
+runtime, real GitHub behavior, durable persistence, or real LLM behavior. Any
+future runtime claim must be backed by tests, command output, and safety scans
+from the sprint that implements that behavior.

@@ -4,7 +4,7 @@ Artifact 07 is a GitHub Repo Steward vertical agent scaffold.
 
 ## Artifact Status
 
-Current status after Sprint 7.7:
+Current status after Sprint 7.8:
 
 - local fixture intake
 - normalization
@@ -14,12 +14,12 @@ Current status after Sprint 7.7:
 - pending approval inbox items
 - local operator decision records
 - local ledger/audit records
+- local dry-run execution results
 
 Artifact 07 is not a completed steward agent.
 
 Still not implemented:
 
-- dry-run executor
 - executor runtime
 - GitHub API read adapter
 - real GitHub integration
@@ -44,23 +44,25 @@ Sprint 7.6: closed - operator decision handling.
 
 Sprint 7.6R: closed - formal design outline revision and roadmap alignment.
 
-Sprint 7.7: local ledger / audit record integration.
+Sprint 7.7: closed - local ledger / audit record integration.
+
+Sprint 7.8: dry-run executor.
 
 Runtime status: local fixture intake, normalization, deterministic findings,
 non-executing fake proposals, local policy evaluation, and pending approval
 inbox items with local operator decision records and local ledger/audit records
-only.
+plus local dry-run execution results only.
 
 ## Purpose
 
 Artifact 07 prepares a future vertical agent that can inspect repository state,
 propose stewardship actions, route those proposals through policy and approval,
-and preserve audit evidence. Sprint 7.5 proves only that a deterministic local
+and preserve audit evidence. Sprint 7.8 proves only that a deterministic local
 fake GitHub-like snapshot can be loaded, normalized, analyzed into structured
 observational findings, converted into non-executing fake proposal drafts, and
 evaluated by local policy rules, then converted into pending approval inbox
-items for future operator review. Sprint 7.6 adds local operator decision
-records for those pending inbox items only.
+items for future operator review, local operator decision records, local
+ledger/audit records, and local dry-run execution results.
 
 ## What This Artifact Demonstrates
 
@@ -190,17 +192,38 @@ Sprint 7.7 does not demonstrate dry-run execution, executor runtime, real
 GitHub reads or writes, GitHub API adapter correctness, real LLM integration,
 database or file persistence, durable audit storage, or production readiness.
 
+Sprint 7.8 demonstrates:
+
+- structured `DryRunExecutionResult` records
+- deterministic dry-run result IDs and order
+- local dry-run results for approved ledgered operator decisions
+- local dry-run no-op results for rejected ledgered operator decisions
+- preservation of ledger, decision, inbox, proposal, policy, and target
+  evidence context
+- `execution_status="not_executed"` on every dry-run result
+- `github_status="not_called"` on every dry-run result
+- `external_side_effect_status="none"` on every dry-run result
+- `ledger_record_status="verified_local_audit_record"` on every dry-run result
+- safe failure for mismatched ledger/inbox data, duplicate ledger records,
+  duplicate inbox items, and missing inbox references
+- local dry-run handling without network access, GitHub credentials, `.env`,
+  file persistence, database persistence, or a real LLM provider
+
+Sprint 7.8 does not demonstrate executor runtime beyond local dry-run result
+generation, real execution, real GitHub reads or writes, GitHub API adapter
+correctness, real GitHub integration, real LLM integration, durable
+persistence, or production readiness.
+
 ## Default Mode
 
 The default mode is fake/local/dry-run. The artifact does not perform real
 GitHub reads or writes. The artifact does not require a real LLM provider.
 
-Sprint 7.7 begins from fixture repository snapshots, normalizes them, produces
+Sprint 7.8 begins from fixture repository snapshots, normalizes them, produces
 deterministic findings, converts those findings into non-executing fake proposal
 drafts, evaluates those drafts with deterministic local policy rules, and
 creates pending approval inbox items, then records local operator approve/reject
-decisions and local ledger/audit records only. Future implementation work may
-add a dry-run executor.
+decisions, local ledger/audit records, and local dry-run execution results only.
 
 ## Safety Model
 
@@ -331,6 +354,27 @@ decision is not implemented in Sprint 7.0.
   7.3 fake proposal behavior, Sprint 7.4 policy behavior, Sprint 7.5 inbox
   behavior, Sprint 7.6 operator decisions, and all existing tests.
 
+## In Scope for Sprint 7.8
+
+- Define structured local dry-run execution result records.
+- Convert local `LedgerAuditRecord` objects and matching `ApprovalInboxItem`
+  context into `DryRunExecutionResult` objects.
+- Keep approved dry-run results `dry_run_completed`.
+- Keep rejected dry-run results `dry_run_skipped` with
+  `planned_action="no_op_rejected_by_operator"`.
+- Keep all dry-run results `not_executed`, `not_called`, and with no external
+  side effect.
+- Preserve upstream ledger, decision, proposal, inbox, target, and
+  evidence-reference context.
+- Fail safely for mismatched ledger/inbox data, duplicate ledger records,
+  duplicate inbox items, missing inbox references, and malformed local input.
+- Prove dry-run handling does not require common secret environment variables,
+  network access, file persistence, or database persistence.
+- Preserve Sprint 7.1 fixture loading, Sprint 7.2 analyzer behavior, Sprint
+  7.3 fake proposal behavior, Sprint 7.4 policy behavior, Sprint 7.5 inbox
+  behavior, Sprint 7.6 operator decisions, Sprint 7.7 ledger/audit records, and
+  all existing tests.
+
 ## Out of Scope for Sprint 7.0
 
 - Real GitHub writes.
@@ -459,20 +503,39 @@ decision is not implemented in Sprint 7.0.
 - Autonomous external side effects.
 - Production readiness claims.
 
+## Out of Scope for Sprint 7.8
+
+- Real GitHub reads or writes.
+- GitHub API calls, SDKs, or adapter implementation.
+- Reading `.env`.
+- Reading tokens or credentials.
+- Real LLM providers or provider SDKs.
+- Real LLM proposal generation.
+- Real executor runtime.
+- Executing approved proposals.
+- Treating dry-run results as execution.
+- Treating dry-run results as GitHub writes.
+- Treating dry-run results as external side effects.
+- File persistence.
+- Database persistence.
+- Durable audit storage.
+- Background automation.
+- Autonomous external side effects.
+- Production readiness claims.
+
 ## Future Sprint Direction
 
 Future sprints may add, subject to Design Supervisor authorization:
 
-- Sprint 7.8 dry-run executor behavior
 - Sprint 7.9 GitHub API read adapter contract
 - Sprint 7.10 real-read mode evidence gate
 - Sprint 7.11 real-write readiness gate
 - Sprint 7.12 Artifact 07 closeout and AFDF framework update
 
-The GitHub API adapter and real-mode gates remain after local ledger/audit and
-dry-run executor work. Raw GitHub API responses must pass through a dedicated
-adapter before internal analyzer, proposal, policy, approval, ledger, or
-executor layers consume them.
+The GitHub API adapter and real-mode gates remain after local dry-run result
+work. Raw GitHub API responses must pass through a dedicated adapter before
+internal analyzer, proposal, policy, approval, ledger, or executor layers
+consume them.
 
 ## How to Review This Scaffold
 
@@ -490,14 +553,15 @@ Review the following files:
 - [Sprint 7.6 validation summary](docs/evidence/artifact-7.6-validation-summary.md)
 - [Sprint 7.6R validation summary](docs/evidence/artifact-7.6r-validation-summary.md)
 - [Sprint 7.7 validation summary](docs/evidence/artifact-7.7-validation-summary.md)
+- [Sprint 7.8 validation summary](docs/evidence/artifact-7.8-validation-summary.md)
 - [Tests README](tests/README.md)
 
 Check that every runtime claim is limited to local fixture intake,
 normalization, deterministic findings, non-executing fake proposal drafts,
 local policy evaluation, pending approval inbox items, local operator decision
-records, and local ledger/audit records. No real GitHub path, real LLM provider,
-secret read, persistence, executor runtime, or external side effect has been
-added.
+records, local ledger/audit records, and local dry-run execution results. No
+real GitHub path, real LLM provider, secret read, persistence, executor runtime,
+or external side effect has been added.
 
 ## Evidence Location
 
@@ -517,9 +581,12 @@ Sprint evidence lives under [docs/evidence](docs/evidence/).
 - Sprint 7.7 ledger/audit records are local structured audit records only; they
   do not execute, call GitHub, trigger executor work, or persist to files or a
   database.
+- Sprint 7.8 dry-run execution results are local simulation records only; they
+  do not execute, call GitHub, trigger executor work, or persist to files or a
+  database.
 - Sprint 7.2 implements only deterministic local finding analysis.
 - Sprint 7.3 implements only non-executing fake proposal drafts.
 - No operational GitHub Repo Steward exists yet.
-- No executor exists in this artifact yet.
+- No real executor exists in this artifact yet.
 - The scaffold does not prove production readiness, real GitHub safety, real LLM
   safety, or end-to-end repository stewardship.
