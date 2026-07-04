@@ -1,0 +1,12 @@
+[
+  {
+    "id": 4001,
+    "pull_request_number": 21,
+    "user": {
+      "login": "reviewer-fixture"
+    },
+    "state": "APPROVED",
+    "body": "The validation approach is approved, pending the failing check.",
+    "submitted_at": "2026-06-27T12:00:00Z"
+  }
+]

@@ -9,12 +9,13 @@
 - Do not print secrets.
 - Do not read, print, or require credentials in Sprint 7.0, Sprint 7.1, Sprint
   7.2, Sprint 7.3, Sprint 7.4, Sprint 7.5, Sprint 7.6, Sprint 7.6R, or
-  Sprint 7.7, or Sprint 7.8.
+  Sprint 7.7, Sprint 7.8, or Sprint 7.9.
 - Do not call GitHub APIs in Sprint 7.1, Sprint 7.2, Sprint 7.3, or Sprint
-  7.4, Sprint 7.5, Sprint 7.6, Sprint 7.6R, Sprint 7.7, or Sprint 7.8.
+  7.4, Sprint 7.5, Sprint 7.6, Sprint 7.6R, Sprint 7.7, Sprint 7.8, or
+  Sprint 7.9.
 - Do not perform real GitHub reads or writes in Sprint 7.1, Sprint 7.2, or
   Sprint 7.3, Sprint 7.4, Sprint 7.5, Sprint 7.6, Sprint 7.6R, Sprint 7.7,
-  or Sprint 7.8.
+  Sprint 7.8, or Sprint 7.9.
 - Do not run live external side effects.
 - Do not run live external side effects without Product Owner approval.
 - Treat proposal-provider output as untrusted.
@@ -28,23 +29,24 @@
 - Raw GitHub API responses must pass through a dedicated adapter before
   internal layers consume them.
 
-## 2. Post-7.8 Safety Boundary
+## 2. Post-7.9 Safety Boundary
 
-After Sprint 7.8, Artifact 07 has local fixture intake, normalization,
+After Sprint 7.9, Artifact 07 has local fixture intake, normalization,
 deterministic analysis, fake proposal drafts, local policy evaluation, pending
 approval inbox items, local operator decision records, and local ledger/audit
-records, plus local dry-run execution results only.
+records, local dry-run execution results, and a local GitHub-like fixture
+adapter contract only.
 
 - Durable ledger/audit persistence remains future.
 - Executor work remains future.
-- GitHub API adapter remains future.
+- Real-read evidence gate remains future.
 - Real GitHub read/write remains future.
 - Real LLM integration remains future.
 
-Sprint 7.8 implements in-memory local dry-run result generation only. It does
-not implement file persistence, database persistence, real executor runtime,
-GitHub API adapter logic, real GitHub reads, real GitHub writes, or real LLM
-integration.
+Sprint 7.9 implements local raw GitHub-like fixture mapping only. It does not
+implement file persistence, database persistence, real executor runtime, live
+GitHub API calls, GitHub authentication, real GitHub reads, real GitHub writes,
+or real LLM integration.
 
 ## 3. Default-Deny Behavior
 
@@ -62,10 +64,12 @@ adds deterministic local policy evaluation of those drafts only. Sprint 7.5
 adds pending approval inbox items from policy-allowed drafts only. Sprint 7.6
 adds local operator decision records for pending inbox items only. Sprint 7.7
 adds local ledger/audit records for operator decision evidence only. Sprint 7.8
-adds local dry-run execution results for ledgered decisions only. These sprints
-do not add a GitHub client, GitHub SDK, GitHub API call, raw GitHub API adapter,
-or real repository read path. Future fake GitHub behavior should use local
-fixtures or fake adapters only. Fake behavior may support deterministic
+adds local dry-run execution results for ledgered decisions only. Sprint 7.9
+adds local raw GitHub-like fixture mapping into the canonical internal snapshot
+shape only. These sprints do not add a GitHub client, GitHub SDK, live GitHub
+API call, GitHub authentication, or real repository read path. Future fake
+GitHub behavior should use local fixtures or fake adapters only. Fake behavior
+may support deterministic
 analysis, non-executing proposal drafts, local policy evaluation, pending
 approval inbox items, local decision records, local audit records, and local
 dry-run result records, but it must not imply live repository mutation.
@@ -73,8 +77,8 @@ dry-run result records, but it must not imply live repository mutation.
 ## 5. Real GitHub Boundary
 
 Real GitHub behavior is out of scope for Sprint 7.0, Sprint 7.1, Sprint 7.2,
-Sprint 7.3, Sprint 7.4, Sprint 7.5, Sprint 7.6, Sprint 7.6R, Sprint 7.7, and
-Sprint 7.8.
+Sprint 7.3, Sprint 7.4, Sprint 7.5, Sprint 7.6, Sprint 7.6R, Sprint 7.7,
+Sprint 7.8, and Sprint 7.9.
 Future real GitHub access, if ever approved, must be explicit, allowlisted,
 policy-gated, operator-approved, audited, and separate from the default demo
 path. A future GitHub API adapter sprint is required before raw GitHub API
@@ -90,7 +94,7 @@ and dry-run behavior without a network call or provider credential.
 ## 7. Real LLM Boundary
 
 Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint 7.5, Sprint
-7.6, Sprint 7.7, and Sprint 7.8 add no real LLM provider. A future
+7.6, Sprint 7.7, Sprint 7.8, and Sprint 7.9 add no real LLM provider. A future
 provider-neutral LLM boundary may be designed only as an optional layer. Real
 provider use must not allow the model to execute tools, approve side effects,
 reject side effects, alter policy, or select real execution mode.
@@ -150,6 +154,13 @@ operator decision evidence was converted into a deterministic local simulation
 record. It does not post to GitHub, enqueue executor work, persist to disk,
 write to a database, or prove a future side effect is safe to execute.
 
+Sprint 7.9 GitHub read adapter contract work is not real GitHub integration.
+A `GitHubReadAdapterResult` means only that local raw GitHub-like fixture
+payloads were mapped into canonical internal snapshot-shaped data. It does not
+call GitHub, authenticate, write to GitHub, execute proposals, bypass the
+normalizer, persist to disk, write to a database, or prove complete GitHub API
+coverage.
+
 ## 10. Ledger/Audit Requirements
 
 Sprint 7.7 local ledger/audit records preserve:
@@ -190,11 +201,29 @@ Sprint 7.8 results are local in-memory dataclass records only. They do not
 execute proposals, call GitHub, trigger real executor work, or persist to a file
 or database.
 
-## 12. Secret Handling
+## 12. GitHub-Like Adapter Requirements
+
+Sprint 7.9 local adapter results preserve:
+
+- local raw endpoint fixture names
+- repository full name derived from fixture identity
+- canonical internal snapshot-shaped output
+- adapter status as `mapped_locally`
+- GitHub status as `not_called`
+- network status as `not_used`
+
+Sprint 7.9 adapter input is local raw GitHub-like fixture data only. Adapter
+output is the canonical internal snapshot shape. The adapter does not call
+GitHub, authenticate, write to GitHub, execute proposals, bypass the normalizer,
+or persist to a file or database. Raw GitHub API responses must pass through a
+dedicated adapter before internal layers consume them.
+
+## 13. Secret Handling
 
 Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint 7.5, Sprint
-7.6, Sprint 7.7, and Sprint 7.8 must not read secrets, print secrets, create secret
-placeholders that look like real credentials, or require provider credentials.
+7.6, Sprint 7.7, Sprint 7.8, and Sprint 7.9 must not read secrets, print
+secrets, create secret placeholders that look like real credentials, or require
+provider credentials.
 Documentation may refer to credentials generically, but it must not include
 real values.
 
@@ -203,7 +232,7 @@ Sprint 7.4 includes local guard-pattern literals such as `GITHUB_TOKEN=`,
 prove token-like draft text is blocked. Safety-scan hits for these strings must
 be classified as intentional local guard-pattern literals, not secret values.
 
-## 13. Forbidden Actions in Sprint 7.0
+## 14. Forbidden Actions in Sprint 7.0
 
 Sprint 7.0 explicitly forbids:
 
@@ -225,7 +254,7 @@ The local git branch and local commit used to package this documentation sprint
 are repository maintenance actions for the sprint itself, not Artifact 07
 runtime capabilities.
 
-## 14. Forbidden Actions in Sprint 7.1
+## 15. Forbidden Actions in Sprint 7.1
 
 Sprint 7.1 explicitly forbids:
 
@@ -250,7 +279,7 @@ Sprint 7.1 explicitly forbids:
 - background automation
 - autonomous external side effects
 
-## 15. Forbidden Actions in Sprint 7.2
+## 16. Forbidden Actions in Sprint 7.2
 
 Sprint 7.2 explicitly forbids:
 
@@ -280,7 +309,7 @@ The local git branch and local commit used to package this implementation
 sprint are repository maintenance actions for the sprint itself, not Artifact
 07 runtime capabilities.
 
-## 16. Forbidden Actions in Sprint 7.3
+## 17. Forbidden Actions in Sprint 7.3
 
 Sprint 7.3 explicitly forbids:
 
@@ -310,7 +339,7 @@ The local git branch and local commit used to package this implementation
 sprint are repository maintenance actions for the sprint itself, not Artifact
 07 runtime capabilities.
 
-## 17. Forbidden Actions in Sprint 7.4
+## 18. Forbidden Actions in Sprint 7.4
 
 Sprint 7.4 explicitly forbids:
 
@@ -350,7 +379,7 @@ Sprint 7.4 policy guard invariants:
 - Policy guard does not enqueue approval inbox items.
 - All proposals still require future operator approval.
 
-## 18. Forbidden Actions in Sprint 7.5
+## 19. Forbidden Actions in Sprint 7.5
 
 Sprint 7.5 explicitly forbids:
 
@@ -391,7 +420,7 @@ Sprint 7.5 approval inbox invariants:
 - Approval inbox does not call GitHub.
 - All inbox items remain pending future operator review.
 
-## 19. Forbidden Actions in Sprint 7.6
+## 20. Forbidden Actions in Sprint 7.6
 
 Sprint 7.6 explicitly forbids:
 
@@ -433,7 +462,7 @@ Sprint 7.6 operator decision invariants:
 - Operator decisions do not enqueue executor work.
 - All execution remains out of scope.
 
-## 20. Forbidden Actions in Sprint 7.6R
+## 21. Forbidden Actions in Sprint 7.6R
 
 Sprint 7.6R explicitly forbids:
 
@@ -462,7 +491,7 @@ Sprint 7.6R explicitly forbids:
 
 Sprint 7.6R may revise documentation and evidence interpretation only.
 
-## 21. Forbidden Actions in Sprint 7.7
+## 22. Forbidden Actions in Sprint 7.7
 
 Sprint 7.7 explicitly forbids:
 
@@ -503,7 +532,7 @@ Sprint 7.7 ledger/audit invariants:
 - Ledger records preserve operator decision evidence.
 - Execution remains out of scope.
 
-## 22. Forbidden Actions in Sprint 7.8
+## 23. Forbidden Actions in Sprint 7.8
 
 Sprint 7.8 explicitly forbids:
 
@@ -544,7 +573,51 @@ Sprint 7.8 dry-run invariants:
 - Dry-run results preserve ledger and operator-decision evidence.
 - Real execution remains out of scope.
 
-## 23. Overclaim Prevention
+## 24. Forbidden Actions in Sprint 7.9
+
+Sprint 7.9 explicitly forbids:
+
+- real GitHub reads
+- real GitHub writes
+- live GitHub API calls
+- GitHub authentication
+- GitHub SDKs
+- real GitHub issue comments
+- real label mutation
+- real issue closing
+- real PR mutation
+- workflow dispatch
+- token reads
+- `.env` reads
+- required real LLM calls
+- real LLM proposal generation
+- real executor runtime
+- executing approved proposals
+- treating raw GitHub-like fixtures as live GitHub data
+- treating adapter output as complete GitHub API coverage
+- bypassing the normalizer
+- database persistence
+- file persistence beyond committed local fixtures
+- durable audit storage
+- background automation
+- autonomous external side effects
+
+Sprint 7.9 may create local fixture payload files and in-memory
+`GitHubReadAdapterResult` objects only.
+
+Sprint 7.9 adapter invariants:
+
+- Adapter input is local raw GitHub-like fixture data only.
+- Adapter output is canonical internal snapshot shape.
+- Adapter does not call GitHub.
+- Adapter does not authenticate.
+- Adapter does not write to GitHub.
+- Adapter does not execute proposals.
+- Adapter does not bypass the normalizer.
+- Raw GitHub API responses must pass through a dedicated adapter before
+  internal layers consume them.
+
+## 25. Overclaim Prevention
 
 Allowed Sprint 7.0 claim:
 
@@ -616,22 +689,30 @@ Sprint 7.8 local dry-run execution result generation for ledgered operator
 decisions is implemented when tests and validation evidence support that claim.
 ```
 
+Allowed Sprint 7.9 claim:
+
+```text
+Sprint 7.9 local GitHub-like read adapter contract over raw fixture payloads is
+implemented when tests and validation evidence support that claim.
+```
+
 Forbidden Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint
-7.5, Sprint 7.6, Sprint 7.6R, Sprint 7.7, and Sprint 7.8 claims:
+7.5, Sprint 7.6, Sprint 7.6R, Sprint 7.7, Sprint 7.8, and Sprint 7.9 claims:
 
 - Artifact 07 is complete.
 - Artifact 07 is operational.
 - Artifact 07 can safely mutate repositories.
 - Artifact 07 has a working GitHub client.
 - Artifact 07 performs live repository reads.
-- Artifact 07 has a raw GitHub API adapter.
+- Artifact 07 has live GitHub API integration.
 - Artifact 07 has real LLM routing.
 - Artifact 07 generates real LLM proposals.
 - Artifact 07 has durable ledger persistence or executor runtime.
 - Artifact 07 has executable approval decisions for proposal drafts.
+- Artifact 07 has live GitHub API integration or authentication.
 - Artifact 07 proves production readiness.
 
-## 24. Green-Gate Safety Checklist
+## 26. Green-Gate Safety Checklist
 
 - [ ] Artifact 07 directory exists.
 - [ ] Documentation scaffold is complete.
@@ -654,6 +735,11 @@ Forbidden Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint
 - [ ] Dry-run results do not call GitHub.
 - [ ] Dry-run results do not trigger real executor work.
 - [ ] Dry-run results do not claim external side effects.
+- [ ] Adapter input remains local raw GitHub-like fixture data only.
+- [ ] Adapter output remains canonical internal snapshot shape.
+- [ ] Adapter does not call GitHub or authenticate.
+- [ ] Adapter does not bypass the normalizer.
+- [ ] No GitHub SDK is added.
 - [ ] No database or file persistence is added.
 - [ ] No secrets are read or printed.
 - [ ] No `.env` file is tracked.

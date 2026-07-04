@@ -1,0 +1,22 @@
+[
+  {
+    "name": "needs-info",
+    "description": "Additional reproduction details are needed",
+    "color": "fef2c0"
+  },
+  {
+    "name": "bug",
+    "description": "Something is not working",
+    "color": "d73a4a"
+  },
+  {
+    "name": "enhancement",
+    "description": "New capability or improvement",
+    "color": "a2eeef"
+  },
+  {
+    "name": "stale",
+    "description": "No recent maintainer activity",
+    "color": "ededed"
+  }
+]

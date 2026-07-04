@@ -1,0 +1,10 @@
+{
+  "id": 9001,
+  "full_name": "fixture-owner/fixture-repo",
+  "owner": {
+    "login": "fixture-owner"
+  },
+  "name": "fixture-repo",
+  "default_branch": "main",
+  "snapshot_generated_at": "2026-07-01T12:00:00Z"
+}

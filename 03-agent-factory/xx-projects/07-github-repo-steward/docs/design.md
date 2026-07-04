@@ -1,11 +1,13 @@
 # Artifact 07 Design Outline
 
-## 1. Current Status After Sprint 7.8
+## 1. Current Status After Sprint 7.9
 
 Artifact 07 is a local/fake GitHub Repo Steward vertical-agent scaffold. After
-Sprint 7.8, the implemented local layers are:
+Sprint 7.9, the implemented local layers are:
 
 ```text
+raw GitHub-like fixture payloads
+GitHub read adapter contract
 canonical fixture snapshot
 normalizer
 deterministic analyzer
@@ -22,10 +24,11 @@ records. They do not read GitHub, call GitHub APIs, call a real LLM provider,
 persist ledger/audit records, run a real executor, or perform repository
 mutation.
 
-Sprint 7.8 adds local dry-run result generation for ledgered operator decisions
-only. It records structured local dry-run result records in memory; it does not
-add SQLite, files-on-disk persistence, durable storage, real executor runtime,
-GitHub calls, or real LLM integration.
+Sprint 7.9 adds a local GitHub-like fixture adapter contract only. It maps
+committed raw endpoint-shaped fixture payloads into the canonical internal
+snapshot shape; it does not call GitHub, authenticate, add GitHub SDKs, add
+SQLite, add files-on-disk persistence, add durable storage, add real executor
+runtime, or add real LLM integration.
 
 ## 2. Completed Sprint Summary
 
@@ -40,7 +43,8 @@ GitHub calls, or real LLM integration.
 | 7.6 | Operator Decision Handling | closed | Local approve/reject operator decision records for pending inbox items. |
 | 7.6R | Formal Design Outline Revision and Roadmap Alignment | closed | Documentation-only alignment of design, roadmap, safety boundaries, and evidence interpretation. |
 | 7.7 | Local Ledger / Audit Record Integration | closed | Local in-memory ledger/audit records for operator decision evidence. |
-| 7.8 | Dry-Run Executor | current | Local dry-run execution result records for ledgered operator decisions. |
+| 7.8 | Dry-Run Executor | closed | Local dry-run execution result records for ledgered operator decisions. |
+| 7.9 | GitHub API Read Adapter Contract | current | Local raw GitHub-like fixture adapter into canonical internal snapshot shape. |
 
 Each sprint proves only its own layer. Earlier evidence does not prove later
 layers.
@@ -48,7 +52,13 @@ layers.
 ## 3. Revised Architecture Diagram
 
 ```text
-Canonical Internal Fixture Snapshot
+Raw GitHub-like Fixture Payloads
+        |
+        v
+GitHub Read Adapter Contract
+        |
+        v
+Canonical Internal Snapshot
         |
         v
 Normalizer
@@ -75,9 +85,6 @@ Ledger / Audit Record
 Dry-Run Executor
         |
         v
-Future GitHub API Read Adapter Contract
-        |
-        v
 Future Real-Read Evidence Gate
         |
         v
@@ -87,6 +94,7 @@ Future Real-Write Readiness Gate
 Implemented through Sprint 7.6:
 
 - canonical internal fixture snapshot
+- local raw GitHub-like fixture adapter contract
 - normalizer
 - deterministic analyzer
 - fake proposal provider
@@ -99,17 +107,18 @@ Implemented through Sprint 7.6:
 Future, unimplemented layers:
 
 - executor runtime
-- GitHub API read adapter
 - real-read evidence gate
 - real-write readiness gate
 
 ## 4. Current Runtime Capability Boundary
 
-The current runtime can load a committed local fixture snapshot, normalize it,
-derive deterministic findings, create fake proposal drafts, evaluate those
-drafts with local policy rules, build pending approval inbox items, and record
-local operator approve/reject decision records with local ledger/audit evidence
-records, then convert those audit records into local dry-run execution results.
+The current runtime can load committed local raw GitHub-like fixture payloads,
+map them into the canonical internal snapshot dictionary shape, normalize that
+snapshot, derive deterministic findings, create fake proposal drafts, evaluate
+those drafts with local policy rules, build pending approval inbox items, and
+record local operator approve/reject decision records with local ledger/audit
+evidence records, then convert those audit records into local dry-run execution
+results.
 
 The current runtime cannot:
 
@@ -118,7 +127,7 @@ The current runtime cannot:
 - call GitHub APIs
 - read live GitHub data
 - write live GitHub data
-- adapt raw GitHub API responses
+- adapt live raw GitHub API responses
 - call a real LLM provider
 - prove production readiness
 
@@ -136,6 +145,11 @@ or proof of execution readiness.
 converted into a local simulation record. It is not a GitHub write, not a real
 executor command, not durable persistence, and not evidence that a future side
 effect was safe or performed.
+
+`GitHubReadAdapterResult` means only that local raw GitHub-like fixture payloads
+were mapped into canonical internal snapshot-shaped data. It is not a live
+GitHub API response, not authentication, not complete GitHub API coverage, and
+not evidence that real GitHub reads are safe.
 
 ## 5. Canonical Fixture vs Raw GitHub API Boundary
 
@@ -164,19 +178,19 @@ policy, approval, ledger, or executor layers.
 
 ## 6. Required GitHub API Adapter Gate
 
-A future GitHub API adapter sprint must be completed before any real-read or
-real-write claim. That adapter must prove:
+Sprint 7.9 provides a local GitHub-like fixture adapter contract before any
+real-read or real-write claim. Future real-read work must still prove:
 
-- raw GitHub endpoint payloads are mapped into the canonical internal snapshot
-  shape
+- live raw GitHub endpoint payloads are mapped into the canonical internal
+  snapshot shape
 - missing or malformed remote data fails safely
 - authentication and token handling are not exposed to internal layers
 - analyzer/proposal/policy/approval layers continue to consume internal records
 - no real write path is introduced by the read adapter itself
 
-The adapter gate must happen after local ledger/audit and dry-run result work,
+The local adapter gate happens after local ledger/audit and dry-run result work,
 so future real-read evidence has a safer local record and execution boundary to
-attach to.
+attach to. Sprint 7.9 itself still uses committed fixtures only.
 
 ## 7. Revised Future Sprint Roadmap
 
@@ -195,8 +209,8 @@ adapter and real-mode gates.
 | 7.6 | Operator Decision Handling | closed |
 | 7.6R | Formal Design Outline Revision and Roadmap Alignment | closed |
 | 7.7 | Local Ledger / Audit Record Integration | closed |
-| 7.8 | Dry-Run Executor | current |
-| 7.9 | GitHub API Read Adapter Contract | future |
+| 7.8 | Dry-Run Executor | closed |
+| 7.9 | GitHub API Read Adapter Contract | current |
 | 7.10 | Real-Read Mode Evidence Gate | future |
 | 7.11 | Real-Write Readiness Gate | future |
 | 7.12 | Artifact 07 Closeout and AFDF Framework Update | future |
@@ -318,7 +332,51 @@ Sprint 7.8 preserves the fixture boundary from Sprint 7.1:
 GitHub REST API payload. A future GitHub API adapter sprint remains required
 before any real-read or real-write claim.
 
-## 10. Three-Role Evidence Lifecycle
+## 10. Sprint 7.9 GitHub API Read Adapter Contract
+
+Sprint 7.9 adds the local adapter boundary before the canonical snapshot:
+
+```text
+Local Raw GitHub-like Fixture Payloads
+        |
+        v
+GitHub Read Adapter Contract
+        |
+        v
+Canonical Internal Snapshot Dictionary
+        |
+        v
+Normalizer
+        |
+        v
+Existing Local Pipeline
+```
+
+The raw GitHub-like fixtures are endpoint-family shaped files for repository
+identity, labels, issues, pulls, issue comments, pull reviews, check runs, and
+statuses. They deliberately differ from `fake_repo_snapshot.json`, which is the
+canonical internal fixture shape. For example, an issue-like payload may contain
+a `pull_request` marker and must not become a canonical issue.
+
+The adapter maps local raw-like payload dictionaries into the canonical
+top-level snapshot fields consumed by `normalize_repo_snapshot`: `repository`,
+`labels`, `issues`, `pull_requests`, `comments`, and `ci_statuses`. It derives
+canonical pull request review and CI summaries from the local review, check-run,
+and status fixtures.
+
+The adapter boundary exists so raw endpoint-shaped payloads never flow directly
+into analyzer, proposal, policy, approval, operator-decision, ledger, or
+dry-run layers. Those internal layers continue to consume normalized internal
+records, with the normalizer remaining the transition point from canonical
+snapshot dictionaries to typed records.
+
+Sprint 7.9 does not prove real GitHub reads or writes. It does not add GitHub
+authentication, GitHub SDKs, live network calls, real executor runtime, durable
+persistence, or real LLM integration. It prepares a future real-read evidence
+gate by proving the local mapping contract and failure behavior before any live
+GitHub payloads are introduced.
+
+## 11. Three-Role Evidence Lifecycle
 
 Future Artifact 07 sprints must follow the three-role evidence lifecycle:
 
@@ -332,7 +390,7 @@ The IDE Agent must not issue the final green gate. The Implementation
 Supervisor must not self-close the sprint. The Implementation Supervisor may
 recommend only `GREEN CANDIDATE`, `AMBER CANDIDATE`, or `RED / BLOCKED`.
 
-## 11. Safety Invariants Before Executor Work
+## 12. Safety Invariants Before Executor Work
 
 Before executor work begins:
 
@@ -348,7 +406,7 @@ Before executor work begins:
 - executor readiness work must start from dry-run result evidence
 - LLM proposes; harness decides; operator approves
 
-## 12. Safety Invariants Before Real GitHub Work
+## 13. Safety Invariants Before Real GitHub Work
 
 Before real GitHub read or write work begins:
 
@@ -364,20 +422,21 @@ Before real GitHub read or write work begins:
 - real GitHub behavior must not be inferred from fixture, fake, or mocked
   evidence
 
-## 13. Non-Claims / Overclaim Prevention
+## 14. Non-Claims / Overclaim Prevention
 
-Sprint 7.8 does not claim:
+Sprint 7.9 does not claim:
 
 - Artifact 07 is complete
 - Artifact 07 is production-ready
 - durable ledger/audit persistence exists
 - executor runtime exists beyond local dry-run result generation
-- GitHub API adapter exists
+- live GitHub API integration exists
+- GitHub authentication exists
 - real GitHub reads are safe
 - real GitHub writes are safe
 - real GitHub integration exists
 - real LLM integration exists
 
-The only Sprint 7.8 completion claim is that local ledger/audit records can be
-converted into deterministic local dry-run execution results when validation
-evidence supports that claim.
+The only Sprint 7.9 completion claim is that local raw GitHub-like fixture
+payloads can be converted into deterministic canonical internal snapshot-shaped
+data when validation evidence supports that claim.

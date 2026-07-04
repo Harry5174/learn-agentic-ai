@@ -1,0 +1,46 @@
+[
+  {
+    "id": 2001,
+    "number": 21,
+    "title": "Add archive importer validation",
+    "body": "Adds local validation before archive import.",
+    "state": "open",
+    "labels": [
+      {"name": "bug"}
+    ],
+    "user": {
+      "login": "dana-fixture"
+    },
+    "created_at": "2026-06-12T11:00:00Z",
+    "updated_at": "2026-06-28T12:10:00Z",
+    "head": {
+      "ref": "fix/archive-import-validation"
+    },
+    "base": {
+      "ref": "main"
+    },
+    "adapter_stale_days": 2
+  },
+  {
+    "id": 2002,
+    "number": 22,
+    "title": "Refresh setup guide",
+    "body": "Clarifies local fixture setup and bootstrap reading order.",
+    "state": "open",
+    "labels": [
+      {"name": "enhancement"}
+    ],
+    "user": {
+      "login": "erin-fixture"
+    },
+    "created_at": "2026-06-20T15:30:00Z",
+    "updated_at": "2026-06-25T16:05:00Z",
+    "head": {
+      "ref": "docs/setup-guide-refresh"
+    },
+    "base": {
+      "ref": "main"
+    },
+    "adapter_stale_days": 5
+  }
+]

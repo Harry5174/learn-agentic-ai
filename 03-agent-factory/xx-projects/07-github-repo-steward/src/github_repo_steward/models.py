@@ -33,6 +33,10 @@ class DryRunExecutionError(ValueError):
     """Raised when local dry-run execution input is malformed or inconsistent."""
 
 
+class GitHubReadAdapterError(ValueError):
+    """Raised when local GitHub-like fixture adapter input is malformed."""
+
+
 @dataclass(frozen=True)
 class OperatorDecisionRecord:
     decision_id: str
@@ -192,6 +196,48 @@ class DryRunExecutionResult:
         ):
             raise DryRunExecutionError(
                 "evidence_refs must be a tuple of strings."
+            )
+
+
+@dataclass(frozen=True)
+class GitHubReadAdapterResult:
+    source: str
+    repository_full_name: str
+    canonical_snapshot: dict[str, object]
+    raw_endpoint_names: tuple[str, ...]
+    warnings: tuple[str, ...]
+    adapter_status: str
+    github_status: str
+    network_status: str
+
+    def __post_init__(self) -> None:
+        if self.adapter_status != "mapped_locally":
+            raise GitHubReadAdapterError(
+                "GitHub read adapter status must be mapped_locally."
+            )
+        if self.github_status != "not_called":
+            raise GitHubReadAdapterError(
+                "GitHub read adapter must never claim GitHub calls."
+            )
+        if self.network_status != "not_used":
+            raise GitHubReadAdapterError(
+                "GitHub read adapter must never claim network use."
+            )
+        if not isinstance(self.canonical_snapshot, dict):
+            raise GitHubReadAdapterError(
+                "canonical_snapshot must be a dictionary."
+            )
+        if not isinstance(self.raw_endpoint_names, tuple) or not all(
+            isinstance(name, str) for name in self.raw_endpoint_names
+        ):
+            raise GitHubReadAdapterError(
+                "raw_endpoint_names must be a tuple of strings."
+            )
+        if not isinstance(self.warnings, tuple) or not all(
+            isinstance(warning, str) for warning in self.warnings
+        ):
+            raise GitHubReadAdapterError(
+                "warnings must be a tuple of strings."
             )
 
 

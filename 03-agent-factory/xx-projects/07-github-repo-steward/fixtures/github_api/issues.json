@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1001,
+    "number": 11,
+    "title": "Crash when importing project archive",
+    "body": "Importing a project archive fails, but the report does not include reproduction steps yet.",
+    "state": "open",
+    "labels": [
+      {"name": "needs-info"},
+      {"name": "bug"}
+    ],
+    "user": {
+      "login": "alice-fixture"
+    },
+    "created_at": "2026-06-05T09:15:00Z",
+    "updated_at": "2026-06-08T10:30:00Z",
+    "comments": 1,
+    "adapter_stale_days": 22
+  },
+  {
+    "id": 1002,
+    "number": 12,
+    "title": "Document repository bootstrap expectations",
+    "body": "The setup guide should explain which bootstrap files must be reviewed before a sprint.",
+    "state": "open",
+    "labels": [
+      {"name": "stale"},
+      {"name": "enhancement"}
+    ],
+    "user": {
+      "login": "bob-fixture"
+    },
+    "created_at": "2026-05-01T08:00:00Z",
+    "updated_at": "2026-05-10T08:45:00Z",
+    "comments": 0,
+    "adapter_stale_days": 51
+  },
+  {
+    "id": 9021,
+    "number": 21,
+    "title": "Add archive importer validation",
+    "body": "Pull request issue-like record from the Issues endpoint.",
+    "state": "open",
+    "labels": [
+      {"name": "bug"}
+    ],
+    "user": {
+      "login": "dana-fixture"
+    },
+    "created_at": "2026-06-12T11:00:00Z",
+    "updated_at": "2026-06-28T12:10:00Z",
+    "comments": 1,
+    "adapter_stale_days": 2,
+    "pull_request": {
+      "marker": "present"
+    }
+  }
+]

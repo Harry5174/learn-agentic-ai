@@ -138,9 +138,28 @@ generation:
 - hygiene command results
 - explicit statements about what local dry-run results do and do not prove
 
-Future runtime sprints may add GitHub adapter evidence, real-read evidence, or
-real-write readiness evidence. Each future evidence package must be interpreted
-by the sprint layer that produced it.
+For Sprint 7.9, evidence is limited to local GitHub-like read adapter contract
+validation:
+
+- file inventory
+- raw GitHub-like fixture file coverage
+- adapter result model coverage
+- canonical snapshot mapping coverage
+- issue-like pull request marker exclusion checks
+- pull request endpoint mapping checks
+- label, comment, review, check, and status mapping checks
+- deterministic adapter output and order checks
+- no-mutation checks
+- no-secret and no-network checks
+- pytest results
+- compile checks
+- hygiene command results
+- explicit statements about what local adapter contract evidence does and does
+  not prove
+
+Future runtime sprints may add real-read evidence or real-write readiness
+evidence. Each future evidence package must be interpreted by the sprint layer
+that produced it.
 
 ## Evidence by Sprint Layer
 
@@ -158,8 +177,10 @@ by the sprint layer that produced it.
   decision evidence only.
 - 7.8 dry-run executor evidence proves local dry-run result generation for
   ledgered operator decisions only.
-- Future executor, GitHub adapter, real-read, and real-write evidence must be
-  produced by the sprint that implements or gates that layer.
+- 7.9 GitHub-like read adapter evidence proves local raw fixture payload mapping
+  into canonical snapshot shape only.
+- Future real executor, real-read, and real-write evidence must be produced by
+  the sprint that implements or gates that layer.
 
 Earlier evidence does not prove later layers.
 
@@ -242,10 +263,20 @@ local offline test evidence, not real execution evidence, not real executor
 runtime evidence, not durable persistence evidence, not live GitHub evidence,
 and not real LLM evidence.
 
+## How Sprint 7.9 Evidence Should Be Interpreted
+
+Sprint 7.9 evidence proves only that committed local raw GitHub-like fixture
+payloads can be mapped into the canonical internal snapshot dictionary shape
+and then normalized for the existing local pipeline. It is local offline test
+evidence, not live GitHub evidence, not authentication evidence, not complete
+GitHub API payload coverage, not real execution evidence, and not real LLM
+evidence.
+
 ## What This Evidence Does Not Prove
 
 Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint 7.5,
-Sprint 7.6, Sprint 7.6R, Sprint 7.7, and Sprint 7.8 evidence do not prove:
+Sprint 7.6, Sprint 7.6R, Sprint 7.7, Sprint 7.8, and Sprint 7.9 evidence do
+not prove:
 
 - an operational GitHub Repo Steward runtime exists
 - real LLM proposal generation works
@@ -253,7 +284,9 @@ Sprint 7.6, Sprint 7.6R, Sprint 7.7, and Sprint 7.8 evidence do not prove:
 - durable ledger/audit persistence works
 - real execution works
 - real GitHub reads work
+- GitHub authentication works
 - GitHub API adapter correctness
+- complete GitHub API payload coverage
 - real GitHub execution works
 - real LLM provider integration works
 - production readiness
@@ -283,3 +316,7 @@ local simulation result generation, but they cannot prove real executor
 runtime, real GitHub behavior, durable persistence, or real LLM behavior. Any
 future runtime claim must be backed by tests, command output, and safety scans
 from the sprint that implements that behavior.
+Local GitHub-like adapter tests can prove local fixture mapping into canonical
+snapshot shape, but they cannot prove live GitHub reads, GitHub authentication,
+complete API coverage, real GitHub behavior, durable persistence, or real LLM
+behavior.

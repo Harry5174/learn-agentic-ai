@@ -26,6 +26,10 @@ operator decisions and matching approval inbox items.
 Sprint 7.8 adds local runtime tests for dry-run execution results created from
 ledger/audit records and matching approval inbox items.
 
+Sprint 7.9 adds local runtime tests for raw GitHub-like fixture adapter
+contracts that map endpoint-shaped payloads into canonical internal snapshot
+data.
+
 Coverage by sprint:
 
 - 7.0 placeholder tests
@@ -37,12 +41,13 @@ Coverage by sprint:
 - 7.6 operator decision tests
 - 7.7 ledger/audit-record tests
 - 7.8 dry-run executor tests
+- 7.9 GitHub-like read adapter contract tests
 
 Future test coverage needed:
 
-- future 7.9 GitHub adapter tests
+- future 7.10 real-read evidence gate tests
 
-Current tests do not cover real executor runtime, GitHub adapter, or real
+Current tests do not cover real executor runtime, real-read evidence, or real
 GitHub behavior.
 
 Current tests cover:
@@ -157,13 +162,39 @@ Current tests cover:
   `ANTHROPIC_API_KEY`
 - dry-run operation without network sockets
 - dry-run operation without file creation
+- raw GitHub-like fixture payload loading
+- structured GitHub read adapter result records
+- raw fixture mapping into canonical snapshot dictionaries
+- issue-like pull request marker exclusion from canonical issues
+- pull request endpoint mapping into canonical pull request records
+- deterministic label mapping
+- deterministic issue comment mapping
+- deterministic pull review/comment mapping
+- deterministic check/status summary mapping
+- mapped snapshot normalization
+- mapped normalized snapshot analyzer behavior
+- mapped normalized snapshot fake proposal behavior
+- mapped normalized snapshot policy guard behavior
+- mapped normalized snapshot approval inbox behavior
+- mapped normalized snapshot operator decision behavior
+- mapped normalized snapshot ledger behavior
+- mapped normalized snapshot dry-run behavior
+- adapter deterministic output and order
+- adapter no-mutation behavior for raw payloads
+- adapter operation without `GITHUB_TOKEN`, `OPENAI_API_KEY`, or
+  `ANTHROPIC_API_KEY`
+- adapter operation without network sockets
+- adapter safe failure for missing repository payloads
+- adapter safe failure for missing pull payloads
+- adapter safe failure for malformed issue payloads
+- adapter safe failure for malformed pull request payloads
 
 Current tests do not cover:
 
 - real executor runtime
-- GitHub API read adapter
 - real GitHub reads
 - real GitHub writes
+- GitHub authentication
 - real LLM integration
 - no real side effects by default
 
@@ -185,5 +216,8 @@ not treat ledger/audit-record tests as evidence of durable persistence, dry-run
 executor runtime, executor runtime, GitHub adapter behavior, or real GitHub
 integration. Do not treat dry-run executor tests as evidence of real execution,
 real executor runtime, durable persistence, GitHub adapter behavior, or real
-GitHub integration. Each future behavior needs implementation plus focused
-tests in the sprint that adds it.
+GitHub integration. Do not treat GitHub-like read adapter tests as evidence of
+live GitHub reads, GitHub authentication, complete GitHub API coverage, real
+GitHub behavior, real executor runtime, durable persistence, or real LLM
+integration. Each future behavior needs implementation plus focused tests in
+the sprint that adds it.

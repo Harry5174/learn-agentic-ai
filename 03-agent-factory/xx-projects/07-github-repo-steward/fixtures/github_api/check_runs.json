@@ -1,0 +1,18 @@
+[
+  {
+    "id": 5001,
+    "pull_request_number": 21,
+    "name": "local-validation",
+    "status": "completed",
+    "conclusion": "failure",
+    "completed_at": "2026-06-28T12:10:00Z"
+  },
+  {
+    "id": 5002,
+    "pull_request_number": 22,
+    "name": "local-validation",
+    "status": "completed",
+    "conclusion": "success",
+    "completed_at": "2026-06-25T16:05:00Z"
+  }
+]
