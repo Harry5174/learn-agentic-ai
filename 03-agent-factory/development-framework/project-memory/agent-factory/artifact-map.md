@@ -46,8 +46,9 @@ This map outlines the status and ownership boundaries of all Agent Factory artif
 - **Owned Responsibility:** Owns development workflow memory/templates/protocols.
 - **Not Owned Responsibility:** Does not run agents, does not execute tools, does not modify artifact runtime code.
 
-## Artifact 07 Candidate — GitHub Repo Steward Agent
-- **Purpose:** First vertical agent utilizing the full safety stack.
-- **Status:** Not Started.
-- **Owned Responsibility:** Vertical logic, prompt management, and tool proposal logic.
-- **Not Owned Responsibility:** Reusable runtime safety (inherited from Phase 02).
+## Artifact 07 — GitHub Repo Steward Agent
+- **Purpose:** Model a local/fake-first repository stewardship pipeline with explicit evidence gates.
+- **Status:** Closed as a local/fake-first GitHub Repo Steward prototype.
+- **Owned Responsibility:** Canonical local fixture intake, normalization, deterministic findings, fake proposals, policy guard, approval inbox, local operator decisions, local audit records, dry-run results, GitHub-like read adapter boundary, real-read evidence gate, and real-write readiness gate.
+- **Not Owned Responsibility:** Live GitHub reads, real GitHub writes, GitHub authentication, real executor runtime, real LLM integration, durable persistence, deployment, production readiness, or next-artifact selection.
+- **Key Evidence Path:** `xx-projects/07-github-repo-steward/docs/evidence/`

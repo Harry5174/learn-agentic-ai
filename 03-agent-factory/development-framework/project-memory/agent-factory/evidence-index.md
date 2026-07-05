@@ -25,6 +25,13 @@ This index points to the concrete evidence packages that prove the project's cla
 | Demo Validation Results | `xx-projects/06-operator-approval-workbench/docs/evidence/a6.5-operator-workbench-demo/validation-results.md` | Demo passed safety and capability validation. | ✅ Found |
 | Portfolio Story | `xx-projects/06-operator-approval-workbench/docs/demos/portfolio-story.md` | Artifact 06 is packaged for portfolio demonstration. | ✅ Found |
 
+## Artifact 07 — GitHub Repo Steward
+| Evidence Item | Path | What It Proves | Verification Status |
+|---------------|------|----------------|---------------------|
+| Sprint 7.0-7.11 validation summaries | `xx-projects/07-github-repo-steward/docs/evidence/` | Local/fake-first repo steward layers were validated sprint-by-sprint through fixture intake, normalization, analyzer, fake proposals, policy, approval inbox, operator decisions, ledger/audit records, dry-run results, adapter boundary, real-read gate, and real-write readiness gate. | ✅ Found |
+| Sprint 7.12 closeout summary | `xx-projects/07-github-repo-steward/docs/evidence/artifact-7.12-closeout-summary.md` | Artifact 07 closeout status, evidence chain, safety boundaries, limitations, and AFDF memory reconciliation. | ✅ Found |
+| Artifact 07 design and safety docs | `xx-projects/07-github-repo-steward/docs/` | Final architecture, adapter boundary, real-read gate boundary, real-write readiness boundary, and non-production safety limits. | ✅ Found |
+
 ## AFDF (Phase 02.5)
 | Evidence Item | Path | What It Proves | Verification Status |
 |---------------|------|----------------|---------------------|

@@ -35,6 +35,9 @@ Sprint 7.10 adds local runtime tests for the real-read evidence gate.
 Sprint 7.11 adds local runtime tests for the real-write readiness evidence
 gate.
 
+Sprint 7.12 is documentation, evidence, and AFDF memory closeout only and adds
+no runtime tests.
+
 Coverage by sprint:
 
 - 7.0 placeholder tests
@@ -49,6 +52,12 @@ Coverage by sprint:
 - 7.9 GitHub-like read adapter contract tests
 - 7.10 real-read evidence gate tests
 - 7.11 real-write readiness evidence gate tests
+- 7.12 closeout validation re-runs the full Artifact 07 suite
+
+Final closeout test baseline:
+
+- 226 local tests passing with `PYTHONDONTWRITEBYTECODE=1`, `PYTHONPATH=src`,
+  and pytest cache disabled
 
 Future test coverage needed:
 

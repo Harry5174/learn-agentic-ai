@@ -1,10 +1,18 @@
 # Artifact 07 - GitHub Repo Steward
 
-Artifact 07 is a GitHub Repo Steward vertical agent scaffold.
+Artifact 07 is a completed local/fake-first GitHub Repo Steward prototype.
 
 ## Artifact Status
 
-Current status after Sprint 7.11:
+Artifact 07 status: closed as a local/fake-first GitHub Repo Steward
+prototype.
+
+It validates architecture, safety gates, deterministic local flow, evidence
+handling, and readiness boundaries. It does not perform real GitHub reads or
+writes. It does not include real executor runtime. It does not include real LLM
+integration. It is not production-ready.
+
+Final validated local layers after Sprint 7.12:
 
 - local fixture intake
 - normalization
@@ -18,8 +26,6 @@ Current status after Sprint 7.11:
 - local GitHub-like fixture adapter contract
 - local real-read mode evidence gate
 - local real-write readiness gate
-
-Artifact 07 is not a completed steward agent.
 
 Still not implemented:
 
@@ -56,7 +62,9 @@ Sprint 7.9: closed — GitHub API read adapter contract.
 
 Sprint 7.10: closed — real-read mode evidence gate.
 
-Sprint 7.11: real-write readiness gate.
+Sprint 7.11: closed — real-write readiness gate.
+
+Sprint 7.12: closed — Artifact 07 closeout and AFDF framework update.
 
 Runtime status: local fixture intake, normalization, deterministic findings,
 non-executing fake proposals, local policy evaluation, pending approval
@@ -68,13 +76,11 @@ real-read evidence gate, and real-write readiness gate only.
 
 Artifact 07 prepares a future vertical agent that can inspect repository state,
 propose stewardship actions, route those proposals through policy and approval,
-and preserve audit evidence. Sprint 7.10 proves only that deterministic local
-fake GitHub-like snapshot can be loaded, normalized, analyzed into structured
-observational findings, converted into non-executing fake proposal drafts, and
-evaluated by local policy rules, then converted into pending approval inbox
-items for future operator review, local operator decision records, local
-ledger/audit records, local dry-run execution results, and local raw
-GitHub-like fixture adapter output plus local real-read gate evidence.
+and preserve audit evidence. Through Sprint 7.12 it proves a local/fake-first
+pipeline from canonical and GitHub-like fixture intake through normalization,
+analysis, fake proposals, policy, inbox, operator decisions, local audit
+records, dry-run results, adapter-boundary evidence, real-read evidence gating,
+and real-write readiness gating.
 
 ## What This Artifact Demonstrates
 
@@ -661,9 +667,8 @@ decision is not implemented in Sprint 7.0.
 
 ## Future Sprint Direction
 
-Future sprints may add, subject to Design Supervisor authorization:
-
-- Sprint 7.12 Artifact 07 closeout and AFDF framework update
+Future work requires Product Owner and Design Supervisor authorization.
+Artifact 07 itself is closed as a local/fake-first prototype.
 
 The real-mode gates remain after the local GitHub-like fixture adapter
 contract. Raw GitHub API responses must pass through a dedicated adapter before
@@ -690,6 +695,7 @@ Review the following files:
 - [Sprint 7.9 validation summary](docs/evidence/artifact-7.9-validation-summary.md)
 - [Sprint 7.10 validation summary](docs/evidence/artifact-7.10-validation-summary.md)
 - [Sprint 7.11 validation summary](docs/evidence/artifact-7.11-validation-summary.md)
+- [Sprint 7.12 closeout summary](docs/evidence/artifact-7.12-closeout-summary.md)
 - [Tests README](tests/README.md)
 
 Check that every runtime claim is limited to local fixture intake,
@@ -732,7 +738,7 @@ Sprint evidence lives under [docs/evidence](docs/evidence/).
   readiness.
 - Sprint 7.2 implements only deterministic local finding analysis.
 - Sprint 7.3 implements only non-executing fake proposal drafts.
-- No operational GitHub Repo Steward exists yet.
-- No real executor exists in this artifact yet.
+- No operational live GitHub Repo Steward exists in this artifact.
+- No real executor exists in this artifact.
 - The scaffold does not prove production readiness, real GitHub safety, real LLM
   safety, or end-to-end repository stewardship.

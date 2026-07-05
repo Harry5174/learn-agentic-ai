@@ -1,9 +1,9 @@
 # Artifact 07 Design Outline
 
-## 1. Current Status After Sprint 7.10
+## 1. Final Status After Sprint 7.12
 
-Artifact 07 is a local/fake GitHub Repo Steward vertical-agent scaffold. After
-Sprint 7.11, the implemented local layers are:
+Artifact 07 is closed as a completed local/fake-first GitHub Repo Steward
+prototype. After Sprint 7.12, the validated local layers are:
 
 ```text
 raw GitHub-like fixture payloads
@@ -26,8 +26,7 @@ records. They do not read GitHub, call GitHub APIs, call a real LLM provider,
 persist ledger/audit records, run a real executor, or perform repository
 mutation.
 
-Sprint 7.11 adds a local real-write readiness gate only. It evaluates whether
-local evidence is structurally ready for a future real-write approval path. It
+Sprint 7.12 adds closeout evidence and AFDF framework memory updates only. It
 does not call GitHub, authenticate, read `.env`, perform writes, add GitHub
 SDKs, add SQLite, add files-on-disk persistence, add real executor runtime, or
 add real LLM integration.
@@ -48,7 +47,8 @@ add real LLM integration.
 | 7.8 | Dry-Run Executor | closed | Local dry-run execution result records for ledgered operator decisions. |
 | 7.9 | GitHub API Read Adapter Contract | closed | Local raw GitHub-like fixture adapter into canonical internal snapshot shape. |
 | 7.10 | Real-Read Mode Evidence Gate | closed | Local gate records for fake/default adapter evidence and blocked/preflight real-read requests. |
-| 7.11 | Real-Write Readiness Gate | current | Local gate records for fake/default write-readiness blocked and blocked/preflight real-write readiness requests. |
+| 7.11 | Real-Write Readiness Gate | closed | Local gate records for fake/default write-readiness blocked and blocked/preflight real-write readiness requests. |
+| 7.12 | Artifact 07 Closeout and AFDF Framework Update | closed | Documentation, evidence, and AFDF memory reconciliation for final Artifact 07 closeout review. |
 
 Each sprint proves only its own layer. Earlier evidence does not prove later
 layers.
@@ -95,10 +95,10 @@ Real-Read Mode Evidence Gate
 Real-Write Readiness Gate
         |
         v
-Future Artifact 07 Closeout
+Artifact 07 Closeout Evidence
 ```
 
-Implemented through Sprint 7.11:
+Validated through Sprint 7.12:
 
 - canonical internal fixture snapshot
 - local raw GitHub-like fixture adapter contract
@@ -119,7 +119,7 @@ Future, unimplemented layers:
 
 ## 4. Current Runtime Capability Boundary
 
-The current runtime can load committed local raw GitHub-like fixture payloads,
+The local runtime can load committed local raw GitHub-like fixture payloads,
 map them into the canonical internal snapshot dictionary shape, normalize that
 snapshot, derive deterministic findings, create fake proposal drafts, evaluate
 those drafts with local policy rules, build pending approval inbox items, and
@@ -128,7 +128,7 @@ evidence records, then convert those audit records into local dry-run execution
 results, local real-read evidence records, and local real-write readiness
 records.
 
-The current runtime cannot:
+The local runtime cannot:
 
 - persist ledger/audit records to disk or a database
 - run a real executor
@@ -260,8 +260,8 @@ adapter and real-mode gates.
 | 7.8 | Dry-Run Executor | closed |
 | 7.9 | GitHub API Read Adapter Contract | closed |
 | 7.10 | Real-Read Mode Evidence Gate | closed |
-| 7.11 | Real-Write Readiness Gate | current |
-| 7.12 | Artifact 07 Closeout and AFDF Framework Update | future |
+| 7.11 | Real-Write Readiness Gate | closed |
+| 7.12 | Artifact 07 Closeout and AFDF Framework Update | closed |
 
 ## 9. Sprint 7.7 Local Ledger / Audit Record Integration
 
@@ -463,7 +463,7 @@ Before real GitHub read or write work begins:
   consume them
 - the canonical internal snapshot boundary must remain stable
 - real read mode must be explicit and evidence-gated
-- real write mode must remain future until a separate readiness gate
+- real write execution must remain future until a separate artifact authorizes it
 - no GitHub token may be printed, committed, or supplied by client input
 - no real GitHub writes may occur without Product Owner approval and operator
   approval
@@ -472,10 +472,10 @@ Before real GitHub read or write work begins:
 
 ## 15. Non-Claims / Overclaim Prevention
 
-Sprint 7.9 does not claim:
+Artifact 07 closeout does not claim:
 
-- Artifact 07 is complete
 - Artifact 07 is production-ready
+- Artifact 07 is an operational live steward
 - durable ledger/audit persistence exists
 - executor runtime exists beyond local dry-run result generation
 - live GitHub API integration exists
@@ -485,9 +485,9 @@ Sprint 7.9 does not claim:
 - real GitHub integration exists
 - real LLM integration exists
 
-The only Sprint 7.9 completion claim is that local raw GitHub-like fixture
-payloads can be converted into deterministic canonical internal snapshot-shaped
-data when validation evidence supports that claim.
+The only Sprint 7.12 completion claim is that Artifact 07 is closed as a
+local/fake-first GitHub Repo Steward prototype when validation evidence supports
+that claim.
 
 ## 16. Sprint 7.11 Real-Write Readiness Gate
 
@@ -574,7 +574,100 @@ operational monitoring. None of these exist in Sprint 7.11.
 
 ### How this prepares future work
 
-Sprint 7.11 establishes the readiness-gate boundary so that a future
-separate real-write smoke-test artifact or Sprint 7.12 closeout can reference
-structured readiness evidence. The gate pattern mirrors Sprint 7.10's
-read-gate pattern, keeping the architecture symmetric.
+Sprint 7.11 establishes the readiness-gate boundary so that future
+separate real-write work can reference structured readiness evidence. The gate
+pattern mirrors Sprint 7.10's read-gate pattern, keeping the architecture
+symmetric.
+
+## 17. Sprint 7.12 Final Closeout
+
+Sprint 7.12 closes Artifact 07 as a local/fake-first GitHub Repo Steward
+prototype. It reconciles the artifact README, design, safety boundaries,
+evidence index, tests index, parent project README, and AFDF project memory
+against the validated Sprint 7.0 through Sprint 7.11 evidence chain.
+
+Final architecture:
+
+```text
+Canonical Internal Fixture / GitHub-like Local Fixture
+        |
+        v
+Normalizer
+        |
+        v
+Analyzer
+        |
+        v
+Fake Proposal Provider
+        |
+        v
+Policy Guard
+        |
+        v
+Approval Inbox
+        |
+        v
+Operator Decision
+        |
+        v
+Ledger / Audit Record
+        |
+        v
+Dry-Run Executor Result
+        |
+        v
+GitHub Read Adapter Boundary
+        |
+        v
+Real-Read Evidence Gate
+        |
+        v
+Real-Write Readiness Gate
+```
+
+Adapter boundary:
+
+```text
+Raw GitHub-like or future real GitHub API payload
+        |
+        v
+GitHub Read Adapter Boundary
+        |
+        v
+Canonical Internal Snapshot
+        |
+        v
+Normalizer and internal Artifact 07 layers
+```
+
+Layer responsibilities:
+
+- Fixture and adapter layers provide local canonical snapshot inputs and keep
+  raw GitHub-shaped payloads out of internal layers.
+- Normalizer, analyzer, fake proposal provider, policy guard, approval inbox,
+  operator decision, ledger/audit, and dry-run layers provide deterministic
+  local records only.
+- Real-read and real-write readiness gates evaluate metadata and evidence
+  boundaries only; they do not read, write, authenticate, or execute.
+- Closeout evidence records what the local/fake-first chain proves and what it
+  deliberately does not prove.
+
+Safety boundaries:
+
+- No real GitHub reads or writes are implemented by Artifact 07.
+- No GitHub write APIs, authentication, `.env` reads, secret printing, real
+  executor runtime, real LLM provider, durable persistence, or production
+  readiness claims are added.
+- Real-read evidence does not imply write readiness.
+- Real-write readiness does not imply write execution.
+
+What remains future:
+
+- Product Owner selection of the next artifact.
+- Any live GitHub read evidence, live GitHub write execution, real executor
+  runtime, real LLM integration, durable persistence, authentication, or
+  production deployment.
+
+Artifact 07 should close here because it has completed the planned
+local/fake-first evidence chain and the next meaningful work would require a
+new artifact authorization boundary rather than additional local closeout work.

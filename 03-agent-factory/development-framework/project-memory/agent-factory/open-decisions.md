@@ -13,33 +13,48 @@ This register tracks decisions that need to be made in upcoming sessions.
 - **Deadline/Trigger:** Before starting Artifact 07 design.
 
 ## 2. Artifact 07 Sprint Map
-- **Question:** What is the exact sprint breakdown (A7.0, A7.1, etc.) for Artifact 07?
-- **Why it matters:** Required to start implementation.
-- **Current recommendation:** Unknown; needs Design Supervisor session.
-- **Decision owner:** Design Supervisor.
-- **Needed evidence:** Approved A7 design spec.
-- **Deadline/Trigger:** Artifact 07 design session.
+- **Status:** Resolved by Artifact 07 Sprint 7.12 closeout.
+- **Resolution:** Artifact 07 closed through Sprint 7.12: design scaffold,
+  fixture normalizer, analyzer, fake proposal provider, policy guard, approval
+  inbox, operator decisions, local ledger/audit records, dry-run results,
+  GitHub-like read adapter, real-read gate, real-write readiness gate, and
+  closeout/AFDF framework update.
+- **Evidence:** `xx-projects/07-github-repo-steward/docs/evidence/artifact-7.12-closeout-summary.md`.
 
 ## 3. Artifact 07 LLM Provider Mode
-- **Question:** Does Artifact 07 include a real LLM provider in manual mode, or fake LLM only?
-- **Why it matters:** Impacts cost, speed, and safety boundaries of A7.
-- **Current recommendation:** Start with fake LLM, add real LLM behind an explicit flag.
-- **Decision owner:** Design Supervisor.
-- **Needed evidence:** A7 design spec.
-- **Deadline/Trigger:** Artifact 07 design session.
+- **Status:** Resolved for Artifact 07.
+- **Resolution:** Artifact 07 is fake/local only and includes no real LLM
+  provider, provider SDK, or model-driven proposal integration.
+- **Evidence:** `xx-projects/07-github-repo-steward/docs/evidence/artifact-7.12-closeout-summary.md`.
 
 ## 4. Reusable LLM Service Boundary
 - **Question:** Where should a reusable LLM service boundary eventually be extracted?
 - **Why it matters:** Avoids hardcoding LLM clients into every vertical agent.
-- **Current recommendation:** Build it specifically for A7 first, then extract if successful.
+- **Current recommendation:** Defer until the Product Owner selects a next
+  artifact that explicitly includes real LLM provider scope. Artifact 07 did
+  not implement real LLM integration.
 - **Decision owner:** Design Supervisor / Product Owner.
-- **Needed evidence:** Successful A7 implementation.
-- **Deadline/Trigger:** Post-Artifact 07.
+- **Needed evidence:** Approved next-artifact scope.
+- **Deadline/Trigger:** Next artifact selection.
 
 ## 5. AFDF Tooling Support
 - **Question:** When should AFDF be promoted from Markdown-only to tooling-supported (CLI/Schema validation)?
 - **Why it matters:** Manual updates are error-prone.
-- **Current recommendation:** After Artifact 07 proves the manual workflow works end-to-end.
+- **Current recommendation:** Product Owner should decide after reviewing
+  Artifact 07 closeout evidence and any pain points from manual AFDF memory
+  reconciliation.
 - **Decision owner:** Product Owner.
-- **Needed evidence:** Pain points recorded in Technical Debt register during A7.
-- **Deadline/Trigger:** After Artifact 07 completion.
+- **Needed evidence:** Artifact 07 closeout evidence and Product Owner
+  priorities for the next artifact.
+- **Deadline/Trigger:** Next artifact selection.
+
+## 6. Next Artifact Selection
+- **Question:** What artifact should follow Artifact 07?
+- **Why it matters:** Artifact 07 is closed as a local/fake-first prototype;
+  live GitHub reads, real writes, executor runtime, durable persistence, real
+  LLM integration, and deployment all require a new explicit authorization
+  boundary.
+- **Current recommendation:** Next artifact requires Product Owner selection.
+- **Decision owner:** Product Owner.
+- **Needed evidence:** Product Owner scope decision.
+- **Deadline/Trigger:** Before any post-Artifact 07 implementation begins.

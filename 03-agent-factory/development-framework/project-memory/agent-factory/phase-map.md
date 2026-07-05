@@ -32,10 +32,10 @@
 
 ## Phase 03 / Vertical Agent Platform
 - **Purpose:** Build vertical agents that utilize the Phase 02 safe runtime to solve actual problems.
-- **Included Artifacts:** Artifact 07 (Candidate: GitHub Repo Steward Agent) and beyond.
-- **Status:** Not Started.
-- **Proves:** The safe runtime provides value in real-world scenarios.
-- **Does Not Prove:** Multi-agent orchestration or SaaS deployment.
+- **Included Artifacts:** Artifact 07 (GitHub Repo Steward Agent) and beyond.
+- **Status:** Started; Artifact 07 closed as a local/fake-first prototype.
+- **Proves:** A vertical repo-steward pipeline can be modeled with deterministic local layers, adapter boundaries, approval/evidence records, real-read gating, and real-write readiness gating.
+- **Does Not Prove:** Live GitHub reads, real GitHub writes, real executor runtime, real LLM integration, production readiness, multi-agent orchestration, or SaaS deployment.
 
 ## Phase 04 / Digital FTE Platform
 - **Purpose:** Orchestrate multiple vertical agents into long-running, autonomous "Digital FTEs."

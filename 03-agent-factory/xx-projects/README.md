@@ -15,7 +15,7 @@ This directory contains the numbered artifact sequence for the Agent Factory tra
 | 4 | [04-approval-gated-real-github-comment-adapter](04-approval-gated-real-github-comment-adapter) | Approval-Gated Real GitHub Comment Adapter | Complete as local/demo real-comment adapter (A4.5) |
 | 5 | [05-real-mode-smoke-evidence-release-gate](05-real-mode-smoke-evidence-release-gate) | Real-Mode Smoke Evidence and Release Gate | Complete / published / tagged evidence artifact |
 | 6 | [06-operator-approval-workbench](06-operator-approval-workbench) | Operator Approval Console / Workbench | Current local/demo workbench artifact (A6.5) |
-| 7 | [07-github-repo-steward](07-github-repo-steward) | GitHub Repo Steward | Local/fake vertical agent runtime through local GitHub-like fixture adapter output, local dry-run execution results, local real-read evidence gate records, and local real-write readiness gate records. Current layers include fixture intake, normalization, deterministic analysis, fake proposals, policy guard, approval inbox, local operator decisions, local audit records, local dry-run results, local adapter contract, real-read gate, and real-write readiness gate. Live GitHub reads, real writes, real executor runtime, real GitHub integration, and real LLM integration remain future work. |
+| 7 | [07-github-repo-steward](07-github-repo-steward) | GitHub Repo Steward | Closed as a local/fake-first GitHub Repo Steward prototype. Validated layers include fixture intake, normalization, deterministic analysis, fake proposals, policy guard, approval inbox, local operator decisions, local audit records, local dry-run results, local adapter contract, real-read gate, and real-write readiness gate. Live GitHub reads, real writes, real executor runtime, real GitHub integration, durable persistence, and real LLM integration remain future work. |
 
 Numbering convention:
 
@@ -159,12 +159,13 @@ for the Artifact 6 demo.
 ## Artifact 7 - GitHub Repo Steward
 
 **Path:** `07-github-repo-steward`
-**Status:** Local fixture snapshot, normalizer, deterministic findings, and
-non-executing fake proposal drafts with local policy evaluation, pending
-approval inbox items, local operator decision records, and local ledger/audit
-records plus local dry-run execution results and a local GitHub-like fixture
-adapter contract;
-fake/local/dry-run by default
+**Status:** Closed as a local/fake-first GitHub Repo Steward prototype.
+Validated layers include local fixture intake, normalization, deterministic
+findings, non-executing fake proposal drafts, local policy evaluation, pending
+approval inbox items, local operator decision records, local ledger/audit
+records, local dry-run execution results, a local GitHub-like fixture adapter
+contract, a local real-read evidence gate, and a local real-write readiness
+gate.
 
 **Sprint 7.0 claim:** Artifact 07 is a GitHub Repo Steward vertical agent
 scaffold. Sprint 7.0 defines the design scaffold, safety contract, evidence
@@ -226,7 +227,12 @@ Fake/default mode blocks write-readiness by default, unsafe write-readiness
 requests are blocked, and write-readiness preflight-allowed metadata remains
 distinct from real GitHub write evidence.
 
-**Current boundary:** Local fixture intake, normalization, deterministic
+**Sprint 7.12 claim:** Artifact 07 closeout reconciles the artifact docs,
+evidence index, tests index, parent project README, and AFDF framework memory
+against the validated Sprint 7.0 through Sprint 7.11 evidence chain. This is
+documentation/framework evidence only, not new runtime behavior.
+
+**Final boundary:** Local fixture intake, normalization, deterministic
 findings, non-executing fake proposal drafts, local policy evaluation, and
 pending approval inbox item creation with local operator decision records and
 local ledger/audit records plus local dry-run execution results and local
@@ -256,6 +262,7 @@ effects are included.
 - [Artifact 7.9 validation summary](07-github-repo-steward/docs/evidence/artifact-7.9-validation-summary.md)
 - [Artifact 7.10 validation summary](07-github-repo-steward/docs/evidence/artifact-7.10-validation-summary.md)
 - [Artifact 7.11 validation summary](07-github-repo-steward/docs/evidence/artifact-7.11-validation-summary.md)
+- [Artifact 7.12 closeout summary](07-github-repo-steward/docs/evidence/artifact-7.12-closeout-summary.md)
 
 ## What Is Not Here Yet
 
@@ -268,13 +275,8 @@ implement general GitHub automation, OAuth/OIDC, MCP, deployment, production
 authentication, live GitHub execution, or production-grade operator console
 claims.
 
-Artifact 07 currently implements only local fixture snapshot loading,
-normalization, deterministic findings, non-executing fake proposal drafts, and
-local policy evaluation with pending approval inbox item creation and local
-operator decision records plus local ledger/audit records and local dry-run
-execution results plus local GitHub-like fixture adapter output, local
-real-read evidence gate records, and local real-write readiness gate records
-for a future approval-gated repository stewardship vertical agent. It does not
-yet implement live GitHub reads, real executor runtime, real GitHub writes,
-live GitHub authentication, durable ledger/audit persistence, or a real LLM
-provider requirement.
+Artifact 07 is closed as a local/fake-first prototype for a future
+approval-gated repository stewardship vertical agent. It does not implement
+live GitHub reads, real executor runtime, real GitHub writes, live GitHub
+authentication, durable ledger/audit persistence, production deployment, or a
+real LLM provider requirement.

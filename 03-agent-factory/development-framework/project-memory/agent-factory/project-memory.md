@@ -10,6 +10,7 @@ Agent Factory is a foundational platform for building, controlling, and reviewin
 ## Current Phase and Status
 **Phase 02** is complete or ready to close, subject to Artifact 06 final publish/tag verification.
 **Phase 02.5** is ongoing: Agent Factory Development Framework standardization (AFDF).
+**Phase 03** has started with Artifact 07, which is closed as a local/fake-first GitHub Repo Steward prototype.
 
 ---
 
@@ -18,6 +19,7 @@ Agent Factory is a foundational platform for building, controlling, and reviewin
 - **Artifact 04:** Approval-gated real GitHub comment adapter (local/demo).
 - **Artifact 05:** Real-mode smoke evidence and release gate.
 - **Artifact 06:** Operator approval console/workbench (local/demo).
+- **Artifact 07:** GitHub Repo Steward local/fake-first prototype with deterministic local pipeline, adapter boundary, real-read gate, and real-write readiness gate.
 - **AFDF (Phase 02.5):** Framework scaffold, template hardening, living memory creation.
 
 See [Artifact Map](artifact-map.md) for detailed artifact ownership and status.
@@ -63,7 +65,11 @@ AFDF (Phase 02.5) provides the Markdown-first workflow for designing, implementi
 
 ## Next Direction
 **Phase 03 target is vertical agents.**
-The **Artifact 07 candidate is GitHub Repo Steward Agent**, which will be the first agent to utilize the full harness safety stack and the AFDF workflow.
+Artifact 07 is closed as a local/fake-first GitHub Repo Steward prototype. It
+does not prove live GitHub reads, real GitHub writes, real executor runtime,
+real LLM integration, durable persistence, or production readiness.
+
+Next artifact requires Product Owner selection.
 
 ---
 

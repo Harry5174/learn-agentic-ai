@@ -201,6 +201,21 @@ validation:
 - explicit statements about what real-write readiness evidence does and does
   not prove
 
+For Sprint 7.12, evidence is limited to Artifact 07 closeout and AFDF framework
+memory reconciliation:
+
+- Artifact 07 final status
+- sprint range closed
+- commit lineage
+- final validated local architecture
+- final test and compile command results
+- safety scan results
+- evidence index
+- explicit statements about what Artifact 07 proves
+- explicit statements about what Artifact 07 does not prove
+- known limitations and future work
+- IDE Agent recommendation label for Implementation Supervisor review only
+
 Future runtime sprints may add real-read evidence or real-write execution
 evidence. Each future evidence package must be interpreted by the sprint layer
 that produced it.
@@ -227,6 +242,8 @@ that produced it.
   adapter-path evidence only.
 - 7.11 real-write readiness evidence proves local write-readiness gate behavior
   and blocked/preflight metadata-only evaluation only.
+- 7.12 closeout evidence proves documentation, evidence, and AFDF memory
+  reconciliation only.
 - Future real executor and real-write evidence must be produced by
   the sprint that implements or gates that layer.
 
@@ -339,11 +356,20 @@ is not proof that a real write happened. It is local offline readiness-gate
 evidence, not real GitHub write evidence, not write-execution evidence, not
 authentication evidence, not real executor evidence, and not real LLM evidence.
 
+## How Sprint 7.12 Evidence Should Be Interpreted
+
+Sprint 7.12 evidence proves only that Artifact 07 documentation, tests index,
+evidence index, parent project index, and AFDF memory were reconciled against
+the validated Sprint 7.0 through Sprint 7.11 evidence chain. It is closeout and
+framework-memory evidence, not runtime evidence, not live GitHub evidence, not
+write-execution evidence, not authentication evidence, not real executor
+evidence, and not real LLM evidence.
+
 ## What This Evidence Does Not Prove
 
 Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint 7.5,
 Sprint 7.6, Sprint 7.6R, Sprint 7.7, Sprint 7.8, Sprint 7.9, Sprint 7.10,
-and Sprint 7.11 evidence do not prove:
+Sprint 7.11, and Sprint 7.12 evidence do not prove:
 
 - an operational GitHub Repo Steward runtime exists
 - real LLM proposal generation works
