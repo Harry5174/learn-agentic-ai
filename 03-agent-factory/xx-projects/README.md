@@ -15,7 +15,7 @@ This directory contains the numbered artifact sequence for the Agent Factory tra
 | 4 | [04-approval-gated-real-github-comment-adapter](04-approval-gated-real-github-comment-adapter) | Approval-Gated Real GitHub Comment Adapter | Complete as local/demo real-comment adapter (A4.5) |
 | 5 | [05-real-mode-smoke-evidence-release-gate](05-real-mode-smoke-evidence-release-gate) | Real-Mode Smoke Evidence and Release Gate | Complete / published / tagged evidence artifact |
 | 6 | [06-operator-approval-workbench](06-operator-approval-workbench) | Operator Approval Console / Workbench | Current local/demo workbench artifact (A6.5) |
-| 7 | [07-github-repo-steward](07-github-repo-steward) | GitHub Repo Steward | Local/fake vertical agent runtime through local GitHub-like fixture adapter output, local dry-run execution results, and local real-read evidence gate records. Current layers include fixture intake, normalization, deterministic analysis, fake proposals, policy guard, approval inbox, local operator decisions, local audit records, local dry-run results, local adapter contract, and real-read gate. Live GitHub reads, real writes, real executor runtime, real GitHub integration, and real LLM integration remain future work. |
+| 7 | [07-github-repo-steward](07-github-repo-steward) | GitHub Repo Steward | Local/fake vertical agent runtime through local GitHub-like fixture adapter output, local dry-run execution results, local real-read evidence gate records, and local real-write readiness gate records. Current layers include fixture intake, normalization, deterministic analysis, fake proposals, policy guard, approval inbox, local operator decisions, local audit records, local dry-run results, local adapter contract, real-read gate, and real-write readiness gate. Live GitHub reads, real writes, real executor runtime, real GitHub integration, and real LLM integration remain future work. |
 
 Numbering convention:
 
@@ -220,18 +220,24 @@ allowed without credentials, unsafe real-read requests are blocked, and
 read-only preflight-allowed metadata remains distinct from live GitHub read
 evidence.
 
+**Sprint 7.11 claim:** Artifact 07 can evaluate local real-write readiness gate
+request objects and produce deterministic readiness/evidence records.
+Fake/default mode blocks write-readiness by default, unsafe write-readiness
+requests are blocked, and write-readiness preflight-allowed metadata remains
+distinct from real GitHub write evidence.
+
 **Current boundary:** Local fixture intake, normalization, deterministic
 findings, non-executing fake proposal drafts, local policy evaluation, and
 pending approval inbox item creation with local operator decision records and
 local ledger/audit records plus local dry-run execution results and local
 GitHub-like fixture adapter output plus local real-read evidence gate records
-only. No live GitHub reads or real GitHub writes, live GitHub API calls, GitHub
-authentication, GitHub SDKs, real GitHub issue
-comments, label mutation, issue closing, PR mutation, branch or commit
-creation, workflow dispatch, required real LLM calls, real LLM proposal
-generation, durable ledger/audit persistence, real executor runtime, `.env`
-reads, token reads, background automation, or autonomous external side effects
-are included.
+plus local real-write readiness gate records only. No live GitHub reads or
+real GitHub writes, live GitHub API calls, GitHub authentication, GitHub SDKs,
+real GitHub issue comments, label mutation, issue closing, PR mutation, branch
+or commit creation, workflow dispatch, required real LLM calls, real LLM
+proposal generation, durable ledger/audit persistence, real executor runtime,
+`.env` reads, token reads, background automation, or autonomous external side
+effects are included.
 
 **Read first:**
 
@@ -249,6 +255,7 @@ are included.
 - [Artifact 7.8 validation summary](07-github-repo-steward/docs/evidence/artifact-7.8-validation-summary.md)
 - [Artifact 7.9 validation summary](07-github-repo-steward/docs/evidence/artifact-7.9-validation-summary.md)
 - [Artifact 7.10 validation summary](07-github-repo-steward/docs/evidence/artifact-7.10-validation-summary.md)
+- [Artifact 7.11 validation summary](07-github-repo-steward/docs/evidence/artifact-7.11-validation-summary.md)
 
 ## What Is Not Here Yet
 
@@ -265,8 +272,9 @@ Artifact 07 currently implements only local fixture snapshot loading,
 normalization, deterministic findings, non-executing fake proposal drafts, and
 local policy evaluation with pending approval inbox item creation and local
 operator decision records plus local ledger/audit records and local dry-run
-execution results plus local GitHub-like fixture adapter output and local
-real-read evidence gate records for a future approval-gated repository
-stewardship vertical agent. It does not yet implement live GitHub reads, real
-executor runtime, real GitHub writes, live GitHub authentication, durable
-ledger/audit persistence, or a real LLM provider requirement.
+execution results plus local GitHub-like fixture adapter output, local
+real-read evidence gate records, and local real-write readiness gate records
+for a future approval-gated repository stewardship vertical agent. It does not
+yet implement live GitHub reads, real executor runtime, real GitHub writes,
+live GitHub authentication, durable ledger/audit persistence, or a real LLM
+provider requirement.

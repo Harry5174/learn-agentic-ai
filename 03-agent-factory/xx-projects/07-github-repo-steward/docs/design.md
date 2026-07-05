@@ -3,7 +3,7 @@
 ## 1. Current Status After Sprint 7.10
 
 Artifact 07 is a local/fake GitHub Repo Steward vertical-agent scaffold. After
-Sprint 7.10, the implemented local layers are:
+Sprint 7.11, the implemented local layers are:
 
 ```text
 raw GitHub-like fixture payloads
@@ -18,6 +18,7 @@ operator decision records
 local ledger/audit records
 local dry-run execution results
 real-read mode evidence gate
+real-write readiness gate
 ```
 
 These layers operate on committed local fixture data and deterministic in-memory
@@ -25,13 +26,11 @@ records. They do not read GitHub, call GitHub APIs, call a real LLM provider,
 persist ledger/audit records, run a real executor, or perform repository
 mutation.
 
-Sprint 7.10 adds a local real-read mode evidence gate only. It can allow the
-fake/default adapter path, block unsafe real-read requests, or mark a read-only
-real-read request as preflight allowed when explicit Product Owner
-authorization and safe metadata are present. It does not call GitHub,
-authenticate, read `.env`, add GitHub SDKs, add SQLite, add files-on-disk
-persistence, add durable storage, add real executor runtime, or add real LLM
-integration.
+Sprint 7.11 adds a local real-write readiness gate only. It evaluates whether
+local evidence is structurally ready for a future real-write approval path. It
+does not call GitHub, authenticate, read `.env`, perform writes, add GitHub
+SDKs, add SQLite, add files-on-disk persistence, add real executor runtime, or
+add real LLM integration.
 
 ## 2. Completed Sprint Summary
 
@@ -48,7 +47,8 @@ integration.
 | 7.7 | Local Ledger / Audit Record Integration | closed | Local in-memory ledger/audit records for operator decision evidence. |
 | 7.8 | Dry-Run Executor | closed | Local dry-run execution result records for ledgered operator decisions. |
 | 7.9 | GitHub API Read Adapter Contract | closed | Local raw GitHub-like fixture adapter into canonical internal snapshot shape. |
-| 7.10 | Real-Read Mode Evidence Gate | current | Local gate records for fake/default adapter evidence and blocked/preflight real-read requests. |
+| 7.10 | Real-Read Mode Evidence Gate | closed | Local gate records for fake/default adapter evidence and blocked/preflight real-read requests. |
+| 7.11 | Real-Write Readiness Gate | current | Local gate records for fake/default write-readiness blocked and blocked/preflight real-write readiness requests. |
 
 Each sprint proves only its own layer. Earlier evidence does not prove later
 layers.
@@ -92,10 +92,13 @@ Dry-Run Executor
 Real-Read Mode Evidence Gate
         |
         v
-Future Real-Write Readiness Gate
+Real-Write Readiness Gate
+        |
+        v
+Future Artifact 07 Closeout
 ```
 
-Implemented through Sprint 7.10:
+Implemented through Sprint 7.11:
 
 - canonical internal fixture snapshot
 - local raw GitHub-like fixture adapter contract
@@ -108,11 +111,11 @@ Implemented through Sprint 7.10:
 - local ledger/audit records
 - local dry-run execution results
 - local real-read evidence gate
+- local real-write readiness gate
 
 Future, unimplemented layers:
 
 - executor runtime
-- real-write readiness gate
 
 ## 4. Current Runtime Capability Boundary
 
@@ -122,7 +125,8 @@ snapshot, derive deterministic findings, create fake proposal drafts, evaluate
 those drafts with local policy rules, build pending approval inbox items, and
 record local operator approve/reject decision records with local ledger/audit
 evidence records, then convert those audit records into local dry-run execution
-results and local real-read evidence records.
+results, local real-read evidence records, and local real-write readiness
+records.
 
 The current runtime cannot:
 
@@ -255,8 +259,8 @@ adapter and real-mode gates.
 | 7.7 | Local Ledger / Audit Record Integration | closed |
 | 7.8 | Dry-Run Executor | closed |
 | 7.9 | GitHub API Read Adapter Contract | closed |
-| 7.10 | Real-Read Mode Evidence Gate | current |
-| 7.11 | Real-Write Readiness Gate | future |
+| 7.10 | Real-Read Mode Evidence Gate | closed |
+| 7.11 | Real-Write Readiness Gate | current |
 | 7.12 | Artifact 07 Closeout and AFDF Framework Update | future |
 
 ## 9. Sprint 7.7 Local Ledger / Audit Record Integration
@@ -484,3 +488,93 @@ Sprint 7.9 does not claim:
 The only Sprint 7.9 completion claim is that local raw GitHub-like fixture
 payloads can be converted into deterministic canonical internal snapshot-shaped
 data when validation evidence supports that claim.
+
+## 16. Sprint 7.11 Real-Write Readiness Gate
+
+Sprint 7.11 adds a deterministic local evidence gate around future real-write
+readiness.
+
+### What Sprint 7.11 adds
+
+- `RealWriteReadinessRequest`, `RealWriteReadinessEvaluation`, and
+  `RealWriteReadinessEvidenceRecord` dataclass models.
+- `RealWriteReadinessError` for malformed gate inputs.
+- `evaluate_real_write_readiness()` function that evaluates local request
+  metadata and returns deterministic records.
+- `build_real_write_readiness_evidence_record()` function for structured
+  evidence.
+- `evaluate_fake_default_real_write_readiness_gate()` convenience helper.
+
+### How real-write readiness differs from real-write execution
+
+Real-write readiness is a metadata-only local gate. It evaluates whether all
+upstream evidence identifiers and safety confirmations are present, and whether
+the request structure is consistent. It does not call GitHub, authenticate,
+read `.env`, perform writes, create side effects, or trigger executor runtime.
+
+Real-write execution would be a separate future layer that consumes the
+readiness verdict and actually posts to GitHub APIs. Sprint 7.11 does not
+implement any part of real-write execution.
+
+### Why fake/default remains the default
+
+Fake/default mode requires no credentials, network, or external access. It
+blocks real-write readiness evaluation automatically, ensuring the safe local
+path is the default.
+
+### Why Product Owner authorization is required
+
+Write-readiness preflight involves evaluating metadata about a future write
+path that could eventually touch repository state. Product Owner authorization
+is required before even the preflight metadata evaluation to prevent accidental
+escalation.
+
+### Why credentials must not be printed or read from .env
+
+The gate evaluates local request metadata only. Credential values are never
+inspected, printed, or loaded. Future real-write execution would need separate
+credential-handling infrastructure, but Sprint 7.11 does not implement it.
+
+### Why real-read evidence must exist before write-readiness
+
+Write-readiness depends on read-gate evidence because real-write proposals
+must originate from analyzed repository state. Without verified read evidence,
+write-readiness cannot be structurally validated.
+
+### Why dry-run and ledger evidence must exist before write-readiness
+
+Write-readiness requires that the proposal has passed through the complete
+local pipeline: policy evaluation, approval inbox, operator decision, ledger
+audit, and dry-run simulation. These upstream records must exist before the
+gate can confirm readiness.
+
+### Why the gate does not prove real GitHub writes
+
+The gate evaluates local metadata only. It does not call GitHub APIs, does not
+authenticate, does not post comments, does not apply labels, does not close
+issues, and does not merge pull requests. `real_write_preflight_allowed` means
+only that local metadata is structurally consistent for a future review.
+
+### Why the gate does not prove production readiness
+
+Production readiness would require live GitHub integration, real executor
+runtime, real authentication, rate-limit handling, error recovery, and
+operational monitoring. None of these exist in Sprint 7.11.
+
+### What remains deliberately not implemented
+
+- Real GitHub write execution
+- GitHub write API calls
+- GitHub authentication for writes
+- Real executor runtime
+- Real LLM integration
+- Durable persistence
+- Database or file write evidence
+- Write types beyond future comments (no labels, closes, merges, etc.)
+
+### How this prepares future work
+
+Sprint 7.11 establishes the readiness-gate boundary so that a future
+separate real-write smoke-test artifact or Sprint 7.12 closeout can reference
+structured readiness evidence. The gate pattern mirrors Sprint 7.10's
+read-gate pattern, keeping the architecture symmetric.

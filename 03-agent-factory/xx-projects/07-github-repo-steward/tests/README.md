@@ -32,6 +32,9 @@ data.
 
 Sprint 7.10 adds local runtime tests for the real-read evidence gate.
 
+Sprint 7.11 adds local runtime tests for the real-write readiness evidence
+gate.
+
 Coverage by sprint:
 
 - 7.0 placeholder tests
@@ -45,13 +48,14 @@ Coverage by sprint:
 - 7.8 dry-run executor tests
 - 7.9 GitHub-like read adapter contract tests
 - 7.10 real-read evidence gate tests
+- 7.11 real-write readiness evidence gate tests
 
 Future test coverage needed:
 
-- future 7.11 real-write readiness tests
+- future real-write execution tests
 
 Current tests do not cover real executor runtime, live GitHub reads, real
-GitHub writes, or real GitHub behavior.
+GitHub writes, real GitHub write execution, or real GitHub behavior.
 
 Current tests cover:
 
@@ -210,6 +214,48 @@ Current tests cover:
   `ANTHROPIC_API_KEY`
 - gate operation without network sockets
 - gate operation without file reads
+- structured real-write readiness request records
+- structured real-write readiness evaluation records
+- structured real-write readiness evidence records
+- fake/default write-readiness blocked by default
+- write-readiness blocking without Product Owner authorization
+- write-readiness blocking without repository full name
+- write-readiness blocking without real-read evidence ID
+- write-readiness blocking without dry-run ID
+- write-readiness blocking without ledger record ID
+- write-readiness blocking without decision ID
+- write-readiness blocking without proposal ID
+- write-readiness blocking for rejected operator decisions
+- write-readiness blocking for unsupported write operation types
+- write-readiness blocking without adapter boundary confirmation
+- write-readiness blocking without real-read gate confirmation
+- write-readiness blocking without dry-run confirmation
+- write-readiness blocking without ledger confirmation
+- write-readiness blocking without policy confirmation
+- write-readiness blocking without approval confirmation
+- write-readiness blocking without secret handling confirmation
+- write-readiness blocking when executor runtime is enabled
+- complete safe request producing write preflight allowed
+- write preflight allowed not calling GitHub
+- write preflight allowed not executing
+- write preflight allowed not proof of real write
+- write preflight allowed for pull request comment type
+- evidence records for blocked fake default path
+- evidence records for blocked real-write path
+- evidence records for preflight-allowed path
+- write-readiness invariant enforcement
+- write-readiness malformed input safe failure
+- write-readiness no-mutation behavior
+- full local pipeline integration to write-readiness gate
+- deterministic write-readiness evaluation IDs
+- deterministic write-readiness evidence IDs
+- evaluation ID change with different repositories
+- evaluation ID change with different write operation types
+- write-readiness operation without `GITHUB_TOKEN`, `OPENAI_API_KEY`, or
+  `ANTHROPIC_API_KEY`
+- write-readiness operation without network sockets
+- write-readiness operation without file reads
+- write-readiness full pipeline without secret env vars
 
 Current tests do not cover:
 
@@ -243,5 +289,8 @@ live GitHub reads, GitHub authentication, complete GitHub API coverage, real
 GitHub behavior, real executor runtime, durable persistence, or real LLM
 integration. Do not treat real-read evidence gate tests as evidence of live
 GitHub reads, live GitHub authentication, GitHub write readiness, real executor
-runtime, durable persistence, or real LLM integration. Each future behavior
+runtime, durable persistence, or real LLM integration. Do not treat real-write
+readiness gate tests as evidence of real GitHub writes, real GitHub write
+execution, write safety, live GitHub authentication, real executor runtime,
+durable persistence, or real LLM integration. Each future behavior
 needs implementation plus focused tests in the sprint that adds it.

@@ -820,6 +820,16 @@ Forbidden Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint
 - [ ] Adapter output remains canonical internal snapshot shape.
 - [ ] Adapter does not call GitHub or authenticate.
 - [ ] Adapter does not bypass the normalizer.
+- [ ] Real-read gate does not call GitHub or authenticate.
+- [ ] Real-read gate does not perform writes.
+- [ ] Real-write readiness gate does not call GitHub or authenticate.
+- [ ] Real-write readiness gate does not perform writes.
+- [ ] Real-write readiness gate does not execute proposals.
+- [ ] Real-write readiness gate does not trigger real executor work.
+- [ ] Real-write readiness gate requires Product Owner authorization.
+- [ ] Real-write readiness gate requires complete upstream evidence.
+- [ ] Fake/default mode blocks write-readiness by default.
+- [ ] Write-readiness preflight allowed is not proof of a real write.
 - [ ] No GitHub SDK is added.
 - [ ] No database or file persistence is added.
 - [ ] No secrets are read or printed.

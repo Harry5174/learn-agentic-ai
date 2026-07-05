@@ -41,6 +41,369 @@ class RealReadGateError(ValueError):
     """Raised when real-read gate input is malformed or inconsistent."""
 
 
+class RealWriteReadinessError(ValueError):
+    """Raised when real-write readiness gate input is malformed or inconsistent."""
+
+
+_SUPPORTED_WRITE_READINESS_MODES = frozenset(
+    {"fake_default", "real_write_readiness_requested"}
+)
+
+_SUPPORTED_WRITE_READINESS_VERDICTS = frozenset(
+    {
+        "fake_default_write_readiness_blocked",
+        "real_write_readiness_blocked",
+        "real_write_preflight_allowed",
+    }
+)
+
+_SUPPORTED_WRITE_READINESS_GITHUB_STATUS = frozenset(
+    {"not_called", "write_preflight_only"}
+)
+
+_SUPPORTED_WRITE_READINESS_NETWORK_STATUS = frozenset(
+    {"not_used", "blocked", "preflight_allowed"}
+)
+
+_SUPPORTED_WRITE_READINESS_WRITE_STATUS = frozenset(
+    {"not_written", "writes_forbidden", "write_preflight_only"}
+)
+
+_SUPPORTED_WRITE_READINESS_SECRET_STATUS = frozenset(
+    {
+        "not_required_for_fake_default",
+        "credentials_not_inspected",
+        "credential_handling_required",
+    }
+)
+
+_SUPPORTED_WRITE_READINESS_EXECUTOR_STATUS = frozenset(
+    {"not_triggered", "blocked", "preflight_only"}
+)
+
+_SUPPORTED_WRITE_OPERATION_TYPES = frozenset(
+    {"future_issue_comment", "future_pull_request_comment"}
+)
+
+_SUPPORTED_WRITE_READINESS_ADAPTER_BOUNDARY_STATUS = frozenset(
+    {
+        "adapter_confirmed",
+        "adapter_not_confirmed",
+        "blocked_before_adapter",
+    }
+)
+
+_SUPPORTED_WRITE_READINESS_READ_GATE_STATUS = frozenset(
+    {
+        "real_read_gate_confirmed",
+        "real_read_gate_not_confirmed",
+        "blocked_before_read_gate",
+    }
+)
+
+_SUPPORTED_WRITE_READINESS_DRY_RUN_STATUS = frozenset(
+    {
+        "dry_run_completed",
+        "dry_run_not_completed",
+        "dry_run_skipped",
+        "blocked_before_dry_run",
+    }
+)
+
+_SUPPORTED_WRITE_READINESS_LEDGER_STATUS = frozenset(
+    {
+        "ledger_confirmed",
+        "ledger_not_confirmed",
+        "blocked_before_ledger",
+    }
+)
+
+_SUPPORTED_WRITE_READINESS_POLICY_STATUS = frozenset(
+    {
+        "policy_confirmed",
+        "policy_not_confirmed",
+        "blocked_before_policy",
+    }
+)
+
+_SUPPORTED_WRITE_READINESS_APPROVAL_STATUS = frozenset(
+    {
+        "approval_confirmed",
+        "approval_not_confirmed",
+        "blocked_before_approval",
+    }
+)
+
+
+@dataclass(frozen=True)
+class RealWriteReadinessRequest:
+    mode: str
+    repository_full_name: str
+    requested_by: str
+    product_owner_authorized: bool
+    authorization_reference: str
+    real_read_evidence_id: str
+    dry_run_id: str
+    ledger_record_id: str
+    decision_id: str
+    proposal_id: str
+    proposal_type: str
+    target_type: str
+    target_number: int
+    operator_decision: str
+    write_operation_type: str
+    adapter_boundary_confirmed: bool
+    real_read_gate_confirmed: bool
+    dry_run_confirmed: bool
+    ledger_confirmed: bool
+    policy_confirmed: bool
+    approval_confirmed: bool
+    writes_allowed: bool
+    credential_source: str
+    secret_handling_confirmed: bool
+    executor_runtime_enabled: bool
+    evidence_expected: tuple[str, ...]
+
+    def __post_init__(self) -> None:
+        if self.mode not in _SUPPORTED_WRITE_READINESS_MODES:
+            raise RealWriteReadinessError(
+                f"Unsupported write-readiness mode: {self.mode}"
+            )
+        if not isinstance(self.repository_full_name, str):
+            raise RealWriteReadinessError(
+                "repository_full_name must be a string."
+            )
+        if not isinstance(self.requested_by, str) or not self.requested_by:
+            raise RealWriteReadinessError("requested_by is required.")
+        if not isinstance(self.product_owner_authorized, bool):
+            raise RealWriteReadinessError(
+                "product_owner_authorized must be a boolean."
+            )
+        if not isinstance(self.authorization_reference, str):
+            raise RealWriteReadinessError(
+                "authorization_reference must be a string."
+            )
+        for field_name in (
+            "real_read_evidence_id",
+            "dry_run_id",
+            "ledger_record_id",
+            "decision_id",
+            "proposal_id",
+            "proposal_type",
+            "target_type",
+            "operator_decision",
+            "write_operation_type",
+            "credential_source",
+        ):
+            if not isinstance(getattr(self, field_name), str):
+                raise RealWriteReadinessError(
+                    f"{field_name} must be a string."
+                )
+        if not isinstance(self.target_number, int) or self.target_number < 0:
+            raise RealWriteReadinessError(
+                "target_number must be a non-negative int."
+            )
+        for bool_field in (
+            "adapter_boundary_confirmed",
+            "real_read_gate_confirmed",
+            "dry_run_confirmed",
+            "ledger_confirmed",
+            "policy_confirmed",
+            "approval_confirmed",
+            "writes_allowed",
+            "secret_handling_confirmed",
+            "executor_runtime_enabled",
+        ):
+            if not isinstance(getattr(self, bool_field), bool):
+                raise RealWriteReadinessError(
+                    f"{bool_field} must be a boolean."
+                )
+        if not isinstance(self.evidence_expected, tuple) or not all(
+            isinstance(ref, str) for ref in self.evidence_expected
+        ):
+            raise RealWriteReadinessError(
+                "evidence_expected must be a tuple of strings."
+            )
+
+
+@dataclass(frozen=True)
+class RealWriteReadinessEvaluation:
+    evaluation_id: str
+    mode: str
+    repository_full_name: str
+    write_operation_type: str
+    verdict: str
+    reasons: tuple[str, ...]
+    github_status: str
+    network_status: str
+    write_status: str
+    secret_status: str
+    executor_status: str
+    safe_for_future_write_review: bool
+
+    def __post_init__(self) -> None:
+        if self.mode not in _SUPPORTED_WRITE_READINESS_MODES:
+            raise RealWriteReadinessError(
+                f"Unsupported write-readiness mode: {self.mode}"
+            )
+        if self.verdict not in _SUPPORTED_WRITE_READINESS_VERDICTS:
+            raise RealWriteReadinessError(
+                f"Unsupported write-readiness verdict: {self.verdict}"
+            )
+        if self.github_status not in _SUPPORTED_WRITE_READINESS_GITHUB_STATUS:
+            raise RealWriteReadinessError(
+                f"Unsupported GitHub status: {self.github_status}"
+            )
+        if (
+            self.network_status
+            not in _SUPPORTED_WRITE_READINESS_NETWORK_STATUS
+        ):
+            raise RealWriteReadinessError(
+                f"Unsupported network status: {self.network_status}"
+            )
+        if self.write_status not in _SUPPORTED_WRITE_READINESS_WRITE_STATUS:
+            raise RealWriteReadinessError(
+                f"Unsupported write status: {self.write_status}"
+            )
+        if self.secret_status not in _SUPPORTED_WRITE_READINESS_SECRET_STATUS:
+            raise RealWriteReadinessError(
+                f"Unsupported secret status: {self.secret_status}"
+            )
+        if (
+            self.executor_status
+            not in _SUPPORTED_WRITE_READINESS_EXECUTOR_STATUS
+        ):
+            raise RealWriteReadinessError(
+                f"Unsupported executor status: {self.executor_status}"
+            )
+        if not isinstance(self.reasons, tuple) or not all(
+            isinstance(reason, str) for reason in self.reasons
+        ):
+            raise RealWriteReadinessError(
+                "reasons must be a tuple of strings."
+            )
+        if not isinstance(self.safe_for_future_write_review, bool):
+            raise RealWriteReadinessError(
+                "safe_for_future_write_review must be a boolean."
+            )
+        if self.safe_for_future_write_review and (
+            self.verdict != "real_write_preflight_allowed"
+            or self.github_status != "write_preflight_only"
+            or self.write_status != "write_preflight_only"
+            or self.executor_status != "preflight_only"
+        ):
+            raise RealWriteReadinessError(
+                "Only write-preflight-allowed evaluations may be safe for "
+                "future write review."
+            )
+        if (
+            self.verdict == "real_write_preflight_allowed"
+            and self.mode != "real_write_readiness_requested"
+        ):
+            raise RealWriteReadinessError(
+                "Only real_write_readiness_requested mode may be "
+                "preflight allowed."
+            )
+        if (
+            self.verdict == "fake_default_write_readiness_blocked"
+            and self.mode != "fake_default"
+        ):
+            raise RealWriteReadinessError(
+                "Only fake_default mode may use "
+                "fake_default_write_readiness_blocked verdict."
+            )
+
+
+@dataclass(frozen=True)
+class RealWriteReadinessEvidenceRecord:
+    evidence_id: str
+    evaluation_id: str
+    repository_full_name: str
+    mode: str
+    write_operation_type: str
+    real_read_evidence_id: str
+    dry_run_id: str
+    ledger_record_id: str
+    decision_id: str
+    proposal_id: str
+    adapter_boundary_status: str
+    real_read_gate_status: str
+    dry_run_status: str
+    ledger_status: str
+    policy_status: str
+    approval_status: str
+    github_status: str
+    write_status: str
+    executor_status: str
+    secret_status: str
+    summary: str
+
+    def __post_init__(self) -> None:
+        if self.mode not in _SUPPORTED_WRITE_READINESS_MODES:
+            raise RealWriteReadinessError(
+                f"Unsupported evidence mode: {self.mode}"
+            )
+        if (
+            self.adapter_boundary_status
+            not in _SUPPORTED_WRITE_READINESS_ADAPTER_BOUNDARY_STATUS
+        ):
+            raise RealWriteReadinessError(
+                "Unsupported adapter boundary status: "
+                f"{self.adapter_boundary_status}"
+            )
+        if (
+            self.real_read_gate_status
+            not in _SUPPORTED_WRITE_READINESS_READ_GATE_STATUS
+        ):
+            raise RealWriteReadinessError(
+                "Unsupported real-read gate status: "
+                f"{self.real_read_gate_status}"
+            )
+        if (
+            self.dry_run_status
+            not in _SUPPORTED_WRITE_READINESS_DRY_RUN_STATUS
+        ):
+            raise RealWriteReadinessError(
+                f"Unsupported dry-run status: {self.dry_run_status}"
+            )
+        if self.ledger_status not in _SUPPORTED_WRITE_READINESS_LEDGER_STATUS:
+            raise RealWriteReadinessError(
+                f"Unsupported ledger status: {self.ledger_status}"
+            )
+        if self.policy_status not in _SUPPORTED_WRITE_READINESS_POLICY_STATUS:
+            raise RealWriteReadinessError(
+                f"Unsupported policy status: {self.policy_status}"
+            )
+        if (
+            self.approval_status
+            not in _SUPPORTED_WRITE_READINESS_APPROVAL_STATUS
+        ):
+            raise RealWriteReadinessError(
+                f"Unsupported approval status: {self.approval_status}"
+            )
+        if self.github_status not in _SUPPORTED_WRITE_READINESS_GITHUB_STATUS:
+            raise RealWriteReadinessError(
+                f"Unsupported GitHub status: {self.github_status}"
+            )
+        if self.write_status not in _SUPPORTED_WRITE_READINESS_WRITE_STATUS:
+            raise RealWriteReadinessError(
+                f"Unsupported write status: {self.write_status}"
+            )
+        if (
+            self.executor_status
+            not in _SUPPORTED_WRITE_READINESS_EXECUTOR_STATUS
+        ):
+            raise RealWriteReadinessError(
+                f"Unsupported executor status: {self.executor_status}"
+            )
+        if self.secret_status not in _SUPPORTED_WRITE_READINESS_SECRET_STATUS:
+            raise RealWriteReadinessError(
+                f"Unsupported secret status: {self.secret_status}"
+            )
+        if not isinstance(self.summary, str):
+            raise RealWriteReadinessError("summary must be a string.")
+
+
 @dataclass(frozen=True)
 class RealReadRequest:
     mode: str

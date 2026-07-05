@@ -179,7 +179,29 @@ validation:
 - explicit statements about whether live-read was attempted
 - explicit statements about what real-read gate evidence does and does not prove
 
-Future runtime sprints may add real-read evidence or real-write readiness
+For Sprint 7.11, evidence is limited to local real-write readiness gate
+validation:
+
+- file inventory
+- real-write readiness request model coverage
+- real-write readiness evaluation model coverage
+- real-write readiness evidence record model coverage
+- fake/default write-readiness blocked checks
+- blocked real-write readiness request checks
+- write-readiness preflight-allowed metadata checks
+- deterministic evaluation ID and evidence ID checks
+- upstream evidence chain confirmation checks
+- operator decision and approval confirmation checks
+- no-mutation checks
+- no-secret and no-network checks
+- no-file-read checks
+- pytest results
+- compile checks
+- hygiene command results
+- explicit statements about what real-write readiness evidence does and does
+  not prove
+
+Future runtime sprints may add real-read evidence or real-write execution
 evidence. Each future evidence package must be interpreted by the sprint layer
 that produced it.
 
@@ -203,6 +225,8 @@ that produced it.
   into canonical snapshot shape only.
 - 7.10 real-read gate evidence proves local gate behavior and fake/default
   adapter-path evidence only.
+- 7.11 real-write readiness evidence proves local write-readiness gate behavior
+  and blocked/preflight metadata-only evaluation only.
 - Future real executor and real-write evidence must be produced by
   the sprint that implements or gates that layer.
 
@@ -306,11 +330,20 @@ happened. It is local offline gate evidence, not live GitHub evidence, not
 authentication evidence, not write-readiness evidence, not real execution
 evidence, and not real LLM evidence.
 
+## How Sprint 7.11 Evidence Should Be Interpreted
+
+Sprint 7.11 evidence proves only that local real-write readiness gate request,
+evaluation, and evidence records can be produced deterministically, and that
+fake/default mode blocks write-readiness by default. `real_write_preflight_allowed`
+is not proof that a real write happened. It is local offline readiness-gate
+evidence, not real GitHub write evidence, not write-execution evidence, not
+authentication evidence, not real executor evidence, and not real LLM evidence.
+
 ## What This Evidence Does Not Prove
 
 Sprint 7.0, Sprint 7.1, Sprint 7.2, Sprint 7.3, Sprint 7.4, Sprint 7.5,
-Sprint 7.6, Sprint 7.6R, Sprint 7.7, Sprint 7.8, Sprint 7.9, and Sprint 7.10
-evidence do not prove:
+Sprint 7.6, Sprint 7.6R, Sprint 7.7, Sprint 7.8, Sprint 7.9, Sprint 7.10,
+and Sprint 7.11 evidence do not prove:
 
 - an operational GitHub Repo Steward runtime exists
 - real LLM proposal generation works
@@ -322,6 +355,8 @@ evidence do not prove:
 - GitHub authentication works
 - GitHub API adapter correctness
 - complete GitHub API payload coverage
+- real GitHub writes work
+- real GitHub write safety
 - real GitHub execution works
 - real LLM provider integration works
 - production readiness
@@ -358,3 +393,7 @@ behavior.
 Local real-read gate tests can prove blocked/default/preflight gate behavior,
 but they cannot prove live GitHub reads, live authentication behavior, write
 readiness, real executor runtime, durable persistence, or real LLM behavior.
+Local real-write readiness gate tests can prove blocked/default/preflight
+write-readiness gate behavior, but they cannot prove real GitHub writes, write
+execution safety, live authentication, real executor runtime, durable
+persistence, or real LLM behavior.

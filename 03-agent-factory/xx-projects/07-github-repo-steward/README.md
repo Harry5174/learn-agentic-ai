@@ -4,7 +4,7 @@ Artifact 07 is a GitHub Repo Steward vertical agent scaffold.
 
 ## Artifact Status
 
-Current status after Sprint 7.10:
+Current status after Sprint 7.11:
 
 - local fixture intake
 - normalization
@@ -17,6 +17,7 @@ Current status after Sprint 7.10:
 - local dry-run execution results
 - local GitHub-like fixture adapter contract
 - local real-read mode evidence gate
+- local real-write readiness gate
 
 Artifact 07 is not a completed steward agent.
 
@@ -25,40 +26,43 @@ Still not implemented:
 - executor runtime
 - real GitHub integration
 - live GitHub read behavior
+- real GitHub writes
 - real LLM integration
 - production readiness
 
 ## Sprint Status
 
-Sprint 7.0: closed - documentation scaffold and safety contract.
+Sprint 7.0: closed — documentation scaffold and safety contract.
 
-Sprint 7.1: closed - local fixture repo snapshot and normalizer.
+Sprint 7.1: closed — local fixture repo snapshot and normalizer.
 
-Sprint 7.2: closed - deterministic repo steward analyzer.
+Sprint 7.2: closed — deterministic repo steward analyzer.
 
-Sprint 7.3: closed - proposal model and fake proposal provider boundary.
+Sprint 7.3: closed — proposal model and fake proposal provider boundary.
 
-Sprint 7.4: closed - proposal safety / policy guard.
+Sprint 7.4: closed — proposal safety / policy guard.
 
-Sprint 7.5: closed - approval inbox integration.
+Sprint 7.5: closed — approval inbox integration.
 
-Sprint 7.6: closed - operator decision handling.
+Sprint 7.6: closed — operator decision handling.
 
-Sprint 7.6R: closed - formal design outline revision and roadmap alignment.
+Sprint 7.6R: closed — formal design outline revision and roadmap alignment.
 
-Sprint 7.7: closed - local ledger / audit record integration.
+Sprint 7.7: closed — local ledger / audit record integration.
 
-Sprint 7.8: closed - dry-run executor.
+Sprint 7.8: closed — dry-run executor.
 
-Sprint 7.9: closed - GitHub API read adapter contract.
+Sprint 7.9: closed — GitHub API read adapter contract.
 
-Sprint 7.10: real-read mode evidence gate.
+Sprint 7.10: closed — real-read mode evidence gate.
+
+Sprint 7.11: real-write readiness gate.
 
 Runtime status: local fixture intake, normalization, deterministic findings,
-non-executing fake proposals, local policy evaluation, and pending approval
-inbox items with local operator decision records and local ledger/audit records
-plus local dry-run execution results and a local GitHub-like fixture adapter
-contract plus a local real-read evidence gate only.
+non-executing fake proposals, local policy evaluation, pending approval
+inbox items, local operator decision records, local ledger/audit records,
+local dry-run execution results, local GitHub-like fixture adapter contract,
+real-read evidence gate, and real-write readiness gate only.
 
 ## Purpose
 
@@ -269,6 +273,33 @@ live GitHub authentication behavior, real GitHub writes, GitHub write
 readiness, GitHub App integration, GitHub OAuth integration, complete GitHub API
 payload coverage, real executor runtime, real LLM integration, or production
 readiness.
+
+Sprint 7.11 demonstrates:
+
+- structured `RealWriteReadinessRequest` records
+- structured `RealWriteReadinessEvaluation` records
+- structured `RealWriteReadinessEvidenceRecord` records
+- fake/default write-readiness blocked by default
+- write-readiness blocked without Product Owner authorization
+- write-readiness blocked without repository, prior evidence IDs, or operator
+  approval
+- write-readiness blocked for rejected operator decisions
+- write-readiness blocked for unsupported write operation types
+- write-readiness blocked if adapter, read-gate, dry-run, ledger, policy, or
+  approval confirmations are missing
+- write-readiness blocked if secret handling is not confirmed
+- write-readiness blocked if executor runtime is enabled
+- metadata-only `real_write_preflight_allowed` from complete safe request
+- preflight allowed does not call GitHub, does not execute, and is not proof of
+  a real write
+- deterministic evaluation IDs and evidence IDs
+- local write-readiness gate handling without network access, GitHub
+  credentials, `.env`, file persistence, database persistence, or a real LLM
+  provider
+
+Sprint 7.11 does not demonstrate real GitHub writes, GitHub write safety,
+GitHub write execution, GitHub App integration, GitHub OAuth integration,
+real executor runtime, real LLM integration, or production readiness.
 
 ## Default Mode
 
@@ -632,8 +663,6 @@ decision is not implemented in Sprint 7.0.
 
 Future sprints may add, subject to Design Supervisor authorization:
 
-- Sprint 7.10 real-read mode evidence gate
-- Sprint 7.11 real-write readiness gate
 - Sprint 7.12 Artifact 07 closeout and AFDF framework update
 
 The real-mode gates remain after the local GitHub-like fixture adapter
@@ -659,15 +688,18 @@ Review the following files:
 - [Sprint 7.7 validation summary](docs/evidence/artifact-7.7-validation-summary.md)
 - [Sprint 7.8 validation summary](docs/evidence/artifact-7.8-validation-summary.md)
 - [Sprint 7.9 validation summary](docs/evidence/artifact-7.9-validation-summary.md)
+- [Sprint 7.10 validation summary](docs/evidence/artifact-7.10-validation-summary.md)
+- [Sprint 7.11 validation summary](docs/evidence/artifact-7.11-validation-summary.md)
 - [Tests README](tests/README.md)
 
 Check that every runtime claim is limited to local fixture intake,
 normalization, deterministic findings, non-executing fake proposal drafts,
 local policy evaluation, pending approval inbox items, local operator decision
-records, local ledger/audit records, local dry-run execution results, and local
-GitHub-like fixture adapter output. No real GitHub path, real LLM provider,
-secret read, persistence, executor runtime, or external side effect has been
-added.
+records, local ledger/audit records, local dry-run execution results, local
+GitHub-like fixture adapter output, local real-read evidence gate records, and
+local real-write readiness gate records. No real GitHub path, real LLM
+provider, secret read, persistence, executor runtime, or external side effect
+has been added.
 
 ## Evidence Location
 
@@ -693,6 +725,11 @@ Sprint evidence lives under [docs/evidence](docs/evidence/).
 - Sprint 7.9 adapter output is local raw-fixture mapping only; it does not call
   GitHub, authenticate, prove live GitHub reads, or prove complete GitHub API
   coverage.
+- Sprint 7.10 real-read gate records are local evidence only; they do not prove
+  live GitHub reads, authentication, or write readiness.
+- Sprint 7.11 write-readiness gate records are local evidence only; they do not
+  prove real GitHub writes, write execution, write safety, or production
+  readiness.
 - Sprint 7.2 implements only deterministic local finding analysis.
 - Sprint 7.3 implements only non-executing fake proposal drafts.
 - No operational GitHub Repo Steward exists yet.
