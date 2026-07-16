@@ -1,6 +1,10 @@
-# AFDF Documentation Index
+# Historical AFDF Documentation Index
 
-This directory contains the specifications, protocols, templates, memory templates, examples, and status documents for the Agent Factory Development Framework.
+> **Frozen historical documentation:** These documents are retained as records of the Agent Factory Development Framework (AFDF). They are not the current AFEF specification.
+
+Current framework documentation lives in the dedicated [Agent Factory Engineering Framework repository](https://github.com/Harry5174/agent-factory-engineering-framework). AFEF v0.1.0 established the first canonical public baseline; consult the [AFEF Releases page](https://github.com/Harry5174/agent-factory-engineering-framework/releases) for the current released version.
+
+The internal links below are preserved for historical study. Old status and roadmap documents are snapshots, not current plans. See the [legacy transition record](../LEGACY.md).
 
 ---
 
@@ -74,7 +78,7 @@ See [Templates Index](templates/README.md) for the full lifecycle map and usage 
 
 | Document | Purpose |
 |----------|---------|
-| [Project Status](status/project-status.md) | Current AFDF and project state |
-| [Roadmap](status/roadmap.md) | AFDF sprint roadmap |
-| [Known Limitations](status/known-limitations.md) | What AFDF cannot do yet |
-| [Interview Notes](status/interview-notes.md) | How to describe AFDF in interviews |
+| [Project Status](status/project-status.md) | Historical AFDF and project-state snapshot |
+| [Roadmap](status/roadmap.md) | Historical AFDF sprint-roadmap snapshot |
+| [Known Limitations](status/known-limitations.md) | Historical AFDF limitations snapshot |
+| [Interview Notes](status/interview-notes.md) | Historical AFDF interview framing |

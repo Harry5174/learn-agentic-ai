@@ -1,12 +1,14 @@
-# Agent Factory Living Memory
+# Historical Agent Factory Memory — Frozen AFDF Records
 
-This folder is the **living memory instance** for the Agent Factory project. It maintains the project's state, decisions, limitations, safety rules, and evidence index.
+> **Frozen historical records:** This folder describes the earlier `learn-agentic-ai` Agent Factory program. It is not canonical AFEF framework memory and is not current GitHub Steward repository memory.
+
+The records remain owned by `learn-agentic-ai` for traceability. They were not migrated into the canonical [Agent Factory Engineering Framework](https://github.com/Harry5174/agent-factory-engineering-framework), must not be copied there as framework-owned operational state, and must not be treated as GitHub Steward adoption records. New projects own their own pinned AFEF adoption records. GitHub Steward adoption has not started. See the [legacy transition record](../../LEGACY.md).
 
 ---
 
 ## Recommended Reading Order
 
-When bootstrapping a new session, read these files in order to build context:
+When reproducing or studying historical Agent Factory work, read these files in order:
 
 1. [project-memory.md](project-memory.md) - High-level project state and current phase
 2. [phase-map.md](phase-map.md) - The overarching phase structure
@@ -20,7 +22,9 @@ When bootstrapping a new session, read these files in order to build context:
 
 ---
 
-## How Roles Use This Memory
+## Historical Role Context
+
+The role notes below describe how this memory was used during the AFDF era; they are not current AFEF bootstrap instructions.
 
 ### Design Supervisor
 - **Reads:** `project-memory.md`, `open-decisions.md`, `next-artifact-readiness.md`

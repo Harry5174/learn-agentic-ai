@@ -29,7 +29,7 @@ The `xx-projects/` directory contains the core artifact sequence:
 | 4 | [Approval-Gated Real GitHub Comment Adapter](xx-projects/04-approval-gated-real-github-comment-adapter) | Complete as local/demo real-comment adapter (A4.5) |
 | 5 | [Real-Mode Smoke Evidence and Release Gate](xx-projects/05-real-mode-smoke-evidence-release-gate) | Complete / published / tagged evidence artifact |
 | 6 | [Operator Approval Console / Workbench](xx-projects/06-operator-approval-workbench) | Current local/demo workbench artifact (A6.5) |
-| 7 | [GitHub Repo Steward](xx-projects/07-github-repo-steward) | Documentation-first scaffold; fake/local/dry-run by default |
+| 7 | [GitHub Repo Steward](xx-projects/07-github-repo-steward) | Closed as a local/fake-first GitHub Repo Steward prototype. Production development is deferred to the dedicated `github-steward` repository after AFEF v0.2.0 is released and adoption is authorized. |
 
 Each artifact builds on the previous:
 
@@ -51,7 +51,7 @@ See [xx-projects/README.md](xx-projects/README.md) for the detailed artifact ind
 ├── 02-how-to-think-ai-era/         # Thinking checklists and methodologies
 ├── 03-agentic-coding-crash-course/ # Core workflows, persistent sandboxes, routines
 ├── 04-build-ai-agents/             # Architecture patterns, MCP, orchestration SDKs
-├── development-framework/          # Reusable development framework (AFDF)
+├── development-framework/          # Frozen historical AFDF snapshot
 └── xx-projects/                    # Numbered artifact sequence
     ├── 00-identity-aware-agent-harness
     ├── 01-llm-proposed-skill-runner
@@ -67,17 +67,19 @@ See [xx-projects/README.md](xx-projects/README.md) for the detailed artifact ind
 
 ## Current Leading Artifact
 
-Artifact 07 (GitHub Repo Steward) is the current scaffold artifact at Sprint 7.0. It is a documentation-first scaffold for a future approval-gated repository stewardship vertical agent. Default mode is fake/local/dry-run; no real GitHub writes or real LLM provider are required in Sprint 7.0.
+Artifact 07 completed through Sprint 7.12 and is closed as a local/fake-first prototype. It demonstrated fixture intake, deterministic analysis, proposals, policy evaluation, approval records, audit records, dry-run results, and readiness gates, but did not implement the production GitHub Steward.
 
-Artifact 07 does not implement a runtime GitHub Repo Steward, live GitHub execution, real LLM routing, OAuth/OIDC, MCP, deployment, or production hardening.
+The production successor belongs in the dedicated `github-steward` repository, which remains reserved and Git-empty. Implementation begins only after the AFEF v0.2.0 release and Product Owner adoption authorization. See [xx-projects/README.md](xx-projects/README.md) for the detailed historical record.
 
 ---
 
 ## Development Framework
 
-The [Agent Factory Development Framework](development-framework/) (AFDF) provides reusable session bootstraps, sprint lifecycle protocols, evidence review standards, safety boundary inheritance, and living project memory templates. It supports all future artifacts and sessions.
+The in-repository [Agent Factory Development Framework](development-framework/) (AFDF) is a frozen historical snapshot. It was the valid framework location for earlier Agent Factory work and remains preserved for provenance and earlier Artifact context.
 
-AFDF is advisory/process infrastructure only. It does not run agents or modify artifact runtime behavior.
+Its canonical successor is the [Agent Factory Engineering Framework](https://github.com/Harry5174/agent-factory-engineering-framework) (AFEF). AFEF v0.1.0 established the first canonical public baseline; current framework use should begin from the dedicated AFEF repository, and the [AFEF Releases page](https://github.com/Harry5174/agent-factory-engineering-framework/releases) determines the current released version.
+
+See the [legacy transition record](development-framework/LEGACY.md) for the freeze rules and historical ownership boundary.
 
 ---
 
@@ -99,4 +101,8 @@ The current artifact sequence remains local/demo. It does not implement:
 
 ## Recommended Next Work
 
-The next step is a future Artifact 07 implementation sprint that starts from the Sprint 7.0 design scaffold and safety contract without bypassing the fake/local/dry-run default.
+The legacy AFDF-to-AFEF transition is complete in this revision. The next work is:
+
+1. Build and release the minimum AFEF v0.2.0 adoption baseline.
+2. Initialize and adopt AFEF in the dedicated `github-steward` repository.
+3. Begin the production Vertical GitHub Steward Agent through bounded sprints.

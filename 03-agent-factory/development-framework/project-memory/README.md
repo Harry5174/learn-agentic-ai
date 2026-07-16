@@ -1,12 +1,14 @@
-# Project Memory
+# Historical Project Memory — Frozen AFDF Records
 
-This directory contains the **living project memory** for Agent Factory and future projects managed by the Agent Factory Development Framework (AFDF).
+> **Frozen historical records:** These files describe the historical `learn-agentic-ai` Agent Factory program. They are not canonical AFEF framework memory and are not current GitHub Steward repository memory.
+
+These records belong to `learn-agentic-ai` and were not migrated into the canonical [Agent Factory Engineering Framework](https://github.com/Harry5174/agent-factory-engineering-framework). Do not copy them into AFEF as framework-owned operational state. New adopting projects must create, pin, and own their own records. GitHub Steward adoption has not started. See the [legacy transition record](../LEGACY.md).
 
 ---
 
-## What is Living Memory?
+## Historical Memory Model
 
-Living memory is the source of truth for project state, decisions, limitations, and evidence. 
+During the AFDF era, living memory was the source of truth for project state, decisions, limitations, and evidence.
 It differs from the templates in `docs/memory/` because it contains actual instantiated project data, rather than just the structure.
 
 - `docs/memory/` contains **templates** for memory structures.
@@ -22,16 +24,15 @@ It differs from the templates in `docs/memory/` because it contains actual insta
 
 ---
 
-## How to Add Another Project
+## New Project Boundary
 
-Currently, this folder contains memory for the `agent-factory` project. 
-If a new project is started under the AFDF, create a new subfolder (e.g., `project-memory/new-project/`) and copy the templates from `docs/memory/` to instantiate it.
+This folder remains the historical memory for the `agent-factory` project. Do not add new projects here. Each future adopting project owns its own operational records in its own repository.
 
 ---
 
-## How to Update Memory
+## Historical Update Process
 
-Memory must be updated **at the end of a sprint** after a GREEN gate review:
+The steps below document the AFDF-era update process for historical interpretation; they are not instructions for new AFEF adoption:
 1. Review the completion report and gate outcome.
 2. Update the `project-memory.md` with new status.
 3. Record new decisions in `decision-log.md`.
@@ -40,7 +41,7 @@ Memory must be updated **at the end of a sprint** after a GREEN gate review:
 
 ---
 
-## Where to Start
+## Where to Start for Historical Study
 
-For the main Agent Factory project, start reading here:
+To study the historical Agent Factory program, start reading here:
 - [Agent Factory Memory README](agent-factory/README.md)
